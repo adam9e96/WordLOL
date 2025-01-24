@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Word Learning App</title>
+    <style>
+        /* 이전 스타일 유지 */
+        .card-container {
+            width: 300px;
+            height: 200px;
+            margin: 50px auto;
+            perspective: 1000px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card-face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-front {
+            background-color: #333;
+        }
+
+        .card-back {
+            background-color: #d13c2c;
+            transform: rotateY(180deg);
+        }
+
+        .flip {
+            transform: rotateY(180deg);
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .input-area {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button {
+            padding: 8px 16px;
+            font-size: 16px;
+            margin: 0 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        input[type="text"] {
+            width: 200px;
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+        }
+
+        .message {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            min-height: 24px;
+        }
+
+        .streak {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="streak">연속 정답: <span id="streak">0</span></div>
+
+    <div class="card-container">
+        <div id="card" class="card">
+            <div class="card-face card-front">
+                <p id="englishWord">Loading...</p>
+            </div>
+            <div class="card-face card-back">
+                <p id="koreanWord"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <div class="input-area">
+        <input type="text" id="answer" placeholder="정답을 입력하세요">
+        <button class="button" onclick="checkAnswer()">확인</button>
+    </div>
+
+    <div class="controls">
+        <button class="button" onclick="showHint()">힌트</button>
+        <button class="button" onclick="loadNewWord()">다음 단어</button>
+    </div>
+
+    <script>
+        let currentWord = null;
+
+        async function loadNewWord() {
+            try {
+                const response = await fetch('http://localhost:8080/api/words/random');
+                currentWord = await response.json();
+                document.getElementById('englishWord').textContent = currentWord.english;
+                document.getElementById('card').classList.remove('flip');
+                document.getElementById('answer').value = '';
+                document.getElementById('message').textContent = '';
+                document.getElementById('koreanWord').textContent = '';
+            } catch (error) {
+                console.error('Error loading word:', error);
+                document.getElementById('message').textContent = '단어 로딩 중 오류가 발생했습니다.';
+            }
+        }
+
+        async function checkAnswer() {
+            const userAnswer = document.getElementById('answer').value;
+            if (!userAnswer) {
+                document.getElementById('message').textContent = '답을 입력해주세요.';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/api/words/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        wordId: currentWord.id,
+                        answer: userAnswer
+                    })
+                });
+
+                const result = await response.json();
+                document.getElementById('message').textContent = result.message;
+                document.getElementById('streak').textContent = result.streak;
+
+                if (result.correct) {
+                    document.getElementById('koreanWord').textContent = userAnswer;
+                    document.getElementById('card').classList.add('flip');
+                    setTimeout(() => loadNewWord(), 1500);
+                }
+            } catch (error) {
+                console.error('Error checking answer:', error);
+                document.getElementById('message').textContent = '오류가 발생했습니다.';
+            }
+        }
+
+        async function showHint() {
+            try {
+                const response = await fetch(`http://localhost:8080/api/words/${currentWord.id}/hint`);
+                const data = await response.json();
+                document.getElementById('message').textContent = `힌트: ${data.hint}`;
+            } catch (error) {
+                console.error('Error getting hint:', error);
+                document.getElementById('message').textContent = '힌트 로딩 중 오류가 발생했습니다.';
+            }
+        }
+
+        document.getElementById('answer').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // 초기 단어 로딩
+        loadNewWord();
+    </script>
+</body>
+</html>
