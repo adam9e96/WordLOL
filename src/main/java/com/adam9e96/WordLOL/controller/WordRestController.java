@@ -2,6 +2,7 @@ package com.adam9e96.WordLOL.controller;
 
 import com.adam9e96.WordLOL.dto.WordDto;
 import com.adam9e96.WordLOL.dto.WordResponse;
+import com.adam9e96.WordLOL.service.EnglishWordService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,8 @@ import java.util.*;
 @RequestMapping("/api/v1/words")
 @CrossOrigin(origins = "*") // 개발환경용, 실제 운영시에는 구체적인 출처를 명시해야 합니다.
 public class WordRestController {
+
+    private EnglishWordService englishWordService;
     private final List<WordDto> words = new ArrayList<>();
     private static int streak = 0; // 연속 정답 횟수를 추적하는 변수. 사용자가 연속으로 맞출 때마다 증가하고 틀리면 0 초기화
 
@@ -26,7 +29,7 @@ public class WordRestController {
                 new WordDto(6L, "get in the way", "방해가 되다", "ㅂㅎㄱ ㄷㄷ"),
                 new WordDto(7L, "rain or shine", "비가 오든 날이 개든", "ㅂㄱ ㅇㄷ ㄴㅇ ㄱㄷ"),
                 new WordDto(8L, "be used", "사용되다", "ㅅㅇㄷㄷ")
-                ));
+        ));
     }
 
     @GetMapping("/random")
@@ -35,8 +38,10 @@ public class WordRestController {
         // 랜덤으로 단어를 선택합니다. 최대 범위는 init() 메서드에서 추가한 단어의 개수
         WordDto word = words.get(random.nextInt(words.size()));
 
+        WordDto word2 = englishWordService.findVocabularyById(6L);
         // 힌트와 정답은 프론트에 바로 전달하지 않습니다.
-        return ResponseEntity.ok().body(new WordDto(word.getId(), word.getEnglish(), null, null));
+//        return ResponseEntity.ok().body(new WordDto(word.getId(), word.getEnglish(), null, null));
+        return ResponseEntity.ok().body(new WordDto(word2.getId(), word2.getEnglish(), null, null));
     }
 
     @PostMapping("/check")
