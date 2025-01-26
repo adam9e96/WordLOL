@@ -24,13 +24,20 @@ public class EnglishWord {
 
 
     @Builder
-    public EnglishWord(Long id, String vocabulary, String meaning) {
+    public EnglishWord(Long id, String vocabulary, String meaning, String hint) {
         this.id = id;
         this.vocabulary = vocabulary;
         this.meaning = meaning;
+        this.hint = hint;
     }
 
     public EnglishWord() {
 
+    }
+
+    public void update(String vocabulary, String meaning, String hint) {
+        this.vocabulary = vocabulary;
+        this.meaning = meaning;
+        this.hint = hint;
     }
 }
