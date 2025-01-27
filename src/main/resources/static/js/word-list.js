@@ -1,5 +1,5 @@
 // word-list.js
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const wordList = document.getElementById('wordList');
     const editModal = new bootstrap.Modal(document.getElementById('editModal'));
 
@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadWords() {
         const response = await fetch('/api/v1/words/list');
         const words = await response.json();
+        console.log(words);
 
         wordList.innerHTML = words.map(word => `
             <tr>
@@ -23,15 +24,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 단어 삭제
-    window.deleteWord = async function(id) {
+    window.deleteWord = async function (id) {
         if (confirm('정말 삭제하시겠습니까?')) {
-            await fetch(`/api/v1/words/${id}`, { method: 'DELETE' });
+            await fetch(`/api/v1/words/${id}`, {method: 'DELETE'});
             loadWords();
         }
     }
 
     // 단어 수정 모달 표시
-    window.editWord = async function(id) {
+    window.editWord = async function (id) {
         const response = await fetch(`/api/v1/words/${id}`);
         const word = await response.json();
 
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 수정 저장
-    document.getElementById('saveEdit').addEventListener('click', async function() {
+    document.getElementById('saveEdit').addEventListener('click', async function () {
         const id = document.getElementById('editId').value;
         const data = {
             vocabulary: document.getElementById('editVocabulary').value,

@@ -10,7 +10,7 @@ async function loadNewWord() {
         console.log(currentWord);
 
         // 단어만 표시하고 나머지는 초기화
-        document.getElementById('englishWord').textContent = currentWord.english;
+        document.getElementById('englishWord').textContent = currentWord.vocabulary;
         document.getElementById('card').classList.remove('flip');
         document.getElementById('answer').value = '';
         document.getElementById('message').textContent = '';
