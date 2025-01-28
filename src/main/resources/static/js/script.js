@@ -6,8 +6,10 @@ async function loadNewWord() {
     try {
         // 비동기 HTTP 요청
         const response = await fetch('http://localhost:8080/api/v1/words/random');
+        // console.log('loadNewWord Response:', response); // Response 객체 확인
+
         currentWord = await response.json(); // 여기서 currentWord에 단어 정보가 저장됨 이후 다른 함수에서도 사용
-        console.log(currentWord);
+        console.log('currentWord:', currentWord);
 
         // 단어만 표시하고 나머지는 초기화
         document.getElementById('englishWord').textContent = currentWord.vocabulary;
@@ -45,7 +47,11 @@ async function checkAnswer() {
                 wordId: currentWord.id,
             })
         });
-
+        if (response.status !== 200) {
+            document.getElementById('message').textContent = '오류가 발생했습니다.';
+            return;
+        }
+        // 정답 확인 결과를 받아옴
         const result = await response.json();
         document.getElementById('message').textContent = result.message;
         document.getElementById('streak').textContent = result.streak;

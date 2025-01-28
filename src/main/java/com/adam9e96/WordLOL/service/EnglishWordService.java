@@ -1,6 +1,6 @@
 package com.adam9e96.WordLOL.service;
 
-import com.adam9e96.WordLOL.dto.WordDto;
+import com.adam9e96.WordLOL.dto.WordResponse;
 import com.adam9e96.WordLOL.entity.EnglishWord;
 import com.adam9e96.WordLOL.repository.EnglishWordRepository;
 import lombok.AllArgsConstructor;
@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 public class EnglishWordService {
     private final EnglishWordRepository englishWordRepository;
 
-    public WordDto findVocabularyById(Long id) {
+    public WordResponse findVocabularyById(Long id) {
         Optional<EnglishWord> englishWord = englishWordRepository.findById(id);
 
         if (englishWord.isPresent()) {
-            return new WordDto(englishWord.get().getId(),
+            return new WordResponse(englishWord.get().getId(),
                     englishWord.get().getVocabulary(),
                     englishWord.get().getMeaning(),
                     englishWord.get().getHint());
@@ -56,9 +56,9 @@ public class EnglishWordService {
         }
     }
 
-    public List<WordDto> findAllWords() {
+    public List<WordResponse> findAllWords() {
         return englishWordRepository.findAll().stream()
-                .map(word -> new WordDto(word.getId(),
+                .map(word -> new WordResponse(word.getId(),
                         word.getVocabulary(),
                         word.getMeaning(),
                         word.getHint()))

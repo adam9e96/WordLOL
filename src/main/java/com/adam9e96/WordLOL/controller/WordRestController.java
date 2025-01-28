@@ -1,7 +1,8 @@
 package com.adam9e96.WordLOL.controller;
 
-import com.adam9e96.WordLOL.dto.WordDto;
+import com.adam9e96.WordLOL.dto.WordRequest;
 import com.adam9e96.WordLOL.dto.WordResponse;
+import com.adam9e96.WordLOL.dto.AnswerResponse;
 import com.adam9e96.WordLOL.service.EnglishWordService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,27 +24,36 @@ public class WordRestController {
     private static int streak = 0; // 연속 정답 횟수를 추적하는 변수. 사용자가 연속으로 맞출 때마다 증가하고 틀리면 0 초기화
 
     @GetMapping("/random")
-    public ResponseEntity<WordDto> getRandomWord() {
+    public ResponseEntity<WordResponse> getRandomWord() {
         // 전체 단어 수를 기준으로 랜덤 ID 생성
         Random random = new Random();
 
         long randomId = random.nextInt(englishWordService.countAllWordList()) + 1; // 1 ~ countAllWordList() 사이의 랜덤 ID 생성
-        WordDto word1 = englishWordService.findVocabularyById(randomId);
+        WordResponse wordResponse = englishWordService.findVocabularyById(randomId);
+
+        // 랜덤 ID에 해당하는 단어가 없으면 다시 랜덤 ID 생성
+        if (wordResponse == null) {
+            wordResponse = englishWordService.findVocabularyById(randomId);
+        }
+        // todo : 랜덤 ID에 해당하는 단어가 없으면 다시 랜덤 ID 생성하는 로직 추가
+
 
         // 힌트와 정답은 프론트에 바로 전달하지 않습니다.
-        return ResponseEntity.ok().body(new WordDto(word1.getId(), word1.getVocabulary(), null, null));
+        return ResponseEntity.ok().body(new WordResponse(
+                wordResponse.id(),
+                wordResponse.vocabulary(),
+                null,
+                null
+        ));
     }
 
     @PostMapping("/check")
-    public ResponseEntity<WordResponse> checkAnswer(@RequestBody Map<String, String> request) {
+    public ResponseEntity<AnswerResponse> checkAnswer(@RequestBody Map<String, String> request) {
         String userAnswer = request.get("answer");
         Long wordId = Long.parseLong(request.get("wordId"));
 
-        WordDto word1 = englishWordService.findVocabularyById(wordId);
-
-
-        // 콤마로
-        String[] correctAnswers1 = word1.getMeaning().split(",");
+        WordResponse wordResponse = englishWordService.findVocabularyById(wordId);
+        String[] correctAnswers1 = wordResponse.meaning().split(",");
 
         // 배열의 답안 중 하나라도 일치하면 정답
         boolean isCorrect = Arrays.stream(correctAnswers1)
@@ -52,17 +62,17 @@ public class WordRestController {
 
         if (isCorrect) {
             streak++;
-            return ResponseEntity.ok().body(new WordResponse(true, "정답입니다!", streak));
+            return ResponseEntity.ok().body(new AnswerResponse(true, "정답입니다!", streak));
         } else {
             streak = 0;
-            return ResponseEntity.ok().body(new WordResponse(false, "틀렸습니다. 다시 시도해보세요.", streak));
+            return ResponseEntity.ok().body(new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", streak));
         }
     }
 
     @GetMapping("/{id}/hint")
     public ResponseEntity<Map<String, String>> getHint(@PathVariable Long id) {
-        WordDto word1 = englishWordService.findVocabularyById(id);
-        return ResponseEntity.ok().body(Map.of("hint", word1.getHint()));
+        WordResponse wordResponse = englishWordService.findVocabularyById(id);
+        return ResponseEntity.ok().body(Map.of("hint", wordResponse.hint()));
     }
 
     @GetMapping("/streak")
@@ -81,12 +91,12 @@ public class WordRestController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<WordDto>> getAllWords() {
+    public ResponseEntity<List<WordResponse>> getAllWords() {
         return ResponseEntity.ok().body(englishWordService.findAllWords());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WordDto> getWord(@PathVariable Long id) {
+    public ResponseEntity<WordResponse> getWord(@PathVariable Long id) {
         return ResponseEntity.ok().body(englishWordService.findVocabularyById(id));
     }
 
@@ -97,8 +107,12 @@ public class WordRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateWord(@PathVariable Long id, @RequestBody WordDto request) {
-        englishWordService.updateWord(id, request.getVocabulary(), request.getMeaning(), request.getHint());
+    public ResponseEntity<Void> updateWord(@PathVariable Long id, @RequestBody WordRequest request) {
+        englishWordService.updateWord(
+                id,
+                request.vocabulary(),
+                request.meaning(),
+                request.hint());
         return ResponseEntity.ok().build();
     }
 
