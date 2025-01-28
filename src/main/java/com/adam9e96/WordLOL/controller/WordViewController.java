@@ -25,7 +25,7 @@ public class WordViewController {
 
     @GetMapping("/")
     public String showMain() {
-        return "main";
+        return "dashboard";
     }
 
 

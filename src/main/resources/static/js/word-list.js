@@ -1,4 +1,3 @@
-// word-list.js
 document.addEventListener('DOMContentLoaded', function () {
     const wordList = document.getElementById('wordList');
     const editModal = new bootstrap.Modal(document.getElementById('editModal'));
@@ -7,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
     async function loadWords() {
         const response = await fetch('/api/v1/words/list');
         const words = await response.json();
-        console.log(words);
 
         wordList.innerHTML = words.map(word => `
             <tr>
@@ -23,11 +21,17 @@ document.addEventListener('DOMContentLoaded', function () {
         `).join('');
     }
 
-    // 단어 삭제
+    /**
+     * 단어 삭제 함수
+     * @param id 삭제할 id
+     * @returns {Promise<void>}
+     */
     window.deleteWord = async function (id) {
         if (confirm('정말 삭제하시겠습니까?')) {
-            await fetch(`/api/v1/words/${id}`, {method: 'DELETE'});
-            loadWords();
+            await fetch(`/api/v1/words/${id}`, {
+                method: 'DELETE'
+            });
+            await loadWords();
         }
     }
 
@@ -62,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         editModal.hide();
-        loadWords();
+        await loadWords();
     });
 
     // 초기 로드
