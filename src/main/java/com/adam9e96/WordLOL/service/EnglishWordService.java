@@ -38,6 +38,11 @@ public class EnglishWordService {
     }
 
 
+    /**
+     * 단어 전체 개수를 조회합니다.
+     *
+     * @return 단어 전체 개수
+     */
     public int countAllWordList() {
         return (int) englishWordRepository.count();
     }
@@ -62,6 +67,12 @@ public class EnglishWordService {
                         word.getVocabulary(),
                         word.getMeaning(),
                         word.getHint()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> findAllIds() {
+        return englishWordRepository.findAll().stream()
+                .map(EnglishWord::getId)
                 .collect(Collectors.toList());
     }
 }

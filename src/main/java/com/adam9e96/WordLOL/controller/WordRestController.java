@@ -25,45 +25,62 @@ public class WordRestController {
 
     @GetMapping("/random")
     public ResponseEntity<WordResponse> getRandomWord() {
-        // 전체 단어 수를 기준으로 랜덤 ID 생성
-        Random random = new Random();
 
-        long randomId = random.nextInt(englishWordService.countAllWordList()) + 1; // 1 ~ countAllWordList() 사이의 랜덤 ID 생성
-        WordResponse wordResponse = englishWordService.findVocabularyById(randomId);
+        /*
+         * 단어가 하나도 없으면 404 Not Found를 반환합니다.
+         * 성능 향상을 위해 존재하는 ID 목록을 가져옵니다.
+         */
+        int totalWords = englishWordService.countAllWordList();
 
-        // 랜덤 ID에 해당하는 단어가 없으면 다시 랜덤 ID 생성
-        if (wordResponse == null) {
-            wordResponse = englishWordService.findVocabularyById(randomId);
+        if (totalWords == 0) {
+            return ResponseEntity.notFound().build();
         }
-        // todo : 랜덤 ID에 해당하는 단어가 없으면 다시 랜덤 ID 생성하는 로직 추가
+
+        /*
+         * 존재하는 단어 ID 목록을 가져옵니다.
+         */
+        List<Long> existingIds = englishWordService.findAllIds();
+//        log.info("existingIds: {}", existingIds);
+
+        Random random = new Random();
+        Long randomId = existingIds.get(random.nextInt(existingIds.size()));
+        WordResponse wordResponse = englishWordService.findVocabularyById(randomId);
 
 
         // 힌트와 정답은 프론트에 바로 전달하지 않습니다.
-        return ResponseEntity.ok().body(new WordResponse(
-                wordResponse.id(),
-                wordResponse.vocabulary(),
-                null,
-                null
-        ));
+        return ResponseEntity.ok().
+
+                body(new WordResponse(
+                        wordResponse.id(),
+                        wordResponse.vocabulary(),
+                        null,
+                        null
+                ));
     }
 
     @PostMapping("/check")
     public ResponseEntity<AnswerResponse> checkAnswer(@RequestBody Map<String, String> request) {
+
+        // 사용자가 입력한 답안과 정답 가져오기
         String userAnswer = request.get("answer");
         Long wordId = Long.parseLong(request.get("wordId"));
 
+        // DB에서 정답 가져오기
         WordResponse wordResponse = englishWordService.findVocabularyById(wordId);
+
+        // 정답을 쉼표로 구분하여 뜻을 배열로 만듭니다.
         String[] correctAnswers1 = wordResponse.meaning().split(",");
 
         // 배열의 답안 중 하나라도 일치하면 정답
         boolean isCorrect = Arrays.stream(correctAnswers1)
-                .map(String::trim)
+                .map(String::trim) // 앞뒤 공백 제거
                 .anyMatch(answer -> answer.equals(userAnswer));
 
         if (isCorrect) {
             streak++;
             return ResponseEntity.ok().body(new AnswerResponse(true, "정답입니다!", streak));
         } else {
+            // 틀리면 streak를 0으로 초기화
             streak = 0;
             return ResponseEntity.ok().body(new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", streak));
         }
