@@ -4,15 +4,16 @@ import com.adam9e96.WordLOL.dto.WordRequest;
 import com.adam9e96.WordLOL.dto.WordResponse;
 import com.adam9e96.WordLOL.dto.AnswerResponse;
 import com.adam9e96.WordLOL.service.EnglishWordService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/words")
@@ -98,11 +99,30 @@ public class WordRestController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> registerWord(@RequestBody Map<String, String> word) {
+    public ResponseEntity<Map<String, Object>> registerWord(@Valid @RequestBody WordRequest request, BindingResult bindingResult) {
+
+        // 유효성 검사 실패 시
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("timestamp", LocalDateTime.now());
+            errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+            errorResponse.put("message", "입력 검증 실패");
+
+            List<String> errors = bindingResult.getFieldErrors()
+                    .stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .toList();
+            errorResponse.put("errors", errors);
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(errorResponse);
+        }
+        // 유효성 검사 통과시
         englishWordService.insertWord(
-                word.get("vocabulary"),
-                word.get("meaning"),
-                word.get("hint")
+                request.vocabulary(),
+                request.meaning(),
+                request.hint()
         );
         return ResponseEntity.ok(Map.of("message", "success"));
     }

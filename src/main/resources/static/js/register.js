@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
             meaning: document.getElementById('meaning').value,
             hint: document.getElementById('hint').value
         };
-        
+
         // API 요청
         try {
             const response = await fetch('/api/v1/words/register', {
@@ -29,13 +29,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify(wordData)
             });
 
+            const data = await response.json();
+
             if (response.ok) {
                 showToast('단어가 등록되었습니다.', 'success');
                 setTimeout(() => {
                     window.location.href = '/word/study';
                 }, 2000);
             } else {
-                showToast('단어 등록에 실패했습니다.', 'danger');
+                // 서버에서 반환한 에러 메시지도 표시
+                const errorMessages = data.errors.join('\n');
+                showToast(`등록 실패: \n
+                ${errorMessages}`, 'danger');
             }
         } catch (error) {
             console.error('Error:', error);
