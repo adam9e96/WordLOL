@@ -1,0 +1,127 @@
+.study-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.streak-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    padding: 15px 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #0d6efd;
+    font-weight: bold;
+}
+
+.card-container {
+    width: 100%;
+    height: 250px;
+    margin: 30px auto;
+    perspective: 1000px;
+}
+
+.card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    border: none;
+}
+
+.card-face {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.card-front {
+    background: linear-gradient(45deg, #4158D0, #C850C0);
+}
+
+.card-back {
+    background: linear-gradient(45deg, #00B4DB, #0083B0);
+    transform: rotateY(180deg);
+}
+
+.flip {
+    transform: rotateY(180deg);
+}
+
+.message {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+    font-size: 1.1rem;
+    min-height: 50px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.input-area {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.answer-input {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.answer-input:focus {
+    outline: none;
+    border-color: #4158D0;
+    box-shadow: 0 0 0 3px rgba(65, 88, 208, 0.1);
+}
+
+.control-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-control {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-check {
+    background: linear-gradient(45deg, #4158D0, #C850C0);
+}
+
+.btn-hint {
+    background: linear-gradient(45deg, #FF512F, #F09819);
+}
+
+.btn-next {
+    background: linear-gradient(45deg, #11998e, #38ef7d);
+}
+
+.btn-control:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}

@@ -4,6 +4,8 @@ import com.adam9e96.WordLOL.dto.WordResponse;
 import com.adam9e96.WordLOL.entity.EnglishWord;
 import com.adam9e96.WordLOL.repository.EnglishWordRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -61,6 +63,7 @@ public class EnglishWordService {
         }
     }
 
+
     public List<WordResponse> findAllWords() {
         return englishWordRepository.findAll().stream()
                 .map(word -> new WordResponse(word.getId(),
@@ -75,4 +78,15 @@ public class EnglishWordService {
                 .map(EnglishWord::getId)
                 .collect(Collectors.toList());
     }
+
+    public Page<WordResponse> findAllWordsWithPaging(Pageable pageable) {
+        Page<EnglishWord> wordPage = englishWordRepository.findAll(pageable);
+        return wordPage.map(word -> new WordResponse(
+                word.getId(),
+                word.getVocabulary(),
+                word.getMeaning(),
+                word.getHint()
+        ));
+    }
+
 }

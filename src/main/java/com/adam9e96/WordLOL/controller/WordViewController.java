@@ -23,7 +23,7 @@ public class WordViewController {
         return "word-list";
     }
 
-    @GetMapping("/")
+    @GetMapping("/dashboard")
     public String showMain() {
         return "dashboard";
     }

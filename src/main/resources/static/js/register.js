@@ -39,8 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 // 서버에서 반환한 에러 메시지도 표시
                 const errorMessages = data.errors.join('\n');
-                showToast(`등록 실패: \n
-                ${errorMessages}`, 'danger');
+                showToast(`등록 실패: ${errorMessages}`, 'danger');
             }
         } catch (error) {
             console.error('Error:', error);

@@ -7,6 +7,10 @@ import com.adam9e96.WordLOL.service.EnglishWordService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -127,10 +131,10 @@ public class WordRestController {
         return ResponseEntity.ok(Map.of("message", "success"));
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<WordResponse>> getAllWords() {
-        return ResponseEntity.ok().body(englishWordService.findAllWords());
-    }
+//    @GetMapping("/list")
+//    public ResponseEntity<List<WordResponse>> getAllWords() {
+//        return ResponseEntity.ok().body(englishWordService.findAllWords());
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<WordResponse> getWord(@PathVariable Long id) {
@@ -151,6 +155,14 @@ public class WordRestController {
                 request.meaning(),
                 request.hint());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<WordResponse>> getAllWords(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return ResponseEntity.ok().body(englishWordService.findAllWordsWithPaging(pageable));
     }
 
 
