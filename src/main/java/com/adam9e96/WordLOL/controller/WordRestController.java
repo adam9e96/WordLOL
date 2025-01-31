@@ -18,7 +18,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/words")
@@ -26,8 +29,8 @@ import java.util.*;
 @AllArgsConstructor
 public class WordRestController {
 
-    private final EnglishWordService englishWordService;
     private static int perfectRun = 0; // 연속 정답 횟수를 추적하는 변수.
+    private final EnglishWordService englishWordService;
 
     @GetMapping("/random")
     public ResponseEntity<WordResponse> getRandomWord() {
@@ -62,9 +65,9 @@ public class WordRestController {
         return ResponseEntity.ok().body(Map.of("hint", wordResponse.hint()));
     }
 
-    @GetMapping("/streak")
+    @GetMapping("/perfectRun")
     public Map<String, Integer> getPerfectRun() {
-        return Map.of("streak", perfectRun);
+        return Map.of("perfectRun", perfectRun);
     }
 
     @PostMapping("/register")

@@ -36,7 +36,7 @@ public class DashboardService {
 
         // TODO : 추구 구현할 기능
         int todayStudiedWords = 0; // 학습 이력 테이블 구현 후 개발 구현
-        int currentStreak = 0; // g현재 streak 값 가져오기
+        int currentStreak = 0; // g현재 perfectRun 값 가져오기
         double correctRate = 0.0; // 정답률 계산 로직 구현 필요
 
         return new DashBoardResponse(

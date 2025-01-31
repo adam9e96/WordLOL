@@ -22,4 +22,5 @@ public interface EnglishWordRepository extends JpaRepository<EnglishWord, Long> 
 
     @Query("SELECT COUNT(e) FROM EnglishWord e")
     long countAllWords();
+
 }

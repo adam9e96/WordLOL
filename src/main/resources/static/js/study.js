@@ -53,8 +53,9 @@ async function checkAnswer() {
         }
         // 정답 확인 결과를 받아옴
         const result = await response.json();
+        console.log('result:', result);
         document.getElementById('message').textContent = result.message;
-        document.getElementById('streak').textContent = result.streak;
+        document.getElementById('perfectRun').textContent = result.perfectRun;
 
         if (result.correct) {
             // 정답을 맞추면 1.5초 후 새로운 단어를 로딩
@@ -90,6 +91,16 @@ document.getElementById('answer').addEventListener('keypress', function (event) 
         });
     }
 });
+
+
+// 확인 버튼을 위해 study.js 파일에 추가할 코드
+// let isAnswerVisible = false;
+
+function toggleAnswer() {
+    if (!currentWord) return;
+    checkAnswer().then(r => console.log('정답 확인'));
+}
+
 
 // 초기 단어 로딩
 loadNewWord().then(() => {
