@@ -70,15 +70,26 @@ async function checkAnswer() {
     }
 }
 
+let visible_hint = false;
+
 async function showHint() {
+
+    if (visible_hint) {
+        document.getElementById('message').textContent = '';
+        visible_hint = false;
+        return;
+    }
+
     try {
         const response = await fetch(`http://localhost:8080/api/v1/words/${currentWord.id}/hint`);
         const data = await response.json();
 
         document.getElementById('message').textContent = `힌트: ${data.hint}`;
+        visible_hint = true;
     } catch (error) {
         console.error('힌트 제공 오류 :', error);
         document.getElementById('message').textContent = '힌트 로딩 중 오류가 발생했습니다.';
+        visible_hint = true;
     }
 }
 
@@ -92,9 +103,27 @@ document.getElementById('answer').addEventListener('keypress', function (event) 
     }
 });
 
+// 입력창 포커스 상태 추적
+let isInputFocused = false;
 
-// 확인 버튼을 위해 study.js 파일에 추가할 코드
-// let isAnswerVisible = false;
+// 입력창 포커스 이벤트
+document.getElementById('answer').addEventListener('focus', () => {
+    isInputFocused = true;
+});
+
+document.getElementById('answer').addEventListener('blur', () => {
+    isInputFocused = false;
+});
+
+// 글로벌 키보드 이벤트 수정
+document.addEventListener('keypress', function (event) {
+    if (!isInputFocused && (event.key === 'h' || event.key === 'H')) {
+        showHint().then(() =>
+            console.log('힌트 표시')
+        );
+    }
+});
+
 
 function toggleAnswer() {
     if (!currentWord) return;
