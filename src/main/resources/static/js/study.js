@@ -9,7 +9,7 @@ async function loadNewWord() {
         // console.log('loadNewWord Response:', response); // Response 객체 확인
 
         currentWord = await response.json(); // 여기서 currentWord에 단어 정보가 저장됨 이후 다른 함수에서도 사용
-        console.log('currentWord:', currentWord);
+        // console.log('currentWord:', currentWord);
 
         // 단어만 표시하고 나머지는 초기화
         document.getElementById('englishWord').textContent = currentWord.vocabulary;
@@ -29,7 +29,7 @@ async function checkAnswer() {
     // answer input 요소에서 사용자가 입력한 값을 가져옴
     const userAnswer = document.getElementById('answer').value;
 
-    console.log('userAnswer:', userAnswer);
+    // console.log('userAnswer:', userAnswer);
     // 사용자가 입력한 값이 없으면 메시지를 표시하고 함수 종료
     if (!userAnswer) {
         document.getElementById('message').textContent = '답을 입력해주세요.';
@@ -93,5 +93,5 @@ document.getElementById('answer').addEventListener('keypress', function (event) 
 
 // 초기 단어 로딩
 loadNewWord().then(() => {
-    console.log('단어 로딩');
+    console.log('단어 로딩 함수 실행');
 });

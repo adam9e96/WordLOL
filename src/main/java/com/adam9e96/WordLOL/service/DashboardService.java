@@ -26,7 +26,10 @@ public class DashboardService {
                         word.getId(),
                         word.getVocabulary(),
                         word.getMeaning(),
-                        word.getHint()
+                        word.getHint(),
+                        word.getDifficulty(),
+                        word.getCreatedAt(),
+                        word.getUpdatedAt()
                 ))
                 .toList();
 

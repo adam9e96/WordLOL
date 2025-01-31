@@ -1,11 +1,13 @@
+/* 테이블 컨테이너 */
 .table-container {
     background: white;
     border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     padding: 20px;
 }
 
+/* 테이블 */
 .custom-table {
     border-radius: 10px;
     overflow: hidden;
@@ -25,6 +27,7 @@
     padding: 15px;
 }
 
+/* 페이지네이션 */
 .pagination {
     gap: 5px;
 }
@@ -52,4 +55,17 @@
     padding: 5px 10px;
     border-radius: 6px;
     transition: all 0.3s ease;
+}
+
+.badge {
+    font-size: 0.8rem;
+    padding: 0.5em 0.8em;
+}
+
+.difficulty-filter {
+    margin-bottom: 1rem;
+}
+
+.table td {
+    vertical-align: middle;
 }

@@ -10,8 +10,10 @@
 </head>
 <body class="bg-light">
 
+<!-- 헤더 영역 -->
 <div th:replace="~{fragments/header :: header}"></div>
 
+<!-- 메인 -->
 <div class="container mt-5">
     <div class="row mb-4">
         <div class="col">
@@ -19,15 +21,19 @@
             <div class="table-container">
                 <div class="table-responsive">
                     <table class="table custom-table table-hover mb-0">
+                        <!-- 테이블 헤더-->
                         <thead>
                         <tr>
                             <th>ID</th>
                             <th>영단어</th>
                             <th>의미</th>
                             <th>힌트</th>
+                            <th>난이도</th>
+                            <th>등록일</th>
                             <th>관리</th>
                         </tr>
                         </thead>
+                        <!-- 테이블 내용 -->
                         <tbody id="wordList"></tbody>
                     </table>
                 </div>
@@ -64,6 +70,17 @@
                         <label for="editHint" class="form-label">힌트</label>
                         <input type="text" class="form-control" id="editHint">
                     </div>
+                    <!-- 수정 모달 내부 -->
+                    <div class="mb-3">
+                        <label for="editDifficulty" class="form-label">난이도</label>
+                        <select class="form-select" id="editDifficulty" required>
+                            <option value="1">Level 1 (매우 쉬움)</option>
+                            <option value="2">Level 2 (쉬움)</option>
+                            <option value="3">Level 3 (보통)</option>
+                            <option value="4">Level 4 (어려움)</option>
+                            <option value="5">Level 5 (매우 어려움)</option>
+                        </select>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -73,6 +90,7 @@
         </div>
     </div>
 </div>
+<!-- 수정 모달 END -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script defer type="text/javascript" src="/js/word-list.js"></script>

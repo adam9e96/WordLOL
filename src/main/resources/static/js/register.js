@@ -4,22 +4,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const bsToast = new bootstrap.Toast(toast);
 
     form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // 기본 폼 제출 동작을 막습니다.
+        e.preventDefault();
 
-        if (!form.checkValidity()) { // 폼 유효성 검사
+        if (!form.checkValidity()) {
             e.stopPropagation();
             form.classList.add('was-validated');
             return;
         }
 
-        // 단어 데이터를 수집
         const wordData = {
             vocabulary: document.getElementById('vocabulary').value,
             meaning: document.getElementById('meaning').value,
-            hint: document.getElementById('hint').value
+            hint: document.getElementById('hint').value,
+            difficulty: parseInt(document.getElementById('difficulty').value)
         };
 
-        // API 요청
         try {
             const response = await fetch('/api/v1/words/register', {
                 method: 'POST',
@@ -37,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     window.location.href = '/word/study';
                 }, 2000);
             } else {
-                // 서버에서 반환한 에러 메시지도 표시
                 const errorMessages = data.errors.join('\n');
                 showToast(`등록 실패: ${errorMessages}`, 'danger');
             }

@@ -38,11 +38,7 @@
 
     <!-- 입력 영역 -->
     <div class="input-area">
-        <input type="text"
-               id="answer"
-               class="answer-input"
-               placeholder="정답을 입력하세요"
-               autocomplete="off">
+        <input type="text" id="answer" class="answer-input" placeholder="정답을 입력하세요" autocomplete="off">
         <button class="btn-control btn-check" onclick="checkAnswer()">
             <i class="bi bi-check-lg me-1"></i>확인
         </button>
@@ -50,9 +46,11 @@
 
     <!-- 컨트롤 버튼 -->
     <div class="control-buttons">
+        <!-- 힌트 버튼 -->
         <button class="btn-control btn-hint" onclick="showHint()">
             <i class="bi bi-lightbulb me-1"></i>힌트
         </button>
+        <!-- 다음단어 버튼 -->
         <button class="btn-control btn-next" onclick="loadNewWord()">
             <i class="bi bi-skip-forward me-1"></i>다음 단어
         </button>
@@ -60,6 +58,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script defer type="text/javascript" th:src="@{/js/script.js}"></script>
+<script defer type="text/javascript" th:src="@{/js/study.js}"></script>
 </body>
 </html>

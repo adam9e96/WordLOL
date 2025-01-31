@@ -1,8 +1,6 @@
 package com.adam9e96.WordLOL.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record WordRequest(
         @NotBlank(message = "단어는 필수 입력값입니")
@@ -15,6 +13,10 @@ public record WordRequest(
         String meaning,
 
         @Size(max = 100, message = "힌트는 100자 이하로 입력해주세요")
-        String hint
+        String hint,
+
+        @Min(value = 1, message = "난이도는 1 이상이어야 합니다")
+        @Max(value = 5, message = "난이도는 5 이하이어야 합니다")
+        Integer difficulty
 ) {
 }

@@ -14,10 +14,12 @@
 
 <!-- 토스트 메시지 -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
-    <div id="toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive"
+         aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
         </div>
     </div>
 </div>
@@ -57,6 +59,22 @@
                         <input type="text" class="form-control" id="hint"
                                placeholder="학습에 도움이 될 힌트를 입력하세요">
                     </div>
+                    <!-- 난이도 선택 추가 -->
+                    <div class="mb-4">
+                        <label for="difficulty" class="form-label">
+                            <i class="bi bi-bar-chart me-2"></i>난이도
+                        </label>
+                        <select class="form-select" id="difficulty" required>
+                            <option value="1">Level 1 (매우 쉬움)</option>
+                            <option value="2">Level 2 (쉬움)</option>
+                            <option value="3">Level 3 (보통)</option>
+                            <option value="4">Level 4 (어려움)</option>
+                            <option value="5">Level 5 (매우 어려움)</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            <i class="bi bi-exclamation-circle me-2"></i>난이도를 선택해주세요.
+                        </div>
+                    </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary btn-submit">
                             <i class="bi bi-plus-lg me-2"></i>단어 등록하기
@@ -64,6 +82,7 @@
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
 </div>

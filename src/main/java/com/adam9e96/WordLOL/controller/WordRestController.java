@@ -1,8 +1,9 @@
 package com.adam9e96.WordLOL.controller;
 
+import com.adam9e96.WordLOL.dto.AnswerRequest;
+import com.adam9e96.WordLOL.dto.AnswerResponse;
 import com.adam9e96.WordLOL.dto.WordRequest;
 import com.adam9e96.WordLOL.dto.WordResponse;
-import com.adam9e96.WordLOL.dto.AnswerResponse;
 import com.adam9e96.WordLOL.service.EnglishWordService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -26,68 +27,32 @@ import java.util.*;
 public class WordRestController {
 
     private final EnglishWordService englishWordService;
-    private static int streak = 0; // 연속 정답 횟수를 추적하는 변수. 사용자가 연속으로 맞출 때마다 증가하고 틀리면 0 초기화
+    private static int perfectRun = 0; // 연속 정답 횟수를 추적하는 변수.
 
     @GetMapping("/random")
     public ResponseEntity<WordResponse> getRandomWord() {
 
-        /*
-         * 단어가 하나도 없으면 404 Not Found를 반환합니다.
-         * 성능 향상을 위해 존재하는 ID 목록을 가져옵니다.
-         */
-        int totalWords = englishWordService.countAllWordList();
+        Optional<WordResponse> wordResponse = englishWordService.getRandomWord();
 
-        if (totalWords == 0) {
-            return ResponseEntity.notFound().build();
-        }
-
-        /*
-         * 존재하는 단어 ID 목록을 가져옵니다.
-         */
-        List<Long> existingIds = englishWordService.findAllIds();
-//        log.info("existingIds: {}", existingIds);
-
-        Random random = new Random();
-        Long randomId = existingIds.get(random.nextInt(existingIds.size()));
-        WordResponse wordResponse = englishWordService.findVocabularyById(randomId);
-
-
-        // 힌트와 정답은 프론트에 바로 전달하지 않습니다.
-        return ResponseEntity.ok().
-
-                body(new WordResponse(
-                        wordResponse.id(),
-                        wordResponse.vocabulary(),
-                        null,
-                        null
-                ));
+        // 단어가 없으면 404 에러 반환
+        // 단어가 있으면 정답과 힌트를 제외한 정보만 반환해서 200 OK 반환
+        return wordResponse.map(
+                response -> ResponseEntity
+                        .ok()
+                        .body(hideSecretInfo(response))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/check")
-    public ResponseEntity<AnswerResponse> checkAnswer(@RequestBody Map<String, String> request) {
-
-        // 사용자가 입력한 답안과 정답 가져오기
-        String userAnswer = request.get("answer");
-        Long wordId = Long.parseLong(request.get("wordId"));
-
-        // DB에서 정답 가져오기
-        WordResponse wordResponse = englishWordService.findVocabularyById(wordId);
-
-        // 정답을 쉼표로 구분하여 뜻을 배열로 만듭니다.
-        String[] correctAnswers1 = wordResponse.meaning().split(",");
-
-        // 배열의 답안 중 하나라도 일치하면 정답
-        boolean isCorrect = Arrays.stream(correctAnswers1)
-                .map(String::trim) // 앞뒤 공백 제거
-                .anyMatch(answer -> answer.equals(userAnswer));
+    public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request) {
+        Boolean isCorrect = englishWordService.checkAnswer(request.wordId(), request.answer());
 
         if (isCorrect) {
-            streak++;
-            return ResponseEntity.ok().body(new AnswerResponse(true, "정답입니다!", streak));
+            perfectRun++;
+            return ResponseEntity.ok().body(new AnswerResponse(true, "정답입니다!", perfectRun));
         } else {
             // 틀리면 streak를 0으로 초기화
-            streak = 0;
-            return ResponseEntity.ok().body(new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", streak));
+            perfectRun = 0;
+            return ResponseEntity.ok().body(new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", perfectRun));
         }
     }
 
@@ -98,12 +63,13 @@ public class WordRestController {
     }
 
     @GetMapping("/streak")
-    public Map<String, Integer> getStreak() {
-        return Map.of("streak", streak);
+    public Map<String, Integer> getPerfectRun() {
+        return Map.of("streak", perfectRun);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> registerWord(@Valid @RequestBody WordRequest request, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> registerWord(
+            @Valid @RequestBody WordRequest request, BindingResult bindingResult) {
 
         // 유효성 검사 실패 시
         if (bindingResult.hasErrors()) {
@@ -126,15 +92,11 @@ public class WordRestController {
         englishWordService.insertWord(
                 request.vocabulary(),
                 request.meaning(),
-                request.hint()
+                request.hint(),
+                request.difficulty()
         );
         return ResponseEntity.ok(Map.of("message", "success"));
     }
-
-//    @GetMapping("/list")
-//    public ResponseEntity<List<WordResponse>> getAllWords() {
-//        return ResponseEntity.ok().body(englishWordService.findAllWords());
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<WordResponse> getWord(@PathVariable Long id) {
@@ -147,22 +109,54 @@ public class WordRestController {
         return ResponseEntity.ok().build();
     }
 
+
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateWord(@PathVariable Long id, @RequestBody WordRequest request) {
         englishWordService.updateWord(
                 id,
                 request.vocabulary(),
                 request.meaning(),
-                request.hint());
+                request.hint(),
+                request.difficulty());
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 단어 목록을 페이징하여 가져옵니다.
+     * URL에서 `?page=1&size=50` 같은 형식으로 요청을 받음
+     * 파라미터가 없으면 기본값: 0페이지, 100개씩 조회
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지에 보여줄 데이터(단어) 수
+     * @return 단어 목록
+     */
     @GetMapping("/list")
     public ResponseEntity<Page<WordResponse>> getAllWords(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "100") int size) {
+            @RequestParam(defaultValue = "0") int page, // 페이지 번호 (0부터 시작)
+            @RequestParam(defaultValue = "100") int size) { // 한 페이지에 보여줄 데이터(단어) 수
+
+        // Pageable 객체 생성
+        // PageRequest.of(페이지 번호, 페이지 크기, 정렬 방식) : 페이징 정보를 담는 객체를 생성
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         return ResponseEntity.ok().body(englishWordService.findAllWordsWithPaging(pageable));
+    }
+
+    /**
+     * 정답과 힌트를 제외한 정보를 반환합니다.
+     *
+     * @param wordResponse 단어 정보
+     * @return 정답과 힌트를 제외한 정보
+     */
+    private WordResponse hideSecretInfo(WordResponse wordResponse) {
+        return new WordResponse(
+                wordResponse.id(),
+                wordResponse.vocabulary(),
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
 

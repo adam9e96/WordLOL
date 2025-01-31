@@ -12,28 +12,112 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 테이블 내용 업데이트
             wordList.innerHTML = pageData.content.map(word => `
-                <tr>
-                    <td>${word.id}</td>
-                    <td class="fw-medium">${word.vocabulary}</td>
-                    <td>${word.meaning}</td>
-                    <td>${word.hint || '-'}</td>
-                    <td>
-                        <button class="btn btn-action btn-outline-primary btn-sm me-1" onclick="editWord(${word.id})">
-                            <i class="bi bi-pencil-square"></i>
-                        </button>
-                        <button class="btn btn-action btn-outline-danger btn-sm" onclick="deleteWord(${word.id})">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            <tr>
+                <td>${word.id}</td>
+                <td class="fw-medium">${word.vocabulary}</td>
+                <td>${word.meaning}</td>
+                <td>${word.hint || '-'}</td>
+                <td>
+                    ${getDifficultyBadge(word.difficulty)}
+                </td>
+                <td>${formatDateTime(word.createdAt)}</td>
+                <td>
+                    <button class="btn btn-action btn-outline-primary btn-sm me-1" onclick="editWord(${word.id})">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-action btn-outline-danger btn-sm" onclick="deleteWord(${word.id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
 
-            // 페이지네이션 업데이트
             updatePagination(pageData);
         } catch (error) {
             console.error('Error loading words:', error);
         }
     }
+
+    // 난이도 뱃지 생성 함수
+    function getDifficultyBadge(level) {
+        const badges = {
+            1: 'success',
+            2: 'info',
+            3: 'warning',
+            4: 'danger',
+            5: 'dark'
+        };
+        const labels = {
+            1: '매우 쉬움',
+            2: '쉬움',
+            3: '보통',
+            4: '어려움',
+            5: '매우 어려움'
+        };
+        return `<span class="badge bg-${badges[level]}">${labels[level]}</span>`;
+    }
+
+// 날짜 포맷팅 함수
+    function formatDateTime(dateTimeStr) {
+        const date = new Date(dateTimeStr);
+        return date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+// 수정 모달에 난이도 선택 추가
+    window.editWord = async function(id) {
+        try {
+            const response = await fetch(`/api/v1/words/${id}`);
+            const word = await response.json();
+
+            document.getElementById('editId').value = word.id;
+            document.getElementById('editVocabulary').value = word.vocabulary;
+            document.getElementById('editMeaning').value = word.meaning;
+            document.getElementById('editHint').value = word.hint || '';
+            document.getElementById('editDifficulty').value = word.difficulty;
+
+            editModal.show();
+        } catch (error) {
+            console.error('Error loading word details:', error);
+            alert('단어 정보를 불러오는 중 오류가 발생했습니다.');
+        }
+    };
+
+// 수정 저장 함수 업데이트
+    document.getElementById('saveEdit').addEventListener('click', async function() {
+        try {
+            const id = document.getElementById('editId').value;
+            const data = {
+                vocabulary: document.getElementById('editVocabulary').value,
+                meaning: document.getElementById('editMeaning').value,
+                hint: document.getElementById('editHint').value,
+                difficulty: parseInt(document.getElementById('editDifficulty').value)
+            };
+
+            const response = await fetch(`/api/v1/words/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                editModal.hide();
+                loadWords(currentPage);
+            } else {
+                alert('단어 수정 중 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error('Error updating word:', error);
+            alert('단어 수정 중 오류가 발생했습니다.');
+        }
+    });
 
     // 페이지네이션 UI 업데이트
     function updatePagination(pageData) {
