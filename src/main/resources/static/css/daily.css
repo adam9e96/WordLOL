@@ -1,0 +1,72 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: url('../images/trail.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.vocabulary {
+    font-weight: 600; /* 가변 폰트이므로 100-900 사이 자유롭게 설정 가능 */
+}
+
+.meaning {
+    font-weight: 400;
+}
+
+.today-words-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 60px); /* 헤더 높이만큼 빼기 */
+    backdrop-filter: blur(3px);
+}
+
+.word-cards-wrapper {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 80%;
+    max-width: 800px;
+}
+
+.word-cards {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.word-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.word-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.vocabulary {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.meaning {
+    font-size: 1.2rem;
+    color: #34495e;
+}
+
+.difficulty {
+    font-size: 0.9rem;
+    color: #f1c40f;
+}

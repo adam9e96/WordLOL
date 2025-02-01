@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adam9e96.WordLOL.mapper.WordMapper">
+    <!-- ResultMap 정의 -->
+    <resultMap id="WordResponseMap" type="com.adam9e96.WordLOL.dto.WordResponse">
+        <constructor>
+            <arg column="id" javaType="Long"/>
+            <arg column="vocabulary" javaType="String"/>
+            <arg column="meaning" javaType="String"/>
+            <arg column="hint" javaType="String"/>
+            <arg column="difficulty" javaType="Integer"/>
+            <arg column="created_at" javaType="java.time.LocalDateTime"/>
+            <arg column="updated_at" javaType="java.time.LocalDateTime"/>
+        </constructor>
+    </resultMap>
+
+
+    <!-- 랜덤 5개 단어 조회 -->
+    <select id="findRandom5Words" resultMap="WordResponseMap">
+        SELECT id,
+               vocabulary,
+               meaning,
+               null as hint,
+               difficulty,
+               null as created_at,
+               null as updated_at
+        FROM english_word
+        ORDER BY RAND()
+        LIMIT 5
+    </select>
+
+
+</mapper>

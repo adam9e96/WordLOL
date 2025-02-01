@@ -1,8 +1,8 @@
 package com.adam9e96.WordLOL.service;
 
-import com.adam9e96.WordLOL.dto.AnswerResponse;
 import com.adam9e96.WordLOL.dto.WordResponse;
 import com.adam9e96.WordLOL.entity.EnglishWord;
+import com.adam9e96.WordLOL.mapper.WordMapper;
 import com.adam9e96.WordLOL.repository.EnglishWordRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +19,7 @@ import java.util.Random;
 @AllArgsConstructor
 public class EnglishWordService {
     private final EnglishWordRepository englishWordRepository;
+    private final WordMapper wordMapper;
 
     /**
      * 단어를 조회합니다.
@@ -173,5 +173,10 @@ public class EnglishWordService {
                 word.getUpdatedAt()
         );
     }
+
+    public List<WordResponse> findRandom5Words() {
+        return wordMapper.findRandom5Words();
+    }
+
 
 }

@@ -162,5 +162,8 @@ public class WordRestController {
         );
     }
 
-
+    @GetMapping("/daily-words")
+    public ResponseEntity<List<WordResponse>> getDailyWords() {
+        return ResponseEntity.ok().body(englishWordService.findRandom5Words());
+    }
 }
