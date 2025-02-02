@@ -37,4 +37,9 @@ public class WordViewController {
     public String showDaily() {
         return "daily"; // 빈 템플릿 반환
     }
+
+    @GetMapping("/book-register")
+    public String showBulkRegister() {
+        return "book-register";
+    }
 }

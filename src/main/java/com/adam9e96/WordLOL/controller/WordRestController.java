@@ -166,4 +166,21 @@ public class WordRestController {
     public ResponseEntity<List<WordResponse>> getDailyWords() {
         return ResponseEntity.ok().body(englishWordService.findRandom5Words());
     }
+
+    @PostMapping("/book")
+    public ResponseEntity<Map<String, Object>> registerWOrds(@Valid @RequestBody List<WordRequest> requests) {
+        try {
+            for (WordRequest request : requests) {
+                englishWordService.insertWord(
+                        request.vocabulary(),
+                        request.meaning(),
+                        request.hint(),
+                        request.difficulty()
+                );
+            }
+            return ResponseEntity.ok().body(Map.of("message", "success", "count", requests.size()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "error", "error", e.getMessage()));
+        }
+    }
 }

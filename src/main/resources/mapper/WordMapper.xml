@@ -29,6 +29,19 @@
         ORDER BY RAND()
         LIMIT 5
     </select>
+    <!-- 최근 생성된 5개 단어 조회 -->
+    <select id="findRecent5Words" resultMap="WordResponseMap">
+        SELECT id,
+               vocabulary,
+               meaning,
+               hint,
+               difficulty,
+               null as created_at,
+               null as updated_at
+        FROM english_word
+        ORDER BY id DESC
+        LIMIT 5
+    </select>
 
 
 </mapper>

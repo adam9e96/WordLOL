@@ -2,6 +2,7 @@ package com.adam9e96.WordLOL.service;
 
 import com.adam9e96.WordLOL.dto.DashBoardResponse;
 import com.adam9e96.WordLOL.dto.WordResponse;
+import com.adam9e96.WordLOL.mapper.WordMapper;
 import com.adam9e96.WordLOL.repository.EnglishWordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,24 +15,15 @@ public class DashboardService {
 
     private final EnglishWordService englishWordService;
     private final EnglishWordRepository englishWordRepository;
+    private final WordMapper wordMapper;
 
     public DashBoardResponse getDashboardData() {
         // 전체 단어 수 조회
         int totalWords = englishWordService.countAllWordList();
 
         // 최근에 추가된 단어 5개 조회
-        List<WordResponse> recentWords = englishWordRepository.findRecentFiveWords()
-                .stream()
-                .map(word -> new WordResponse(
-                        word.getId(),
-                        word.getVocabulary(),
-                        word.getMeaning(),
-                        word.getHint(),
-                        word.getDifficulty(),
-                        word.getCreatedAt(),
-                        word.getUpdatedAt()
-                ))
-                .toList();
+        List<WordResponse> recentWords = wordMapper.findRecent5Words();
+
 
 
         // TODO : 추구 구현할 기능

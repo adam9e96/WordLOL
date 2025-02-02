@@ -13,10 +13,6 @@ public interface EnglishWordRepository extends JpaRepository<EnglishWord, Long> 
 
     List<EnglishWord> findTop5ByOrderByIdDesc();
 
-    @Query("SELECT e FROM EnglishWord e ORDER BY e.id DESC LIMIT 5")
-    List<EnglishWord> findRecentFiveWords();
-
-
     @Query("SELECT e.id FROM EnglishWord e")
     List<Long> findAllIds();
 
