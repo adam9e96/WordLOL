@@ -3,6 +3,7 @@ package com.adam9e96.WordLOL.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -36,17 +37,19 @@ public class EnglishWord {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_book_id")
     private WordBook wordBook;
 
     @Builder
-    public EnglishWord(Long id, String vocabulary, String meaning, String hint, Integer difficulty) {
+    public EnglishWord(Long id, String vocabulary, String meaning, String hint, Integer difficulty, WordBook wordBook) {
         this.id = id;
         this.vocabulary = vocabulary;
         this.meaning = meaning;
         this.hint = hint;
         this.difficulty = difficulty;
+        this.wordBook = wordBook;
     }
 
     public EnglishWord() {
@@ -60,4 +63,5 @@ public class EnglishWord {
         this.hint = hint;
         this.difficulty = difficulty != null ? difficulty : this.difficulty; // difficulty가 null이면 기존 값을 유지합니다.
     }
+
 }

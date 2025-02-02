@@ -38,8 +38,19 @@ public class WordViewController {
         return "daily"; // 빈 템플릿 반환
     }
 
-    @GetMapping("/book-register")
-    public String showBulkRegister() {
+
+    @GetMapping("/wordbook-list")
+    public String showWordBookList() {
+        return "wordbook-list";
+    }
+
+    @GetMapping("/wordbook-create")
+    public String showWordBookRegister() {
+        return "wordbook-create";
+    }
+
+    @GetMapping("/register-all")
+    public String showWordBook() {
         return "book-register";
     }
 }

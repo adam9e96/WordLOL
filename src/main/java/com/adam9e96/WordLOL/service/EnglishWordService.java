@@ -2,6 +2,7 @@ package com.adam9e96.WordLOL.service;
 
 import com.adam9e96.WordLOL.dto.WordResponse;
 import com.adam9e96.WordLOL.entity.EnglishWord;
+import com.adam9e96.WordLOL.entity.WordBook;
 import com.adam9e96.WordLOL.mapper.WordMapper;
 import com.adam9e96.WordLOL.repository.EnglishWordRepository;
 import jakarta.transaction.Transactional;
@@ -178,5 +179,23 @@ public class EnglishWordService {
         return wordMapper.findRandom5Words();
     }
 
+
+    @Transactional
+    public void insertWordToBook(String vocabulary, String meaning, String hint, Integer difficulty, WordBook wordBook) {
+        EnglishWord englishWord = EnglishWord.builder()
+                .vocabulary(vocabulary)
+                .meaning(meaning)
+                .hint(hint)
+                .difficulty(difficulty)
+                .wordBook(wordBook)  // 단어장 연결
+                .build();
+        englishWordRepository.save(englishWord);
+    }
+
+    // 단어장 ID로 단어들 조회
+    public Page<WordResponse> findWordsByBookId(Long bookId, Pageable pageable) {
+        Page<EnglishWord> wordPage = englishWordRepository.findByWordBookId(bookId, pageable);
+        return wordPage.map(this::convertToDTO);
+    }
 
 }
