@@ -6,7 +6,6 @@ import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -37,7 +36,9 @@ public class EnglishWord {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "word_book_id")
+    private WordBook wordBook;
 
     @Builder
     public EnglishWord(Long id, String vocabulary, String meaning, String hint, Integer difficulty) {
