@@ -15,33 +15,46 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 public class WordBook {
+    @OneToMany(mappedBy = "wordBook", cascade = CascadeType.ALL)
+    private List<EnglishWord> words = new ArrayList<>(); // 초기화 추가
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private String name;
-
     @Column(nullable = false)
     private String description;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
-
-    @OneToMany(mappedBy = "wordBook", cascade = CascadeType.ALL)
-    private List<EnglishWord> words = new ArrayList<>(); // 초기화 추가
-
-    @Column(updatable = false)
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
-
-    // 단어 추가를 위한 메서드
-    public void addWord(EnglishWord word) {
-        words.add(word);
-        word.setWordBook(this);
+    @Builder(builderMethodName = "createWordBook")  // Builder 메서드 이름 지정
+    public WordBook(String name, String description, Category category) {
+        this.name = name;
+        this.description = description;
+        this.category = category;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
+    public static WordBook createNewWordBook(String name, String description, Category category) {
+        WordBook wordBook = new WordBook();
+        wordBook.name = name;
+        wordBook.description = description;
+        wordBook.category = category;
+        wordBook.createdAt = LocalDateTime.now();
+        wordBook.updatedAt = LocalDateTime.now();
+        wordBook.words = new ArrayList<>();
+        return wordBook;
+    }
+
+    public void addWord(EnglishWord word) {
+        if (this.words == null) {
+            this.words = new ArrayList<>();
+        }
+        this.words.add(word);
+        word.setWordBook(this);
+    }
 }

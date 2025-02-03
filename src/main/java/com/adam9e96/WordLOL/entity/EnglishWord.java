@@ -37,6 +37,7 @@ public class EnglishWord {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_book_id")
@@ -63,5 +64,16 @@ public class EnglishWord {
         this.hint = hint;
         this.difficulty = difficulty != null ? difficulty : this.difficulty; // difficulty가 null이면 기존 값을 유지합니다.
     }
+
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdAt = LocalDateTime.now();
+//        this.updatedAt = LocalDateTime.now();
+//    }
+//
+//    @PreUpdate
+//    protected void onUpdate() {
+//        this.updatedAt = LocalDateTime.now();
+//    }
 
 }

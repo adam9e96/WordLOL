@@ -192,6 +192,7 @@ public class EnglishWordService {
         englishWordRepository.save(englishWord);
     }
 
+
     // 단어장 ID로 단어들 조회
     public Page<WordResponse> findWordsByBookId(Long bookId, Pageable pageable) {
         Page<EnglishWord> wordPage = englishWordRepository.findByWordBookId(bookId, pageable);

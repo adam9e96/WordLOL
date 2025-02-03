@@ -6,12 +6,12 @@ import lombok.Getter;
 public enum Category {
     TOEIC("토익"),
     TOEFL("토플"),
-    TOEIC_SPEAKING("토익 스피킹"),
-    TOEFL_SPEAKING("토플 스피킹"),
-    BASIC("기초 영어"),
-    INTERMEDIATE("중급 영어"),
-    ADVANCED("고급 영어"),
-    CUSTOM("커스텀");
+    CSAT("수능"),  // 추가
+    TOEIC_SPEAKING("토익스피킹"),
+    BASIC("기초"),
+    INTERMEDIATE("중급"),
+    ADVANCED("고급"),
+    CUSTOM("사용자 정의");
 
     private final String description;
 

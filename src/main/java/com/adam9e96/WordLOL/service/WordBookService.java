@@ -7,6 +7,7 @@ import com.adam9e96.WordLOL.dto.WordResponse;
 import com.adam9e96.WordLOL.entity.Category;
 import com.adam9e96.WordLOL.entity.EnglishWord;
 import com.adam9e96.WordLOL.entity.WordBook;
+import com.adam9e96.WordLOL.repository.EnglishWordRepository;
 import com.adam9e96.WordLOL.repository.WordBookRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +24,16 @@ import java.util.stream.Collectors;
 public class WordBookService {
     private final WordBookRepository wordBookRepository;
     private final EnglishWordService englishWordService;
+    private final EnglishWordRepository englishWordRepository;
 
     @Transactional
     public WordBookResponse createWordBook(WordBookRequest request) {
-        WordBook wordBook = WordBook.builder()
-                .name(request.name())
-                .description(request.description())
-                .category(request.category())
-                .build();
+        // 단어장 생성 (정적 팩토리 메서드 사용)
+        WordBook wordBook = WordBook.createNewWordBook(
+                request.name(),
+                request.description(),
+                request.category()
+        );
 
         // 단어들을 생성하고 단어장과 연결
         for (WordRequest wordRequest : request.words()) {
@@ -40,13 +43,13 @@ public class WordBookService {
                     .hint(wordRequest.hint())
                     .difficulty(wordRequest.difficulty())
                     .build();
-            wordBook.addWord(word);  // 수정된 부분
+            wordBook.addWord(word);
         }
 
+        // 단어장 저장 (cascade로 단어들도 함께 저장됨)
         WordBook savedWordBook = wordBookRepository.save(wordBook);
         return convertToDTO(savedWordBook);
     }
-
 
 
     public Page<WordResponse> getWordsInBook(Long bookId, Pageable pageable) {
@@ -63,10 +66,10 @@ public class WordBookService {
                 .collect(Collectors.toList());
     }
 
-    // 단어장 목록 조회 (페이징)
-    public Page<WordBookResponse> findAllWordBooks(Pageable pageable) {
-        return wordBookRepository.findAll(pageable)
-                .map(this::convertToDTO);
+    public List<WordBookResponse> findAllWordBooks() {
+        return wordBookRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
 
@@ -80,4 +83,42 @@ public class WordBookService {
                 wordBook.getCreatedAt()
         );
     }
+
+    public List<WordResponse> getWordsByWordBookId(Long wordBookId) {
+        return englishWordRepository.findByWordBookId(wordBookId).stream()
+                .map(this::convertToWordDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<WordResponse> getWordsByCategory(Category category) {
+        return englishWordRepository.findByWordBook_Category(category).stream()
+                .map(this::convertToWordDTO)
+                .collect(Collectors.toList());
+    }
+
+    private WordResponse convertToWordDTO(EnglishWord word) {
+        return new WordResponse(
+                word.getId(),
+                word.getVocabulary(),
+                word.getMeaning(),
+                word.getHint(),
+                word.getDifficulty(),
+                word.getCreatedAt(),
+                word.getUpdatedAt()
+        );
+    }
+
+    // 또는 보안을 위해 특정 필드를 제외하고 싶다면:
+    private WordResponse convertToWordDTOWithoutAnswer(EnglishWord word) {
+        return new WordResponse(
+                word.getId(),
+                word.getVocabulary(),
+                null,  // 정답은 숨김
+                null,  // 힌트도 숨김
+                word.getDifficulty(),
+                word.getCreatedAt(),
+                word.getUpdatedAt()
+        );
+    }
+
 }
