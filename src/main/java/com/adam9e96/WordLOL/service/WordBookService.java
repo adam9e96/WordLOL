@@ -58,7 +58,7 @@ public class WordBookService {
         WordBook wordBook = wordBookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("단어장을 찾을 수 없습니다."));
 
-        return englishWordService.findWordsByBookId(bookId, pageable);
+        return englishWordService.findWordsByBookId(bookId, pageable).map(this::convertToWordDTO);
     }
 
     // 카테고리별 단어장 목록 조회

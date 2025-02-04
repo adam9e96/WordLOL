@@ -4,6 +4,7 @@ import com.adam9e96.WordLOL.dto.AnswerRequest;
 import com.adam9e96.WordLOL.dto.AnswerResponse;
 import com.adam9e96.WordLOL.dto.WordRequest;
 import com.adam9e96.WordLOL.dto.WordResponse;
+import com.adam9e96.WordLOL.entity.EnglishWord;
 import com.adam9e96.WordLOL.service.EnglishWordService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -32,32 +33,86 @@ public class WordRestController {
     private static int perfectRun = 0; // 연속 정답 횟수를 추적하는 변수.
     private final EnglishWordService englishWordService;
 
+
+    @GetMapping("/{id}")
+    public ResponseEntity<WordResponse> getWord(@PathVariable Long id) {
+        Optional<EnglishWord> wordOptional = englishWordService.findById(id);
+
+        if (wordOptional.isEmpty()) {
+            log.warn("단어를 찾을 수 없습니다. id: {}", id);
+            return ResponseEntity.notFound().build();
+        }
+
+        WordResponse response = toResponse(wordOptional.get());
+        return ResponseEntity.ok(response);
+    }
+
+    private WordResponse toResponse(EnglishWord word) {
+        return new WordResponse(
+                word.getId(),
+                word.getVocabulary(),
+                word.getMeaning(),
+                word.getHint(),
+                word.getDifficulty(),
+                word.getCreatedAt(),
+                word.getUpdatedAt()
+        );
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteWord(@PathVariable Long id) {
+        englishWordService.deleteWord(id);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * #todo response을 반환할 필요가 있는지
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateWord(@PathVariable Long id, @RequestBody WordRequest request) {
+        Optional<EnglishWord> updateWord = englishWordService.updateWord(
+                id,
+                request.vocabulary(),
+                request.meaning(),
+                request.hint(),
+                request.difficulty()
+        );
+
+        if (updateWord.isEmpty()) {
+            log.warn("수정할 단어를 찾을 수 없습니다. id: {}", id);
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
+
+    }
+
+
     @GetMapping("/random")
     public ResponseEntity<WordResponse> getRandomWord() {
+        Optional<EnglishWord> randomWord = englishWordService.getRandomWord();
 
-        Optional<WordResponse> wordResponse = englishWordService.getRandomWord();
-
-        // 단어가 없으면 404 에러 반환
-        // 단어가 있으면 정답과 힌트를 제외한 정보만 반환해서 200 OK 반환
-        return wordResponse.map(
-                response -> ResponseEntity
-                        .ok()
-                        .body(hideSecretInfo(response))).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/check")
-    public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request) {
-        Boolean isCorrect = englishWordService.checkAnswer(request.wordId(), request.answer());
-
-        if (isCorrect) {
-            perfectRun++;
-            return ResponseEntity.ok().body(new AnswerResponse(true, "정답입니다!", perfectRun));
-        } else {
-            // 틀리면 streak를 0으로 초기화
-            perfectRun = 0;
-            return ResponseEntity.ok().body(new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", perfectRun));
+        if (randomWord.isEmpty()) {
+            log.warn("랜덤 단어를 찾을 수 없습니다.");
+            return ResponseEntity.notFound().build();
         }
+        WordResponse response = toResponseWithoutAnswer(randomWord.get());
+        return ResponseEntity.ok(response);
+
     }
+
+    private WordResponse toResponseWithoutAnswer(EnglishWord word) {
+        return new WordResponse(
+                word.getId(),
+                word.getVocabulary(),
+                null, // 정답 숨김
+                null, // 힌트 숨김
+                word.getDifficulty(),
+                word.getCreatedAt(),
+                word.getUpdatedAt()
+        );
+    }
+
 
     /**
      * 단어의 힌트를 조회
@@ -68,21 +123,81 @@ public class WordRestController {
      */
     @GetMapping("/{id}/hint")
     public ResponseEntity<Map<String, String>> getHint(@PathVariable Long id) {
-//        WordResponse wordResponse = englishWordService.findVocabularyById(id);
-        Optional<WordResponse> wordResponseOpt = englishWordService.findVocabularyById(id);
-        if (wordResponseOpt.isPresent()) {
-            return ResponseEntity.ok(Map.of("hint", wordResponseOpt.get().hint()));
-        } else {
-            log.warn("힌트 조회 실패: ID {}에 해당하는 단어가 존재하지 않음.", id);
+        Optional<EnglishWord> word = englishWordService.findById(id);
+
+        if (word.isEmpty()) {
+            log.warn("힌트를 찾을 수 없습니다. id: {}", id);
             return ResponseEntity.notFound().build();
         }
-//        return ResponseEntity.ok().body(Map.of("hint", wordResponse.hint()));
+
+        return ResponseEntity.ok().body(Map.of("hint", word.get().getHint()));
+    }
+
+    @PostMapping("/check")
+    public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request) {
+        boolean isCorrect = englishWordService.checkAnswer(request.wordId(), request.answer());
+        AnswerResponse response;
+
+
+        if (isCorrect) {
+            perfectRun++;
+            response = new AnswerResponse(true, "정답입니다!", perfectRun);
+        } else {
+            perfectRun = 0;
+            response = new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", perfectRun);
+
+        }
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/perfectRun")
     public Map<String, Integer> getPerfectRun() {
         return Map.of("perfectRun", perfectRun);
     }
+
+
+    @GetMapping("/daily-words")
+    public ResponseEntity<List<WordResponse>> getDailyWords() {
+        List<EnglishWord> words = englishWordService.findRandom5Words();
+        List<WordResponse> response = toResponseList(words);
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    private List<WordResponse> toResponseList(List<EnglishWord> words) {
+        return words.stream()
+                .map(this::toResponse)
+                .toList();
+
+    }
+
+    /**
+     * 단어 목록을 페이징하여 가져옵니다.
+     * URL에서 `?page=1&size=50` 같은 형식으로 요청을 받음
+     * 파라미터가 없으면 기본값: 0페이지, 100개씩 조회
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지에 보여줄 데이터(단어) 수
+     * @return 단어 목록
+     */
+    @GetMapping("/list")
+    public ResponseEntity<Page<WordResponse>> getAllWords(
+            @RequestParam(defaultValue = "0") int page, // 페이지 번호 (0부터 시작)
+            @RequestParam(defaultValue = "20") int size) { // 한 페이지에 보여줄 데이터(단어) 수
+
+        // Pageable 객체 생성
+        // PageRequest.of(페이지 번호, 페이지 크기, 정렬 방식) : 페이징 정보를 담는 객체를 생성
+        // 페이징 정보 생성
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        // 서비스에서 엔티티 페이지 조회
+        Page<EnglishWord> wordPage = englishWordService.findAllWordsWithPaging(pageable);
+
+        // 엔티티 페이지를 DTO 페이지로 변환
+        Page<WordResponse> responsePage = wordPage.map(this::toResponse);
+
+        return ResponseEntity.ok(responsePage);
+    }
+
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> registerWord(
@@ -106,7 +221,7 @@ public class WordRestController {
                     .body(errorResponse);
         }
         // 유효성 검사 통과시
-        englishWordService.insertWord(
+        englishWordService.createWord(
                 request.vocabulary(),
                 request.meaning(),
                 request.hint(),
@@ -116,102 +231,34 @@ public class WordRestController {
     }
 
 
-    /**
-     * 단어 조회
-     * 주어진 ID에 해당하는 단어가 존재하면 해당 단어 정보를 반환하며, 없으면 404 응답을 반환합니다.
-     *
-     * @param id 조회할 단어의 고유 ID
-     * @return 단어 정보
-     *
-     * #todo 함수형 스타일로 변경하기
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<WordResponse> getWord(@PathVariable Long id) {
-        Optional<WordResponse> englishWordOptional = englishWordService.findVocabularyById(id);
-        if (englishWordOptional.isEmpty()) {
-            log.warn("단어 조회 실패: ID {}에 해당하는 단어가 없음", id);
-            return ResponseEntity.notFound().build();
-        }
-        WordResponse wordResponse = englishWordOptional.get();
-
-        return ResponseEntity.ok().body(wordResponse);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWord(@PathVariable Long id) {
-        englishWordService.deleteWord(id);
-        return ResponseEntity.ok().build();
-    }
-
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateWord(@PathVariable Long id, @RequestBody WordRequest request) {
-        englishWordService.updateWord(
-                id,
-                request.vocabulary(),
-                request.meaning(),
-                request.hint(),
-                request.difficulty());
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * 단어 목록을 페이징하여 가져옵니다.
-     * URL에서 `?page=1&size=50` 같은 형식으로 요청을 받음
-     * 파라미터가 없으면 기본값: 0페이지, 100개씩 조회
-     *
-     * @param page 페이지 번호
-     * @param size 한 페이지에 보여줄 데이터(단어) 수
-     * @return 단어 목록
-     */
-    @GetMapping("/list")
-    public ResponseEntity<Page<WordResponse>> getAllWords(
-            @RequestParam(defaultValue = "0") int page, // 페이지 번호 (0부터 시작)
-            @RequestParam(defaultValue = "100") int size) { // 한 페이지에 보여줄 데이터(단어) 수
-
-        // Pageable 객체 생성
-        // PageRequest.of(페이지 번호, 페이지 크기, 정렬 방식) : 페이징 정보를 담는 객체를 생성
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        return ResponseEntity.ok().body(englishWordService.findAllWordsWithPaging(pageable));
-    }
-
-    /**
-     * 정답과 힌트를 제외한 정보를 반환합니다.
-     *
-     * @param wordResponse 단어 정보
-     * @return 정답과 힌트를 제외한 정보
-     */
-    private WordResponse hideSecretInfo(WordResponse wordResponse) {
-        return new WordResponse(
-                wordResponse.id(),
-                wordResponse.vocabulary(),
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-    }
-
-    @GetMapping("/daily-words")
-    public ResponseEntity<List<WordResponse>> getDailyWords() {
-        return ResponseEntity.ok().body(englishWordService.findRandom5Words());
-    }
-
     @PostMapping("/book")
-    public ResponseEntity<Map<String, Object>> registerWOrds(@Valid @RequestBody List<WordRequest> requests) {
+    public ResponseEntity<Map<String, Object>> registerWords(@Valid @RequestBody List<WordRequest> requests) {
         try {
+            int successCount = 0;
             for (WordRequest request : requests) {
-                englishWordService.insertWord(
+                englishWordService.createWord(
                         request.vocabulary(),
                         request.meaning(),
                         request.hint(),
                         request.difficulty()
                 );
+                successCount++;
             }
-            return ResponseEntity.ok().body(Map.of("message", "success", "count", requests.size()));
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "success");
+            response.put("count", successCount);
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("message", "error", "error", e.getMessage()));
+            log.error("단어 일괄 등록 실패", e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "error");
+            errorResponse.put("error", e.getMessage());
+
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 }

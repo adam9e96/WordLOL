@@ -35,4 +35,27 @@
         FROM english_word
         WHERE id = #{id}
     </select>
+    <select id="findEnglishWordByHint" resultMap="EnglishWordResultMap">
+        SELECT hint
+        FROM english_word
+        WHERE id = #{id}
+    </select>
+
+    <!-- 랜덤 5개 단어 조회 -->
+    <select id="findRandom5Words" resultMap="EnglishWordResultMap">
+        SELECT id,
+               vocabulary,
+               meaning,
+               null as hint,
+               difficulty,
+               null as created_at,
+               null as updated_at
+        FROM english_word
+        ORDER BY RAND()
+        LIMIT 5
+    </select>
+    <select id="findAllIds" resultType="java.lang.Long">
+        SELECT id
+        FROM english_word
+    </select>
 </mapper>

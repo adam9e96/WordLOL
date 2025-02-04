@@ -62,7 +62,7 @@ async function checkAnswer() {
             document.getElementById('koreanWord').textContent = userAnswer;
             // 카드를 뒤집는 애니메이션
             document.getElementById('card').classList.add('flip');
-            setTimeout(() => loadNewWord(), 1500);
+            setTimeout(() => loadNewWord(), 1000);
         }
     } catch (error) {
         console.error('정답을 찾을 수 없음', error);

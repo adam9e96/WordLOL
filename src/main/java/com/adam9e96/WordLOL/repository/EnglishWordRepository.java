@@ -16,9 +16,6 @@ import java.util.Optional;
 @Repository
 public interface EnglishWordRepository extends JpaRepository<EnglishWord, Long> {
 
-    @Query("SELECT e.id FROM EnglishWord e")
-    List<Long> findAllIds();
-
     Page<EnglishWord> findByWordBookId(Long wordBookId, Pageable pageable);
 
     // 특정 단어장의 모든 단어 조회

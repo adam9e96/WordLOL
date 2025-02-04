@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface WordMapper {
 
-    List<WordResponse> findRandom5Words();
+//    List<WordResponse> findRandom5Words();
 
     /**
      * 최근 추가된 5개의 단어를 조회합니다.
