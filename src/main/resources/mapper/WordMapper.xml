@@ -43,5 +43,15 @@
         LIMIT 5
     </select>
 
+    <select id="countAllWords" resultType="Long">
+        SELECT COUNT(*) FROM english_word
+    </select>
+
+    <select id="findByWordBookId" resultType="com.adam9e96.WordLOL.entity.EnglishWord">
+        SELECT e.id
+        FROM english_word e
+        WHERE word_book_id = #{wordBookId}
+    </select>
+
 
 </mapper>

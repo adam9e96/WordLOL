@@ -7,6 +7,7 @@ import com.adam9e96.WordLOL.dto.WordResponse;
 import com.adam9e96.WordLOL.entity.Category;
 import com.adam9e96.WordLOL.entity.EnglishWord;
 import com.adam9e96.WordLOL.entity.WordBook;
+import com.adam9e96.WordLOL.mapper.WordMapper;
 import com.adam9e96.WordLOL.repository.EnglishWordRepository;
 import com.adam9e96.WordLOL.repository.WordBookRepository;
 import jakarta.transaction.Transactional;
@@ -25,6 +26,7 @@ public class WordBookService {
     private final WordBookRepository wordBookRepository;
     private final EnglishWordService englishWordService;
     private final EnglishWordRepository englishWordRepository;
+    private final WordMapper wordMapper;
 
     @Transactional
     public WordBookResponse createWordBook(WordBookRequest request) {
@@ -84,8 +86,10 @@ public class WordBookService {
         );
     }
 
-    public List<WordResponse> getWordsByWordBookId(Long wordBookId) {
-        return englishWordRepository.findByWordBookId(wordBookId).stream()
+    public List<WordResponse> getWordsByWordBookId(int wordBookId) {
+//        return englishWordRepository.findByWordBookId(wordBookId).stream()
+
+        return wordMapper.findByWordBookId(wordBookId).stream()
                 .map(this::convertToWordDTO)
                 .collect(Collectors.toList());
     }

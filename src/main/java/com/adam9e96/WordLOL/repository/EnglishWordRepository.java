@@ -16,14 +16,8 @@ import java.util.Optional;
 @Repository
 public interface EnglishWordRepository extends JpaRepository<EnglishWord, Long> {
 
-    List<EnglishWord> findTop5ByOrderByIdDesc();
-
     @Query("SELECT e.id FROM EnglishWord e")
     List<Long> findAllIds();
-
-    @Query("SELECT COUNT(e) FROM EnglishWord e")
-    long countAllWords();
-
 
     Page<EnglishWord> findByWordBookId(Long wordBookId, Pageable pageable);
 

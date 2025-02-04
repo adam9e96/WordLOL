@@ -3,10 +3,12 @@ package com.adam9e96.WordLOL.service;
 import com.adam9e96.WordLOL.dto.WordResponse;
 import com.adam9e96.WordLOL.entity.EnglishWord;
 import com.adam9e96.WordLOL.entity.WordBook;
+import com.adam9e96.WordLOL.mapper.EnglishWordMapper;
 import com.adam9e96.WordLOL.mapper.WordMapper;
 import com.adam9e96.WordLOL.repository.EnglishWordRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,22 +18,31 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+
 @Service
+@Slf4j
 @AllArgsConstructor
 public class EnglishWordService {
     private final EnglishWordRepository englishWordRepository;
     private final WordMapper wordMapper;
+    private final EnglishWordMapper englishWordMapper;
 
     /**
-     * 단어를 조회합니다.
+     * 영어 단어를 조회하여 DTO로 변환한 후 Optional로 반환합니다.
      *
-     * @param id 단어 ID
-     * @return 단어 정보
+     * @param id 조회할 영어 단어의 고유 ID
+     * @return 조회된 영어 단어의 DTO를 Optional로 감싸서 반환합니다.
      */
-    public WordResponse findVocabularyById(Long id) {
-        Optional<EnglishWord> englishWord = englishWordRepository.findById(id);
+    public Optional<WordResponse> findVocabularyById(Long id) {
+        Optional<EnglishWord> englishWordOptional = englishWordMapper.findById(id);
 
-        return englishWord.map(this::convertToDTO).orElse(null);
+        if (englishWordOptional.isPresent()) {
+            log.info("영어단어 id를 찾음 {}.", id);
+        } else {
+            log.warn("영어 단어를 찾지못함");
+        }
+        // 값이 있으면 Optional<WordResponse> 앖이 없으면 Optional.empty() 를 반환
+        return englishWordOptional.map(this::toDTO);
     }
 
     /**
@@ -41,6 +52,8 @@ public class EnglishWordService {
      * @param meaning    뜻
      * @param hint       힌트
      * @param difficulty 난이도
+     *                   <p>
+     *                   #todo Optioal로 개선
      */
     public void insertWord(String vocabulary, String meaning, String hint, Integer difficulty) {
         EnglishWord englishWord = EnglishWord.builder()
@@ -111,7 +124,7 @@ public class EnglishWordService {
      */
     public Page<WordResponse> findAllWordsWithPaging(Pageable pageable) {
         Page<EnglishWord> wordPage = englishWordRepository.findAll(pageable);
-        return wordPage.map(this::convertToDTO);
+        return wordPage.map(this::toDTO);
     }
 
     /**
@@ -136,24 +149,37 @@ public class EnglishWordService {
         Long randomId = existingIds.get(random.nextInt(existingIds.size()));
 
         // 선택된 ID로 단어 조회 및 DTO 변환
-        return Optional.ofNullable(findVocabularyById(randomId));
+//        return Optional.ofNullable(findVocabularyById(randomId));
+
+        return findVocabularyById(randomId);
 
     }
 
-    public Boolean checkAnswer(Long id, String userAnswer) {
 
+    /**
+     * 사용자가 입력한 답변이 해당 영어 단어의 의미와 일치하는지 확인합니다.
+     *
+     * @param id         검증할 영어 단어의 고유 ID
+     * @param userAnswer 사용자가 입력한 답변
+     * @return 정답이 맞으면 true, 틀리면 false
+     * @throws IllegalArgumentException 단어가 존재하지 않는 경우
+     */
+    public Boolean checkAnswer(Long id, String userAnswer) {
         // 단어 조회
-        WordResponse wordResponse = findVocabularyById(id);
-        if (wordResponse == null) {
-            throw new IllegalArgumentException("존재하지 않는 단어 ID입니다.");
+        Optional<WordResponse> wordResponseOptional = findVocabularyById(id);
+        if (wordResponseOptional.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 단어 ID입니다. ID: " + id);
         }
+        WordResponse wordResponse = wordResponseOptional.get();
         // 정답 배열 생성 및 공백 제거
         String[] correctAnswers = wordResponse.meaning().split(",");
 
         // 정답 체크
-        return Arrays.stream(correctAnswers)
+        Boolean isCorrect = Arrays.stream(correctAnswers)
                 .map(String::trim)
-                .anyMatch(answer -> answer.equals(userAnswer));
+                .anyMatch(word -> word.equals(userAnswer));
+
+        return isCorrect;
 
     }
 
@@ -163,7 +189,7 @@ public class EnglishWordService {
      * @param word 단어 객체
      * @return WordResponse 객체
      */
-    private WordResponse convertToDTO(EnglishWord word) {
+    private WordResponse toDTO(EnglishWord word) {
         return new WordResponse(
                 word.getId(),
                 word.getVocabulary(),
@@ -196,7 +222,7 @@ public class EnglishWordService {
     // 단어장 ID로 단어들 조회
     public Page<WordResponse> findWordsByBookId(Long bookId, Pageable pageable) {
         Page<EnglishWord> wordPage = englishWordRepository.findByWordBookId(bookId, pageable);
-        return wordPage.map(this::convertToDTO);
+        return wordPage.map(this::toDTO);
     }
 
 }

@@ -1,6 +1,5 @@
 package com.adam9e96.WordLOL.controller;
 
-import com.adam9e96.WordLOL.service.EnglishWordService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/word")
 @AllArgsConstructor
 public class WordViewController {
-
-    private final EnglishWordService englishWordService;
 
     @RequestMapping("/study")
     public String showStudy() {

@@ -59,10 +59,24 @@ public class WordRestController {
         }
     }
 
+    /**
+     * 단어의 힌트를 조회
+     * 해당 단어가 존재하면 힌트를 반환하고, 없으면 404 응답을 반환합니다.
+     *
+     * @param id 조회할 단어의 고유 ID
+     * @return 단어의 힌트를 담은 Map
+     */
     @GetMapping("/{id}/hint")
     public ResponseEntity<Map<String, String>> getHint(@PathVariable Long id) {
-        WordResponse wordResponse = englishWordService.findVocabularyById(id);
-        return ResponseEntity.ok().body(Map.of("hint", wordResponse.hint()));
+//        WordResponse wordResponse = englishWordService.findVocabularyById(id);
+        Optional<WordResponse> wordResponseOpt = englishWordService.findVocabularyById(id);
+        if (wordResponseOpt.isPresent()) {
+            return ResponseEntity.ok(Map.of("hint", wordResponseOpt.get().hint()));
+        } else {
+            log.warn("힌트 조회 실패: ID {}에 해당하는 단어가 존재하지 않음.", id);
+            return ResponseEntity.notFound().build();
+        }
+//        return ResponseEntity.ok().body(Map.of("hint", wordResponse.hint()));
     }
 
     @GetMapping("/perfectRun")
@@ -101,9 +115,26 @@ public class WordRestController {
         return ResponseEntity.ok(Map.of("message", "success"));
     }
 
+
+    /**
+     * 단어 조회
+     * 주어진 ID에 해당하는 단어가 존재하면 해당 단어 정보를 반환하며, 없으면 404 응답을 반환합니다.
+     *
+     * @param id 조회할 단어의 고유 ID
+     * @return 단어 정보
+     *
+     * #todo 함수형 스타일로 변경하기
+     */
     @GetMapping("/{id}")
     public ResponseEntity<WordResponse> getWord(@PathVariable Long id) {
-        return ResponseEntity.ok().body(englishWordService.findVocabularyById(id));
+        Optional<WordResponse> englishWordOptional = englishWordService.findVocabularyById(id);
+        if (englishWordOptional.isEmpty()) {
+            log.warn("단어 조회 실패: ID {}에 해당하는 단어가 없음", id);
+            return ResponseEntity.notFound().build();
+        }
+        WordResponse wordResponse = englishWordOptional.get();
+
+        return ResponseEntity.ok().body(wordResponse);
     }
 
     @DeleteMapping("/{id}")
