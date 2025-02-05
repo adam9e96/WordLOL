@@ -30,6 +30,7 @@ public class EnglishWordService {
     /**
      * READ
      * ID로 단어 조회
+     * study.js
      */
     public Optional<EnglishWord> findById(Long id) {
         return englishWordMapper.findById(id);
@@ -96,6 +97,7 @@ public class EnglishWordService {
     /**
      * 랜덤 단어를 조회합니다.
      * 단어가 없으면 빈 Optional 반환
+     * study.js
      */
     public Optional<EnglishWord> getRandomWord() {
         // 전체 단어 개수 조회
@@ -111,6 +113,7 @@ public class EnglishWordService {
     }
 
     /**
+     * study.js
      * 사용자가 입력한 답변이 해당 영어 단어의 의미와 일치하는지 확인합니다.
      *
      * @param id         검증할 영어 단어의 고유 ID

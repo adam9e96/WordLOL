@@ -66,9 +66,7 @@ public class WordRestController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * #todo response을 반환할 필요가 있는지
-     */
+
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateWord(@PathVariable Long id, @RequestBody WordRequest request) {
         Optional<EnglishWord> updateWord = englishWordService.updateWord(
@@ -88,6 +86,10 @@ public class WordRestController {
     }
 
 
+    /**
+     * study.js
+     * @return
+     */
     @GetMapping("/random")
     public ResponseEntity<WordResponse> getRandomWord() {
         Optional<EnglishWord> randomWord = englishWordService.getRandomWord();
@@ -108,13 +110,14 @@ public class WordRestController {
                 null, // 정답 숨김
                 null, // 힌트 숨김
                 word.getDifficulty(),
-                word.getCreatedAt(),
-                word.getUpdatedAt()
+                null, // 등록일 숨김
+                null // 업데이트 숨김
         );
     }
 
 
     /**
+     * study.js
      * 단어의 힌트를 조회
      * 해당 단어가 존재하면 힌트를 반환하고, 없으면 404 응답을 반환합니다.
      *
@@ -133,11 +136,15 @@ public class WordRestController {
         return ResponseEntity.ok().body(Map.of("hint", word.get().getHint()));
     }
 
+    /**
+     * study.js
+     * @param request
+     * @return
+     */
     @PostMapping("/check")
     public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request) {
         boolean isCorrect = englishWordService.checkAnswer(request.wordId(), request.answer());
         AnswerResponse response;
-
 
         if (isCorrect) {
             perfectRun++;
@@ -150,6 +157,10 @@ public class WordRestController {
         return ResponseEntity.ok().body(response);
     }
 
+    /**
+     * study.js
+     * @return
+     */
     @GetMapping("/perfectRun")
     public Map<String, Integer> getPerfectRun() {
         return Map.of("perfectRun", perfectRun);

@@ -25,12 +25,12 @@
     <div class="card-container">
         <div class="card" id="card">
             <div class="card-face card-front">
-                <p id="englishWord">
+                <p id="vocabulary">
                     <i class="bi bi-hourglass-split me-2"></i>로딩중...
                 </p>
             </div>
             <div class="card-face card-back">
-                <p id="koreanWord"></p>
+                <p id="meaning"></p>
             </div>
         </div>
     </div>
@@ -41,7 +41,7 @@
     <!-- 입력 영역 -->
     <div class="input-area">
         <input autocomplete="off" class="answer-input" id="answer" placeholder="정답을 입력하세요" type="text">
-        <button class="btn-control btn-answer" onclick="toggleAnswer()">
+        <button class="btn-control btn-answer" onclick="submitAnswer()">
             <i class="bi bi-eye me-1"></i>정답 확인
         </button>
     </div>
