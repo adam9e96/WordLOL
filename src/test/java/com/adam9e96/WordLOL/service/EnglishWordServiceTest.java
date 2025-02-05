@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,9 +28,104 @@ class EnglishWordServiceTest {
     @Autowired
     private EnglishWordRepository englishWordRepository;
 
-    private EnglishWord testWord;
     @Autowired
     private EntityManager entityManager;
+
+
+    @Nested
+    @DisplayName("createWord 메서드는")
+    class CreateWord {
+
+        @Test
+        @DisplayName("올바른 입력값으로 단어를 생성한다")
+        void createsWordWithValidInput() {
+            // given
+            String vocabulary = "book";
+            String meaning = "책";
+            String hint = "읽는 것";
+            Integer difficulty = 1;
+
+            // when
+            englishWordService.createWord(vocabulary, meaning, hint, difficulty);
+            entityManager.flush();
+            entityManager.clear();
+
+            // then
+            Optional<EnglishWord> savedWord = englishWordRepository.findAll().stream()
+                    .filter(word -> word.getVocabulary().equals(vocabulary))
+                    .findFirst();
+
+            assertThat(savedWord).isPresent();
+            assertThat(savedWord.get())
+                    .satisfies(word -> {
+                        assertThat(word.getVocabulary()).isEqualTo(vocabulary);
+                        assertThat(word.getMeaning()).isEqualTo(meaning);
+                        assertThat(word.getHint()).isEqualTo(hint);
+                        assertThat(word.getDifficulty()).isEqualTo(difficulty);
+                        assertThat(word.getCreatedAt()).isNotNull();
+                        assertThat(word.getUpdatedAt()).isNotNull();
+                    });
+        }
+
+        @Test
+        @DisplayName("힌트 없이도 단어를 생성한다")
+        void createsWordWithoutHint() {
+            // given
+            String vocabulary = "pen";
+            String meaning = "펜";
+            Integer difficulty = 1;
+
+            // when
+            englishWordService.createWord(vocabulary, meaning, null, difficulty);
+            entityManager.flush();
+            entityManager.clear();
+
+            // then
+            Optional<EnglishWord> savedWord = englishWordRepository.findAll().stream()
+                    .filter(word -> word.getVocabulary().equals(vocabulary))
+                    .findFirst();
+
+            assertThat(savedWord).isPresent();
+            assertThat(savedWord.get())
+                    .satisfies(word -> {
+                        assertThat(word.getVocabulary()).isEqualTo(vocabulary);
+                        assertThat(word.getMeaning()).isEqualTo(meaning);
+                        assertThat(word.getHint()).isNull();
+                        assertThat(word.getDifficulty()).isEqualTo(difficulty);
+                    });
+        }
+
+        // 이건 나중에 막아야함 안되도록
+        @Test
+        @DisplayName("동일한 단어를 여러번 생성할 수 있다")
+        void createsDuplicateWords() {
+            // given
+            String vocabulary = "test";
+            String meaning = "테스트";
+            String hint = "시험";
+            Integer difficulty = 1;
+
+            // when
+            englishWordService.createWord(vocabulary, meaning, hint, difficulty);
+            englishWordService.createWord(vocabulary, meaning, hint, difficulty);
+            entityManager.flush();
+            entityManager.clear();
+
+            // then
+            List<EnglishWord> savedWords = englishWordRepository.findAll().stream()
+                    .filter(word -> word.getVocabulary().equals(vocabulary))
+                    .toList();
+
+            assertThat(savedWords).hasSize(2);
+            assertThat(savedWords)
+                    .allSatisfy(word -> {
+                        assertThat(word.getVocabulary()).isEqualTo(vocabulary);
+                        assertThat(word.getMeaning()).isEqualTo(meaning);
+                        assertThat(word.getHint()).isEqualTo(hint);
+                        assertThat(word.getDifficulty()).isEqualTo(difficulty);
+                    });
+        }
+    }
 
 
     @Nested

@@ -8,6 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/register.css}" type="text/css">
     <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link href="data:;base64,iVBORw0KGgo=" rel="icon">
+
+
 </head>
 <body class="bg-light">
 
@@ -32,6 +35,7 @@
                 <h2 class="mb-4">
                     <i class="bi bi-plus-circle me-2"></i>단어 등록
                 </h2>
+                <!-- 단어 등록 Form -->
                 <form class="needs-validation" id="wordForm" novalidate>
                     <div class="mb-4">
                         <label class="form-label" for="vocabulary">
@@ -76,11 +80,15 @@
                             <i class="bi bi-exclamation-circle me-2"></i>난이도를 선택해주세요.
                         </div>
                     </div>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-primary btn-submit" type="submit">
+                    <div class="d-flex gap-2">  <!-- d-grid를 d-flex로 변경하여 버튼을 나란히 배치 -->
+                        <button class="btn btn-secondary flex-fill" id="cancelBtn" type="button">
+                            <i class="bi bi-x-lg me-2"></i>취소  <!-- 아이콘 추가 -->
+                        </button>
+                        <button class="btn btn-primary btn-submit flex-fill" type="submit">
                             <i class="bi bi-plus-lg me-2"></i>단어 등록하기
                         </button>
                     </div>
+
                 </form>
             </div>
 
