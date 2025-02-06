@@ -1,9 +1,6 @@
 package com.adam9e96.WordLOL.controller;
 
-import com.adam9e96.WordLOL.dto.AnswerRequest;
-import com.adam9e96.WordLOL.dto.AnswerResponse;
-import com.adam9e96.WordLOL.dto.WordRequest;
-import com.adam9e96.WordLOL.dto.WordResponse;
+import com.adam9e96.WordLOL.dto.*;
 import com.adam9e96.WordLOL.entity.EnglishWord;
 import com.adam9e96.WordLOL.service.EnglishWordService;
 import jakarta.validation.Valid;
@@ -88,6 +85,7 @@ public class WordRestController {
 
     /**
      * study.js
+     *
      * @return
      */
     @GetMapping("/random")
@@ -138,6 +136,7 @@ public class WordRestController {
 
     /**
      * study.js
+     *
      * @param request
      * @return
      */
@@ -159,6 +158,7 @@ public class WordRestController {
 
     /**
      * study.js
+     *
      * @return
      */
     @GetMapping("/perfectRun")
@@ -192,21 +192,29 @@ public class WordRestController {
      * @return 단어 목록
      */
     @GetMapping("/list")
-    public ResponseEntity<Page<WordResponse>> getAllWords(
-            @RequestParam(defaultValue = "0") int page, // 페이지 번호 (0부터 시작)
-            @RequestParam(defaultValue = "20") int size) { // 한 페이지에 보여줄 데이터(단어) 수
+    public ResponseEntity<PageResponse<WordResponse>> getAllWords(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
 
-        // Pageable 객체 생성
-        // PageRequest.of(페이지 번호, 페이지 크기, 정렬 방식) : 페이징 정보를 담는 객체를 생성
-        // 페이징 정보 생성
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        // 서비스에서 엔티티 페이지 조회
+        // 정렬 방향 결정
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ?
+                Sort.Direction.DESC : Sort.Direction.ASC;
+
+        // 페이징 및 정렬 정보 생성
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+
+        // 서비스에서 페이징된 데이터 조회
         Page<EnglishWord> wordPage = englishWordService.findAllWordsWithPaging(pageable);
 
-        // 엔티티 페이지를 DTO 페이지로 변환
+        // DTO로 변환
         Page<WordResponse> responsePage = wordPage.map(this::toResponse);
 
-        return ResponseEntity.ok(responsePage);
+        // 커스텀 응답 객체 생성
+        PageResponse<WordResponse> pageResponse = new PageResponse<>(responsePage);
+
+        return ResponseEntity.ok(pageResponse);
     }
 
 

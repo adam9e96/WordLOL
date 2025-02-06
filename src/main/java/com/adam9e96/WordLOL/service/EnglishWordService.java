@@ -91,8 +91,14 @@ public class EnglishWordService {
      * @return 페이징 처리된 단어 목록
      */
     public Page<EnglishWord> findAllWordsWithPaging(Pageable pageable) {
-        return englishWordRepository.findAll(pageable);
+        try {
+            return englishWordRepository.findAll(pageable);
+        } catch (Exception e) {
+            log.error("Failed to fetch words with paging", e);
+            throw new RuntimeException("Failed to fetch words", e);
+        }
     }
+
 
     /**
      * 랜덤 단어를 조회합니다.
