@@ -26,7 +26,6 @@ public class EnglishWordService {
     private final EnglishWordMapper englishWordMapper;
     private final Random random = new Random();
 
-
     /**
      * READ
      * ID로 단어 조회
@@ -35,7 +34,6 @@ public class EnglishWordService {
     public Optional<EnglishWord> findById(Long id) {
         return englishWordMapper.findById(id);
     }
-
 
     /**
      * CREATE
@@ -79,7 +77,7 @@ public class EnglishWordService {
      *
      * @return 단어 전체 개수
      */
-    public int countAllWordList() {
+    public int countAll() {
         return (int) englishWordRepository.count();
     }
 

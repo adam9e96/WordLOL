@@ -15,8 +15,6 @@ public interface EnglishWordRepository extends JpaRepository<EnglishWord, Long> 
 
     Page<EnglishWord> findByWordBookId(Long wordBookId, Pageable pageable);
 
-    // 특정 단어장의 모든 단어 조회
-//    List<EnglishWord> findByWordBookId(Long wordBookId);
 
     List<EnglishWord> findByWordBook_Category(Category category);
 

@@ -19,7 +19,7 @@ public class DashboardService {
 
     public DashBoardResponse getDashboardData() {
         // 전체 단어 수 조회
-        int totalWords = englishWordService.countAllWordList();
+        int totalWords = englishWordService.countAll();
 
         // 최근에 추가된 단어 5개 조회
         List<WordResponse> recentWords = wordMapper.findRecent5Words();

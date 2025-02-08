@@ -57,13 +57,27 @@ public class WordRestController {
     }
 
 
+    /**
+     * 단어 삭제
+     *
+     * @param id 삭제할 ID
+     * @return void
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWord(@PathVariable Long id) {
         englishWordService.deleteWord(id);
+
         return ResponseEntity.ok().build();
     }
 
 
+    /**
+     * 단어 수정
+     *
+     * @param id
+     * @param request
+     * @return
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateWord(@PathVariable Long id, @RequestBody WordRequest request) {
         Optional<EnglishWord> updateWord = englishWordService.updateWord(

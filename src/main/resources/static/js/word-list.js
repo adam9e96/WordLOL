@@ -4,11 +4,11 @@ const pageSize = 20;
 
 document.addEventListener('DOMContentLoaded', function () {
     // 초기 로드
-    loadWords(currentPage);
+    loadWords(currentPage).then(r => console.log("단어 로딩"));
 });
 
 // 전역 함수로 선언하여 onclick에서 접근 가능하도록 함
-window.loadWords = async function(page) {
+window.loadWords = async function (page) {
     try {
         const response = await fetch(`/api/v1/words/list?page=${page}&size=${pageSize}`);
         if (!response.ok) {
@@ -143,7 +143,7 @@ function showError(message) {
 }
 
 // 단어 수정 함수
-window.editWord = async function(id) {
+window.editWord = async function (id) {
     try {
         const response = await fetch(`/api/v1/words/${id}`);
         if (!response.ok) throw new Error('단어 정보를 불러오는데 실패했습니다.');
@@ -165,7 +165,7 @@ window.editWord = async function(id) {
 };
 
 // 단어 삭제 함수
-window.deleteWord = async function(id) {
+window.deleteWord = async function (id) {
     if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) return;
 
     try {
@@ -184,7 +184,7 @@ window.deleteWord = async function(id) {
 };
 
 // 수정 저장 버튼 이벤트 리스너
-document.getElementById('saveEdit')?.addEventListener('click', async function() {
+document.getElementById('saveEdit')?.addEventListener('click', async function () {
     const id = document.getElementById('editId').value;
     const data = {
         vocabulary: document.getElementById('editVocabulary').value,
