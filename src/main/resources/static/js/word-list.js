@@ -4,7 +4,7 @@ const pageSize = 20;
 
 document.addEventListener('DOMContentLoaded', function () {
     // 초기 로드
-    loadWords(currentPage).then(r => console.log("단어 로딩"));
+    loadWords(currentPage).then(() => console.log("단어 로딩"));
 });
 
 // 전역 함수로 선언하여 onclick에서 접근 가능하도록 함
@@ -184,8 +184,10 @@ window.deleteWord = async function (id) {
 };
 
 // 수정 저장 버튼 이벤트 리스너
+//
 document.getElementById('saveEdit')?.addEventListener('click', async function () {
     const id = document.getElementById('editId').value;
+    console.log('id버튼 눌림', id.value);
     const data = {
         vocabulary: document.getElementById('editVocabulary').value,
         meaning: document.getElementById('editMeaning').value,

@@ -208,19 +208,54 @@ public class WordRestController {
     @GetMapping("/list")
     public ResponseEntity<PageResponse<WordResponse>> getAllWords(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction) {
+            @RequestParam(defaultValue = "20") int size) {
 
         // 정렬 방향 결정
-        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ?
-                Sort.Direction.DESC : Sort.Direction.ASC;
+//        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ?
+//                Sort.Direction.DESC : Sort.Direction.ASC;
 
         // 페이징 및 정렬 정보 생성
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        // offset 과 limit 은 내부적으로 Pageable에서 계산함
+        /*
+         * page : 페이지 번호 (0부터 시작)
+         * size : 한 페이지당 항목 수
+         * 내부적으로
+         * offset = page * size
+         * limit = size
+         *
+         * ex)
+         * page =2, size=20 인 경우:
+         * offset = 2 * 20 = 40 (41번째 레코드부터)
+         * limit = 20 (20개 레코드)
+         */
+        Pageable pageable = PageRequest.of(page, size);
 
         // 서비스에서 페이징된 데이터 조회
         Page<EnglishWord> wordPage = englishWordService.findAllWordsWithPaging(pageable);
+
+        // 페이징 정보 로깅
+        log.info("=== Paging Information ===");
+        log.info("내용 {}", wordPage.getContent());
+        log.info("현재 페이지 : {}", wordPage.getNumber());
+        log.info("페이지 사이즈 : {}", wordPage.getSize());
+        log.info("전체 단어 개수: {}", wordPage.getTotalElements());
+        log.info("총 페이지 : {}", wordPage.getTotalPages());
+        log.info("다음 페이지 여부 : {}", wordPage.hasNext());
+        log.info("이전 페이지 여부 : {}", wordPage.hasPrevious());
+        log.info("정렬 방향 {}", wordPage.getSort());
+        log.info("=== Paging Information END ===");
+
+        // 현재 페이지의 실제 데이터 로깅
+        log.info("=== Current Page Content ===");
+        wordPage.getContent().forEach(word ->
+                log.info("Word ID: {}, Vocabulary: {}, Meaning: {}, Difficulty: {}, Created At: {}",
+                        word.getId(),
+                        word.getVocabulary(),
+                        word.getMeaning(),
+                        word.getDifficulty(),
+                        word.getCreatedAt()
+                ));
+
 
         // DTO로 변환
         Page<WordResponse> responsePage = wordPage.map(this::toResponse);
