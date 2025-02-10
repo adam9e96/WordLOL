@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -73,10 +72,6 @@ public class WordRestController {
 
     /**
      * 단어 수정
-     *
-     * @param id
-     * @param request
-     * @return
      */
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateWord(@PathVariable Long id, @RequestBody WordRequest request) {
@@ -99,8 +94,6 @@ public class WordRestController {
 
     /**
      * study.js
-     *
-     * @return
      */
     @GetMapping("/random")
     public ResponseEntity<WordResponse> getRandomWord() {
@@ -150,9 +143,6 @@ public class WordRestController {
 
     /**
      * study.js
-     *
-     * @param request
-     * @return
      */
     @PostMapping("/check")
     public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request) {
@@ -172,8 +162,6 @@ public class WordRestController {
 
     /**
      * study.js
-     *
-     * @return
      */
     @GetMapping("/perfectRun")
     public Map<String, Integer> getPerfectRun() {
@@ -210,10 +198,6 @@ public class WordRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        // 정렬 방향 결정
-//        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ?
-//                Sort.Direction.DESC : Sort.Direction.ASC;
-
         // 페이징 및 정렬 정보 생성
         // offset 과 limit 은 내부적으로 Pageable에서 계산함
         /*
@@ -248,10 +232,11 @@ public class WordRestController {
         // 현재 페이지의 실제 데이터 로깅
         log.info("=== Current Page Content ===");
         wordPage.getContent().forEach(word ->
-                log.info("Word ID: {}, Vocabulary: {}, Meaning: {}, Difficulty: {}, Created At: {}",
+                log.info("Word ID: {}, Vocabulary: {}, Meaning: {},Hint {}, Difficulty: {}, Created At: {}",
                         word.getId(),
                         word.getVocabulary(),
                         word.getMeaning(),
+                        word.getHint(),
                         word.getDifficulty(),
                         word.getCreatedAt()
                 ));
@@ -284,9 +269,7 @@ public class WordRestController {
                     .toList();
             errorResponse.put("errors", errors);
 
-            return ResponseEntity
-                    .badRequest()
-                    .body(errorResponse);
+            return ResponseEntity.badRequest().body(errorResponse);
         }
         // 유효성 검사 통과시
         englishWordService.createWord(

@@ -48,6 +48,6 @@ public class WordViewController {
 
     @GetMapping("/register-all")
     public String showWordBook() {
-        return "book-register";
+        return "words-register";
     }
 }

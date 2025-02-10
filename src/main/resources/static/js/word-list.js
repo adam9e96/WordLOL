@@ -1,6 +1,6 @@
 // 전역 변수 선언
-let currentPage = 0;
-const pageSize = 20;
+let currentPage = 0; // 첫페이지로 설정
+const pageSize = 20; // 한 페이지당 20개 항목으로 설정
 
 document.addEventListener('DOMContentLoaded', function () {
     // 초기 로드
@@ -10,15 +10,31 @@ document.addEventListener('DOMContentLoaded', function () {
 // 전역 함수로 선언하여 onclick에서 접근 가능하도록 함
 window.loadWords = async function (page) {
     try {
+        // 파라미터로 page와 size를 전달
         const response = await fetch(`/api/v1/words/list?page=${page}&size=${pageSize}`);
         if (!response.ok) {
             throw new Error('단어 목록을 불러오는데 실패했습니다.');
         }
 
+        /*
+         * 성공시
+         * 1. 응답 데이터로 테이블 내용 업데이트
+         * 2. 각 단어마다 ID, 단어, 의미, 힌트, 난이도, 생성일 표시
+         * 3. 각 행에 수정/삭제 버튼 추가
+         * 4. updatePagination() 호출하여 페이징 UI 업데이트
+         * 실패시 : 에러 메시지 표시
+         */
+
         const data = await response.json();
         currentPage = page; // 현재 페이지 업데이트
 
         // 테이블 내용 업데이트
+        // id : 240
+        // vocabulary : temerity
+        // Meaning : 무모함
+        // hint : a
+        // difficulty : 3
+        // createAt : 2025-02-10T00:47:05.033169
         const wordList = document.getElementById('wordList');
         wordList.innerHTML = data.content.map(word => `
             <tr>
@@ -45,16 +61,17 @@ window.loadWords = async function (page) {
         console.error('Error:', error);
         showError('단어 목록을 불러오는데 실패했습니다.');
     }
-};
+}
 
 // 페이지네이션 UI 업데이트
 function updatePagination(pageData) {
     const pagination = document.getElementById('pagination');
-    const totalPages = pageData.totalPages;
+    const totalPages = pageData.totalPages; // ex) 총 페이지: 11
 
     let paginationHtml = '';
 
-    // 첫 페이지로 이동
+    // 이동 불가능한 페이지는 disabled 처리
+    // 첫 페이지 버튼 생성
     paginationHtml += `
         <li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
             <a class="page-link" href="javascript:void(0)" onclick="loadWords(0)">
@@ -63,7 +80,7 @@ function updatePagination(pageData) {
         </li>
     `;
 
-    // 이전 페이지로 이동
+    // 이전 페이지 버튼 생성
     paginationHtml += `
         <li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
             <a class="page-link" href="javascript:void(0)" onclick="loadWords(${currentPage - 1})">
@@ -72,10 +89,11 @@ function updatePagination(pageData) {
         </li>
     `;
 
-    // 페이지 번호들
+    // 현재 페이지 기준 +- 2페이지까지 페이지 버튼 생성
     let startPage = Math.max(0, currentPage - 2);
     let endPage = Math.min(totalPages - 1, currentPage + 2);
 
+    // 현재 페이지는 active 상태로 표시
     for (let i = startPage; i <= endPage; i++) {
         paginationHtml += `
             <li class="page-item ${currentPage === i ? 'active' : ''}">
@@ -84,7 +102,7 @@ function updatePagination(pageData) {
         `;
     }
 
-    // 다음 페이지로 이동
+    // 다음 페이지 버튼 생성
     paginationHtml += `
         <li class="page-item ${currentPage >= totalPages - 1 ? 'disabled' : ''}">
             <a class="page-link" href="javascript:void(0)" onclick="loadWords(${currentPage + 1})">
@@ -93,7 +111,7 @@ function updatePagination(pageData) {
         </li>
     `;
 
-    // 마지막 페이지로 이동
+    // 마지막 페이지 버튼 생성
     paginationHtml += `
         <li class="page-item ${currentPage >= totalPages - 1 ? 'disabled' : ''}">
             <a class="page-link" href="javascript:void(0)" onclick="loadWords(${totalPages - 1})">
@@ -115,6 +133,7 @@ function getDifficultyBadge(level) {
         5: ['dark', '매우 어려움']
     };
     const [colorClass, label] = badges[level] || ['secondary', '알 수 없음'];
+    console.log("난이도: ", colorClass, label);
     return `<span class="badge bg-${colorClass}">${label}</span>`;
 }
 
@@ -145,6 +164,7 @@ function showError(message) {
 // 단어 수정 함수
 window.editWord = async function (id) {
     try {
+        // GET으로 단어 정보 가져오기
         const response = await fetch(`/api/v1/words/${id}`);
         if (!response.ok) throw new Error('단어 정보를 불러오는데 실패했습니다.');
 
@@ -184,7 +204,6 @@ window.deleteWord = async function (id) {
 };
 
 // 수정 저장 버튼 이벤트 리스너
-//
 document.getElementById('saveEdit')?.addEventListener('click', async function () {
     const id = document.getElementById('editId').value;
     console.log('id버튼 눌림', id.value);
@@ -206,6 +225,7 @@ document.getElementById('saveEdit')?.addEventListener('click', async function ()
 
         if (!response.ok) throw new Error('단어 수정에 실패했습니다.');
 
+        // 모달 닫기
         const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
         editModal.hide();
 
