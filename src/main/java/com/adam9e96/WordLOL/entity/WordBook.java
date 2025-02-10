@@ -1,7 +1,10 @@
 package com.adam9e96.WordLOL.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,7 +16,6 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 public class WordBook {
     @OneToMany(mappedBy = "wordBook", cascade = CascadeType.ALL)
     private List<EnglishWord> words = new ArrayList<>(); // 초기화 추가
@@ -29,15 +31,6 @@ public class WordBook {
     private Category category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    @Builder(builderMethodName = "createWordBook")  // Builder 메서드 이름 지정
-    public WordBook(String name, String description, Category category) {
-        this.name = name;
-        this.description = description;
-        this.category = category;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
 
     public static WordBook createNewWordBook(String name, String description, Category category) {
         WordBook wordBook = new WordBook();

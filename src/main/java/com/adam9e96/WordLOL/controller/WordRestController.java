@@ -300,6 +300,8 @@ public class WordRestController {
             response.put("message", "success");
             response.put("count", successCount);
 
+            log.info("response: {}", response);
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {

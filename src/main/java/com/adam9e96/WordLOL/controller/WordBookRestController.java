@@ -19,19 +19,11 @@ import java.util.List;
 public class WordBookRestController {
     private final WordBookService wordBookService;
 
-    @PostMapping
+
+    @PostMapping("/create")
     public ResponseEntity<WordBookResponse> createWordBook(@RequestBody WordBookRequest request) {
         return ResponseEntity.ok(wordBookService.createWordBook(request));
     }
-
-//    @GetMapping("/{id}/words")
-//    public ResponseEntity<Page<WordResponse>> getWordsInBook(
-//            @PathVariable Long id,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "20") int size) {
-//        return ResponseEntity.ok(wordBookService.getWordsInBook(id,
-//                PageRequest.of(page, size)));
-//    }
 
     @GetMapping("/{id}/words")
     public ResponseEntity<List<WordResponse>> getWordsInWordBook(@PathVariable int id) {

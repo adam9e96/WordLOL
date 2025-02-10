@@ -17,7 +17,7 @@ public class WordViewController {
 
     @GetMapping("/register")
     public String showRegister() {
-        return "register";
+        return "word-register";
     }
 
     @GetMapping("/list")
