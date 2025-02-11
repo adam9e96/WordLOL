@@ -51,6 +51,7 @@ public class WordBookRestController {
     }
 
 
+    // 아직 안씀
     @GetMapping("/category/{category}/words")
     public ResponseEntity<List<WordResponse>> getWordsByCategory(@PathVariable("category") Category category) {
         return ResponseEntity.ok().body(

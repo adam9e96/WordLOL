@@ -16,11 +16,11 @@ Content-Type: application/json
 GET http://localhost:8080/api/v1/words/random
 
 
-### Delete
+### 단어 삭제
 DELETE http://localhost:8080/api/v1/words/110
 
 
-### GET hint
+### 단어 힌트 조회
 GET http://localhost:8080/api/v1/words/28/hint
 
 ### POST 정답 확인
@@ -40,6 +40,9 @@ GET http://localhost:8080/api/v1/words/daily-words
 
 ### 단어 리스트 조회 with 페이징 정보
 GET http://localhost:8080/api/v1/words/list
+
+### 단어 목록 페이징 조회
+GET http://localhost:8080/api/v1/words/list?page=0&size=20
 
 
 ### 단어 추가

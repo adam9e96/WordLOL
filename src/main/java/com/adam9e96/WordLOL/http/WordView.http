@@ -1,0 +1,26 @@
+### GET study 학습페이지 반환
+GET http://localhost:8080/word/study
+
+### GET 단어 등록 페이지 반환
+GET http://localhost:8080/word/register
+
+### GET 단어 목록 페이지 반환
+GET http://localhost:8080/word/list
+
+### GET 대시보드 페이지 반환
+GET http://localhost:8080/word/dashboard
+
+### GET 오늘의 단어 페이지 반환
+GET http://localhost:8080/word/daily
+
+### GET 단어장 목록 페이지 반환
+GET http://localhost:8080/word/wordbook-list
+
+### GET 단어장 생성 페이지 반환
+GET http://localhost:8080/word/wordbook-create
+
+### GET 단어 일괄 등록 페이지 반환
+GET http://localhost:8080/word/register-all
+
+### GET 단어장 수정 페이지 반환
+GET http://localhost:8080/word/wordbook/edit/1
