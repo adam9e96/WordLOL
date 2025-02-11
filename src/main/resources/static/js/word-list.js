@@ -3,6 +3,12 @@ let currentPage = 0;
 const pageSize = 20;
 
 document.addEventListener('DOMContentLoaded', function () {
+    // URL에서 현재 페이지 파라미터 읽기
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageParam = urlParams.get('page');
+    currentPage = pageParam ? parseInt(pageParam) : 0;
+    console.log(currentPage);
+
     // 초기 로드
     loadWords(currentPage).then(() => console.log("단어 로딩"));
 });
@@ -10,9 +16,14 @@ document.addEventListener('DOMContentLoaded', function () {
 // 전역 함수로 선언하여 onclick에서 접근 가능하도록 함
 window.loadWords = async function (page) {
     try {
+        // URL 업데이트
+        const url = new URL(window.location);
+        url.searchParams.set('page', page);
+        window.history.pushState({}, '', url);
+
         const response = await fetch(`/api/v1/words/list?page=${page}&size=${pageSize}`);
         if (!response.ok) {
-            throw new Error('단어 목록을 불러오는데 실패했습니다.');
+            throw new Error('단어 목록을 불러오는데 실패했습니다.s');
         }
 
         const data = await response.json();
@@ -182,6 +193,14 @@ window.deleteWord = async function (id) {
         showError('단어 삭제에 실패했습니다.');
     }
 };
+
+// 브라우저 뒤로가기/앞으로가기 처리
+window.addEventListener('popstate', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageParam = urlParams.get('page');
+    currentPage = pageParam ? parseInt(pageParam) : 0;
+    loadWords(currentPage);
+});
 
 // 수정 저장 버튼 이벤트 리스너
 //

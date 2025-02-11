@@ -30,17 +30,29 @@ public class WordBookRestController {
         return ResponseEntity.ok().body(toResponse(wordBook));
     }
 
-    @GetMapping("/{id}/words")
-    public ResponseEntity<List<WordResponse>> getWordsInWordBook(@PathVariable int id) {
-        log.info("getWordsInWordBook 실행됨");
-        return ResponseEntity.ok().body(wordBookService.getWordsByWordBookId(id)
+    /**
+     * 특정 단어장에 포함된 모든 단어를 조회합니다.
+     *
+     * @param wordBookId 조회할 단어장의 ID
+     * @return 단어장에 포함된 모든 단어의 목록을 담은 ResponseEntity
+     * - 성공 시: 200 OK와 함께 WordResponse 목록 반환
+     * - 단어장이 존재하지 않을 경우: 404 Not Found
+     * @throws IllegalArgumentException 유효하지 않은 단어장 ID가 제공된 경우
+     * @see WordResponse
+     * @see WordBookService#getWordsByWordBookId
+     */
+    @GetMapping("/words/{wordBookId}")
+    public ResponseEntity<List<WordResponse>> getWordsByWordBookId(@PathVariable("wordBookId") Long wordBookId) {
+        log.info("단어장 ID {}의 단어 목록 조회", wordBookId);
+        return ResponseEntity.ok().body(wordBookService.getWordsByWordBookId(wordBookId)
                 .stream()
                 .map(this::toWordResponse)
                 .toList());
     }
 
+
     @GetMapping("/category/{category}/words")
-    public ResponseEntity<List<WordResponse>> getWordsByCategory(@PathVariable Category category) {
+    public ResponseEntity<List<WordResponse>> getWordsByCategory(@PathVariable("category") Category category) {
         return ResponseEntity.ok().body(
                 wordBookService.getWordsByCategory(category).stream()
                         .map(this::toWordResponse)
@@ -56,7 +68,7 @@ public class WordBookRestController {
     }
 
     @GetMapping("/category")
-    public ResponseEntity<List<WordBookResponse>> getWordBooksByCategory(@RequestParam Category category) {
+    public ResponseEntity<List<WordBookResponse>> getWordBooksByCategory(@RequestParam("category") Category category) {
         log.info("category 선택 : {},{}", category, category.getDescription());
         return ResponseEntity.ok().body(
                 wordBookService.findWordBooksByCategory(category)
@@ -66,9 +78,9 @@ public class WordBookRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         try {
-            wordBookService.deleteWordBook(Long.parseLong(String.valueOf(id)));
+            wordBookService.deleteWordBook(id);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
@@ -77,8 +89,14 @@ public class WordBookRestController {
         }
     }
 
+    /**
+     * id 로 단어장을 조회하는 API
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<WordBookResponse> getWordBook(@PathVariable Long id) {
+    public ResponseEntity<WordBookResponse> getWordBook(@PathVariable("id") Long id) {
         return wordBookService.findById(id)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok)
@@ -86,7 +104,7 @@ public class WordBookRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<WordBookResponse> updateWordBook(@PathVariable Long id, @RequestBody WordBookRequest request) {
+    public ResponseEntity<WordBookResponse> updateWordBook(@PathVariable("id") Long id, @RequestBody WordBookRequest request) {
         try {
             WordBook updatedWordBook = wordBookService.updateWordBook(id, request);
             return ResponseEntity.ok().body(toResponse(updatedWordBook));
@@ -102,7 +120,8 @@ public class WordBookRestController {
                 wordBook.getDescription(),
                 wordBook.getCategory(),
                 wordBook.getWords().size(),  // 단어 수
-                wordBook.getCreatedAt()
+                wordBook.getCreatedAt(),
+                wordBook.getUpdatedAt()
         );
     }
 
@@ -115,15 +134,6 @@ public class WordBookRestController {
                 word.getDifficulty(),
                 word.getCreatedAt(),
                 word.getUpdatedAt()
-        );
-    }
-
-    public ResponseEntity<List<WordResponse>> getWordBookResponse(@PathVariable long id) {
-        return ResponseEntity.ok().body(
-                englishWordService.findWordsByBookId(id)
-                        .stream()
-                        .map(this::toWordResponse)
-                        .toList()
         );
     }
 

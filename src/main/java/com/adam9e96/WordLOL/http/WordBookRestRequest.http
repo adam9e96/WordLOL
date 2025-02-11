@@ -23,15 +23,42 @@ Content-Type: application/json
   ]
 }
 
-###
-GET http://localhost:8080/api/v1/wordbooks/8
+### GET 단어장 조회
+GET http://localhost:8080/api/v1/wordbooks/9
 
-
-###
-GET http://localhost:8080/api/v1/wordbooks/7/words
 
 <> 2025-02-11T183115.200.json
 
-### 단어장 상세 조회
-GET http://localhost:8080/api/v1/wordbooks/7
 
+### PUT 단어장 수정 (업데이트)
+PUT http://localhost:8080/api/v1/wordbooks/9
+Content-Type: application/json
+
+{
+  "name": "토익단어장테스트2",
+  "category": "TOEIC",
+  "description": "토익단어장테스트#1",
+  "words": [
+    {
+      "id": 291,
+      "vocabulary": "occur1",
+      "meaning": "발생하다1",
+      "hint": "발생하다1",
+      "difficulty": 2
+    },
+    {
+      "id": 292,
+      "vocabulary": "wheel1",
+      "meaning": "바퀴1",
+      "hint": "바퀴1",
+      "difficulty": 1
+    }
+  ]
+}
+
+
+### 단어장 상세 조회
+GET http://localhost:8080/api/v1/wordbooks/words/9
+
+### 단어장 수정 페이지 이동
+GET http://localhost:8080/word/wordbook/edit/8

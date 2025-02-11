@@ -41,6 +41,7 @@ GET http://localhost:8080/api/v1/words/daily-words
 ### 단어 리스트 조회 with 페이징 정보
 GET http://localhost:8080/api/v1/words/list
 
+
 ### 단어 추가
 POST http://localhost:8080/api/v1/words/register
 Content-Type: application/json
@@ -51,6 +52,7 @@ Content-Type: application/json
   "difficulty": 2,
   "hint": "testhint1"
 }
+
 ### 단어 N개 추가
 POST http://localhost:8080/api/v1/words/book
 Content-Type: application/json

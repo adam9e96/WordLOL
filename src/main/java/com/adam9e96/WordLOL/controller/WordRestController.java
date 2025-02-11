@@ -31,7 +31,7 @@ public class WordRestController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<WordResponse> getWord(@PathVariable Long id) {
+    public ResponseEntity<WordResponse> getWord(@PathVariable("id") Long id) {
         Optional<EnglishWord> wordOptional = englishWordService.findById(id);
 
         if (wordOptional.isEmpty()) {
@@ -63,7 +63,7 @@ public class WordRestController {
      * @return void
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWord(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteWord(@PathVariable("id") Long id) {
         englishWordService.deleteWord(id);
 
         return ResponseEntity.ok().build();
@@ -74,7 +74,7 @@ public class WordRestController {
      * 단어 수정
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateWord(@PathVariable Long id, @RequestBody WordRequest request) {
+    public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @RequestBody WordRequest request) {
         Optional<EnglishWord> updateWord = englishWordService.updateWord(
                 id,
                 request.vocabulary(),
@@ -130,7 +130,7 @@ public class WordRestController {
      * @return 단어의 힌트를 담은 Map
      */
     @GetMapping("/{id}/hint")
-    public ResponseEntity<Map<String, String>> getHint(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> getHint(@PathVariable("id") Long id) {
         Optional<EnglishWord> word = englishWordService.findById(id);
 
         if (word.isEmpty()) {
@@ -195,8 +195,9 @@ public class WordRestController {
      */
     @GetMapping("/list")
     public ResponseEntity<PageResponse<WordResponse>> getAllWords(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
+
 
         // 페이징 및 정렬 정보 생성
         // offset 과 limit 은 내부적으로 Pageable에서 계산함

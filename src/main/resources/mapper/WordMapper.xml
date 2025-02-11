@@ -17,7 +17,7 @@
 
 
     <!-- 랜덤 5개 단어 조회 -->
-<!--    <select id="findRandom5Words" resultMap="WordResponseMap">-->
+    <!--    <select id="findRandom5Words" resultMap="WordResponseMap">-->
     <!--        SELECT id,-->
     <!--               vocabulary,-->
     <!--               meaning,-->
@@ -44,19 +44,13 @@
     </select>
 
     <select id="countAllWords" resultType="Long">
-        SELECT COUNT(*) FROM english_word
+        SELECT COUNT(*)
+        FROM english_word
     </select>
 
     <select id="findByWordBookId" resultType="com.adam9e96.WordLOL.entity.EnglishWord">
-        SELECT e.id,
-               created_at,
-               difficulty,
-               hint,
-               meaning,
-               updated_at,
-               vocabulary,
-               word_book_id
-        FROM english_word e
+        SELECT *
+        FROM english_word
         WHERE word_book_id = #{wordBookId}
     </select>
 

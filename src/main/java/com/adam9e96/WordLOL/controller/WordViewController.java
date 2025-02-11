@@ -55,7 +55,7 @@ public class WordViewController {
     }
 
     @GetMapping("/wordbook/edit/{id}")
-    public String showWordBookEdit(@PathVariable Long id, Model model) {
+    public String showWordBookEdit(@PathVariable("id") Long id, Model model) {
         model.addAttribute("wordBookId", id);
         return "wordbook-edit";
     }

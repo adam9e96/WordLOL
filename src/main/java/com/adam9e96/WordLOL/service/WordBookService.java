@@ -72,9 +72,10 @@ public class WordBookService {
         return wordBookRepository.findAll();
     }
 
-    public List<EnglishWord> getWordsByWordBookId(int wordBookId) {
+    public List<EnglishWord> getWordsByWordBookId(Long wordBookId) {
         return wordMapper.findByWordBookId(wordBookId);
     }
+
 
     public List<EnglishWord> getWordsByCategory(Category category) {
         return englishWordRepository.findByWordBookCategory(category);

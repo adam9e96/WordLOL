@@ -19,5 +19,5 @@ public interface WordMapper {
 
     Long countAllWords();
 
-    List<EnglishWord> findByWordBookId(int wordBookId);
+    List<EnglishWord> findByWordBookId(Long wordBookId);
 }

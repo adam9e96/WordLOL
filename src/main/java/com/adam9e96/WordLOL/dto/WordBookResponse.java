@@ -11,6 +11,7 @@ public record WordBookResponse(
         String description,
         Category category,
         int wordCount,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 }
