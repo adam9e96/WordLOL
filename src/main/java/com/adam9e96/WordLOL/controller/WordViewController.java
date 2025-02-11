@@ -2,8 +2,11 @@ package com.adam9e96.WordLOL.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/word")
@@ -49,5 +52,11 @@ public class WordViewController {
     @GetMapping("/register-all")
     public String showWordBook() {
         return "words-register";
+    }
+
+    @GetMapping("/wordbook/edit/{id}")
+    public String showWordBookEdit(@PathVariable Long id, Model model) {
+        model.addAttribute("wordBookId", id);
+        return "wordbook-edit";
     }
 }

@@ -218,28 +218,28 @@ public class WordRestController {
         Page<EnglishWord> wordPage = englishWordService.findAllWordsWithPaging(pageable);
 
         // 페이징 정보 로깅
-        log.info("=== Paging Information ===");
-        log.info("내용 {}", wordPage.getContent());
-        log.info("현재 페이지 : {}", wordPage.getNumber());
-        log.info("페이지 사이즈 : {}", wordPage.getSize());
-        log.info("전체 단어 개수: {}", wordPage.getTotalElements());
-        log.info("총 페이지 : {}", wordPage.getTotalPages());
-        log.info("다음 페이지 여부 : {}", wordPage.hasNext());
-        log.info("이전 페이지 여부 : {}", wordPage.hasPrevious());
-        log.info("정렬 방향 {}", wordPage.getSort());
-        log.info("=== Paging Information END ===");
-
-        // 현재 페이지의 실제 데이터 로깅
-        log.info("=== Current Page Content ===");
-        wordPage.getContent().forEach(word ->
-                log.info("Word ID: {}, Vocabulary: {}, Meaning: {},Hint {}, Difficulty: {}, Created At: {}",
-                        word.getId(),
-                        word.getVocabulary(),
-                        word.getMeaning(),
-                        word.getHint(),
-                        word.getDifficulty(),
-                        word.getCreatedAt()
-                ));
+//        log.info("=== Paging Information ===");
+//        log.info("내용 {}", wordPage.getContent());
+//        log.info("현재 페이지 : {}", wordPage.getNumber());
+//        log.info("페이지 사이즈 : {}", wordPage.getSize());
+//        log.info("전체 단어 개수: {}", wordPage.getTotalElements());
+//        log.info("총 페이지 : {}", wordPage.getTotalPages());
+//        log.info("다음 페이지 여부 : {}", wordPage.hasNext());
+//        log.info("이전 페이지 여부 : {}", wordPage.hasPrevious());
+//        log.info("정렬 방향 {}", wordPage.getSort());
+//        log.info("=== Paging Information END ===");
+//
+//        // 현재 페이지의 실제 데이터 로깅
+//        log.info("=== Current Page Content ===");
+//        wordPage.getContent().forEach(word ->
+//                log.info("Word ID: {}, Vocabulary: {}, Meaning: {},Hint {}, Difficulty: {}, Created At: {}",
+//                        word.getId(),
+//                        word.getVocabulary(),
+//                        word.getMeaning(),
+//                        word.getHint(),
+//                        word.getDifficulty(),
+//                        word.getCreatedAt()
+//                ));
 
 
         // DTO로 변환

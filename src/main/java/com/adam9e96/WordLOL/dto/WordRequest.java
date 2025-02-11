@@ -3,6 +3,7 @@ package com.adam9e96.WordLOL.dto;
 import jakarta.validation.constraints.*;
 
 public record WordRequest(
+        Long id,
         @NotBlank(message = "단어는 필수 입력값입니")
         @Pattern(regexp = "^[a-zA-Z]*$", message = "영단어는 영문자, 공백, 하이픈만 포함할 수 있습니다")
         @Size(min = 1, max = 100, message = "단어는 1자 이상 100자 이하로 입력해주세요")

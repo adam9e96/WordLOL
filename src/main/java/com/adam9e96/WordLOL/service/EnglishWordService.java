@@ -165,4 +165,8 @@ public class EnglishWordService {
 
     }
 
+    public List<EnglishWord> findWordsByBookId(Long bookId) {
+        return englishWordRepository.findByWordBookId(bookId);
+    }
+
 }

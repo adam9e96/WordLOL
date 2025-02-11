@@ -50,4 +50,12 @@ public class WordBook {
         this.words.add(word);
         word.setWordBook(this);
     }
+
+    public void updateInfo(String name, String description, Category category) {
+        this.name = name;
+        this.description = description;
+        this.category = category;
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }

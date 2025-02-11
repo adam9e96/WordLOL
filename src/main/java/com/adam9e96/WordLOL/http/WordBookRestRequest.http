@@ -1,0 +1,37 @@
+
+### POST create 단어장
+POST http://localhost:8080/api/v1/wordbooks/create
+Content-Type: application/json
+
+{
+  "name": "토익테스트단어장",
+  "description": "토익테스트설명",
+  "category": "TOEIC",
+  "words": [
+    {
+      "vocabulary": "occur",
+      "meaning": "발생하다",
+      "hint": "발생하다",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "wheel",
+      "meaning": "바퀴, 밀다, 태우고 가다",
+      "hint": "바퀴",
+      "difficulty": 2
+    }
+  ]
+}
+
+###
+GET http://localhost:8080/api/v1/wordbooks/8
+
+
+###
+GET http://localhost:8080/api/v1/wordbooks/7/words
+
+<> 2025-02-11T183115.200.json
+
+### 단어장 상세 조회
+GET http://localhost:8080/api/v1/wordbooks/7
+

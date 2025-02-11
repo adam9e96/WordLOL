@@ -1,9 +1,7 @@
 package com.adam9e96.WordLOL.service;
 
 import com.adam9e96.WordLOL.dto.WordBookRequest;
-import com.adam9e96.WordLOL.dto.WordBookResponse;
 import com.adam9e96.WordLOL.dto.WordRequest;
-import com.adam9e96.WordLOL.dto.WordResponse;
 import com.adam9e96.WordLOL.entity.Category;
 import com.adam9e96.WordLOL.entity.EnglishWord;
 import com.adam9e96.WordLOL.entity.WordBook;
@@ -12,12 +10,15 @@ import com.adam9e96.WordLOL.repository.EnglishWordRepository;
 import com.adam9e96.WordLOL.repository.WordBookRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 @Transactional
@@ -29,7 +30,7 @@ public class WordBookService {
     private final WordMapper wordMapper;
 
     @Transactional
-    public WordBookResponse createWordBook(WordBookRequest request) {
+    public WordBook createWordBook(WordBookRequest request) {
         // 단어장 생성 (정적 팩토리 메서드 사용)
         WordBook wordBook = WordBook.createNewWordBook(
                 request.name(),
@@ -49,80 +50,101 @@ public class WordBookService {
         }
 
         // 단어장 저장 (cascade로 단어들도 함께 저장됨)
-        WordBook savedWordBook = wordBookRepository.save(wordBook);
-        return convertToDTO(savedWordBook);
+        return wordBookRepository.save(wordBook);
     }
 
 
-    public Page<WordResponse> getWordsInBook(Long bookId, Pageable pageable) {
-        WordBook wordBook = wordBookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("단어장을 찾을 수 없습니다."));
+//    public Page<WordBook> getWordsInBook(Long bookId, Pageable pageable) {
+//        WordBook wordBook = wordBookRepository.findById(bookId)
+//                .orElseThrow(() -> new IllegalArgumentException("단어장을 찾을 수 없습니다."));
+//
+//        return englishWordService.findWordsByBookId(bookId, pageable);
 
-        return englishWordService.findWordsByBookId(bookId, pageable).map(this::convertToWordDTO);
-    }
+    /// /        return englishWordService.findWordsByBookId(bookId, pageable).map(this::convertToWordDTO);
+//    }
 
     // 카테고리별 단어장 목록 조회
-    public List<WordBookResponse> findWordBooksByCategory(Category category) {
-        return wordBookRepository.findByCategory(category).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public List<WordBook> findWordBooksByCategory(Category category) {
+        return wordBookRepository.findByCategory(category);
     }
 
-    public List<WordBookResponse> findAllWordBooks() {
-        return wordBookRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public List<WordBook> findAllWordBooks() {
+        return wordBookRepository.findAll();
     }
 
+    public List<EnglishWord> getWordsByWordBookId(int wordBookId) {
+        return wordMapper.findByWordBookId(wordBookId);
+    }
 
-    private WordBookResponse convertToDTO(WordBook wordBook) {
-        return new WordBookResponse(
-                wordBook.getId(),
-                wordBook.getName(),
-                wordBook.getDescription(),
-                wordBook.getCategory(),
-                wordBook.getWords().size(),  // 단어 수
-                wordBook.getCreatedAt()
+    public List<EnglishWord> getWordsByCategory(Category category) {
+        return englishWordRepository.findByWordBookCategory(category);
+    }
+    // ================================ //
+
+    @Transactional
+    public void deleteWordBook(Long wordBookId) {
+        // 존재 여부 확인
+        if (!wordBookRepository.existsById(wordBookId)) {
+            throw new IllegalArgumentException("존재하지 않는 단어장입니다. id:" + id);
+        }
+        wordBookRepository.deleteById(wordBookId);
+    }
+
+    @Transactional
+    public Optional<WordBook> findById(Long id) {
+        return wordBookRepository.findById(id);
+    }
+
+    @Transactional
+    public WordBook updateWordBook(Long id, WordBookRequest request) {
+        WordBook wordBook = wordBookRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("단어장을 찾을 수 없습니다."));
+
+        // 기본 정보 업데이트
+        wordBook.updateInfo(
+                request.name(),
+                request.description(),
+                request.category()
         );
-    }
 
-    public List<WordResponse> getWordsByWordBookId(int wordBookId) {
-//        return englishWordRepository.findByWordBookId(wordBookId).stream()
 
-        return wordMapper.findByWordBookId(wordBookId).stream()
-                .map(this::convertToWordDTO)
-                .collect(Collectors.toList());
-    }
+        // 기존 단어들을 Map으로 변환 (ID로 빠르게 조회하기 위해)
+        Map<Long, EnglishWord> existingWords = wordBook.getWords().stream()
+                .collect(Collectors.toMap(EnglishWord::getId, word -> word));
 
-    public List<WordResponse> getWordsByCategory(Category category) {
-        return englishWordRepository.findByWordBook_Category(category).stream()
-                .map(this::convertToWordDTO)
-                .collect(Collectors.toList());
-    }
+        // 새로운 단어 목록
+        List<EnglishWord> updatedWords = new ArrayList<>();
 
-    private WordResponse convertToWordDTO(EnglishWord word) {
-        return new WordResponse(
-                word.getId(),
-                word.getVocabulary(),
-                word.getMeaning(),
-                word.getHint(),
-                word.getDifficulty(),
-                word.getCreatedAt(),
-                word.getUpdatedAt()
-        );
-    }
+        // 요청받은 단어들 처리
+        for (WordRequest wordRequest : request.words()) {
+            if (wordRequest.id() != null && existingWords.containsKey(wordRequest.id())) {
+                // 기존 단어 업데이트
+                EnglishWord existingWord = existingWords.get(wordRequest.id());
+                existingWord.update(
+                        wordRequest.vocabulary(),
+                        wordRequest.meaning(),
+                        wordRequest.hint(),
+                        wordRequest.difficulty()
+                );
+                updatedWords.add(existingWord);
+            } else {
+                // 새 단어 추가
+                EnglishWord newWord = EnglishWord.builder()
+                        .vocabulary(wordRequest.vocabulary())
+                        .meaning(wordRequest.meaning())
+                        .hint(wordRequest.hint())
+                        .difficulty(wordRequest.difficulty())
+                        .build();
+                wordBook.addWord(newWord);
+                updatedWords.add(newWord);
+            }
+        }
 
-    // 또는 보안을 위해 특정 필드를 제외하고 싶다면:
-    private WordResponse convertToWordDTOWithoutAnswer(EnglishWord word) {
-        return new WordResponse(
-                word.getId(),
-                word.getVocabulary(),
-                null,  // 정답은 숨김
-                null,  // 힌트도 숨김
-                word.getDifficulty(),
-                word.getCreatedAt(),
-                word.getUpdatedAt()
-        );
+        // 단어장의 단어 목록 갱신
+        wordBook.getWords().clear();
+        wordBook.getWords().addAll(updatedWords);
+
+        return wordBookRepository.save(wordBook);
     }
 
 }

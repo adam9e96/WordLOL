@@ -15,12 +15,8 @@ public interface EnglishWordRepository extends JpaRepository<EnglishWord, Long> 
 
     Page<EnglishWord> findByWordBookId(Long wordBookId, Pageable pageable);
 
+    List<EnglishWord> findByWordBookCategory(Category category);
 
-    List<EnglishWord> findByWordBook_Category(Category category);
-
-
-    // 특정 단어장에서 랜덤 단어 조회
-//    @Query(value = "SELECT * FROM english_word WHERE word_book_id = :wordBookId ORDER BY RAND() LIMIT 1", nativeQuery = true)
-//    Optional<EnglishWord> findRandomWordByWordBookId(@Param("wordBookId") Long wordBookId);
+    List<EnglishWord> findByWordBookId(Long wordBookId);
 
 }
