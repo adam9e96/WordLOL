@@ -191,7 +191,7 @@ public class WordRestController {
 
     /**
      * 단어 목록을 페이징하여 가져옵니다.
-     * URL에서 `?page=1&size=50` 같은 형식으로 요청을 받음
+     * URL 에서 `?page=1&size=50` 같은 형식으로 요청을 받음
      * 파라미터가 없으면 기본값: 0페이지, 100개씩 조회
      *
      * @param page 페이지 번호
