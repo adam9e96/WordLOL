@@ -1,3 +1,11 @@
 body {
     font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
 }
+
+:root {
+    --header-height: 75px; /* 실제 헤더 높이에 맞게 조정 */
+}
+
+.navbar {
+    height: var(--header-height);
+}
