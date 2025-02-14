@@ -58,4 +58,10 @@ public class WordViewController {
         model.addAttribute("wordBookId", id);
         return "wordbook-edit";
     }
+
+    @GetMapping("/study/{wordBookId}")
+    public String showWordBookStudy(@PathVariable("wordBookId") Long wordBookId, Model model) {
+        model.addAttribute("wordBookId", wordBookId);
+        return "wordbook-study";
+    }
 }

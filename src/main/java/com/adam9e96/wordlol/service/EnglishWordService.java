@@ -67,7 +67,12 @@ public class EnglishWordService {
      * 단어를 삭제합니다.
      */
     public void deleteWord(Long id) {
-        englishWordRepository.deleteById(id);
+        try {
+            wordMapper.deleteById(id);
+        } catch (Exception e) {
+            log.error("단어 삭제 중 오류가 발생했습니다. ID: {}", id, e);
+            throw new IllegalStateException("단어 삭제 중 오류가 발생했습니다", e);
+        }
     }
 
     /**
@@ -80,8 +85,8 @@ public class EnglishWordService {
         try {
             return englishWordRepository.findAll(pageable);
         } catch (Exception e) {
-            log.error("Failed to fetch words with paging", e);
-            throw new RuntimeException("Failed to fetch words", e);
+            log.error("페이징된 단어 목록 조회 중 실패했습니다", e);
+            throw new IllegalStateException("단어 목록 조회 중 오류가 발생했습니다", e);
         }
     }
 

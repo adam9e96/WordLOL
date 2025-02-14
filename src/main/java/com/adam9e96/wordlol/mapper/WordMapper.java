@@ -33,4 +33,11 @@ public interface WordMapper {
 
     List<EnglishWord> findByWordBookId(Long wordBookId);
 
+    /**
+     * ID에 해당하는 영어 단어를 삭제합니다.
+     */
+    void deleteById(Long id);
+
+    List<EnglishWord> findAllByWordBookId(Long wordBookId);
+
 }

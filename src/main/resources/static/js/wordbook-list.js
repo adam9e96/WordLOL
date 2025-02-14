@@ -32,7 +32,7 @@ async function loadWordBooks() {
                             <small class="text-muted">단어 수: ${book.wordCount}</small>
                             <div class="btn-group">
                                 <button class="btn btn-sm btn-outline-primary"
-                                        onclick="location.href='/word/wordbook/study/${book.id}'">
+                                        onclick="location.href='/word/study/${book.id}'">
                                     <i class="bi bi-play-fill"></i> 학습
                                 </button>
                                 <button class="btn btn-sm btn-outline-secondary"

@@ -2,6 +2,7 @@ package com.adam9e96.wordlol.controller;
 
 import com.adam9e96.wordlol.dto.WordBookRequest;
 import com.adam9e96.wordlol.dto.WordBookResponse;
+import com.adam9e96.wordlol.dto.WordBookStudyResponse;
 import com.adam9e96.wordlol.dto.WordResponse;
 import com.adam9e96.wordlol.entity.Category;
 import com.adam9e96.wordlol.entity.EnglishWord;
@@ -132,6 +133,26 @@ public class WordBookRestController {
                 word.getDifficulty(),
                 word.getCreatedAt(),
                 word.getUpdatedAt()
+        );
+    }
+
+    @GetMapping("/study/{wordBookId}")
+    public ResponseEntity<List<WordBookStudyResponse>> getStudyByWordBookId(@PathVariable("wordBookId") Long wordBookId) {
+        List<EnglishWord> words = wordBookService.findAllByWordBookId(wordBookId);
+        return ResponseEntity.ok().body(
+                words.stream()
+                        .map(this::toStudyResponse)
+                        .toList());
+
+    }
+
+    private WordBookStudyResponse toStudyResponse(EnglishWord word) {
+        return new WordBookStudyResponse(
+                word.getId(),
+                word.getVocabulary(),
+                word.getMeaning(),
+                word.getHint(),
+                word.getDifficulty()
         );
     }
 

@@ -138,4 +138,8 @@ public class WordBookService {
         return wordBookRepository.save(wordBook);
     }
 
+    public List<EnglishWord> findAllByWordBookId(Long wordBookId) {
+        return wordMapper.findAllByWordBookId(wordBookId);
+    }
+
 }

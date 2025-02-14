@@ -24,3 +24,6 @@ GET http://localhost:8080/word/register-all
 
 ### GET 단어장 수정 페이지 반환
 GET http://localhost:8080/word/wordbook/edit/1
+
+###
+GET http://localhost:8080/word/study/5

@@ -21,6 +21,12 @@
             <id property="id" column="word_book_id"/>
         </association>
     </resultMap>
+    <!-- id에 해당되는 엔티티 삭제 -->
+    <delete id="deleteById">
+        DELETE
+        FROM english_word
+        WHERE id = #{id}
+    </delete>
 
     <!-- ID로 EnglishWord 조회 쿼리 -->
     <select id="findById" parameterType="long" resultMap="EnglishWordResultMap">
@@ -65,7 +71,7 @@
                meaning,
                hint,
                difficulty,
-               null as created_at,
+               created_at,
                null as updated_at
         FROM english_word
         ORDER BY id DESC
@@ -78,6 +84,17 @@
     <select id="findByWordBookId" resultMap="EnglishWordResultMap">
         SELECT *
         FROM english_word
+        WHERE word_book_id = #{wordBookId}
+    </select>
+    <select id="findAllByWordBookId" resultMap="EnglishWordResultMap">
+        SELECT e.id,
+               e.vocabulary,
+               e.meaning,
+               e.hint,
+               e.difficulty,
+               e.created_at,
+               e.updated_at
+        FROM english_word e
         WHERE word_book_id = #{wordBookId}
     </select>
 

@@ -2,6 +2,10 @@ package com.adam9e96.wordlol.entity;
 
 import lombok.Getter;
 
+/**
+ * 단어의 카테고리를 나타내는 Enum
+ * TOEIC, TOEFL, CSAT, CUSTOM
+ */
 @Getter
 public enum Category {
     TOEIC("토익"),

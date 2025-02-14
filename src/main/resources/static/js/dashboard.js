@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 <td>${word.vocabulary}</td>
                 <td>${word.meaning}</td>
                 <td>${word.hint || '-'}</td>
-            </tr>
+                <td>${word.createAt || ''}</td>
+        </tr>
         `).join('');
 
     } catch (error) {

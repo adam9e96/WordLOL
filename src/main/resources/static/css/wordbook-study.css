@@ -1,0 +1,44 @@
+.btn-prev {
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+}
+
+.btn-next {
+    background: linear-gradient(45deg, #11998e, #38ef7d);
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.form-switch .form-check-input {
+    width: 2.5em;
+    margin-left: 0.5em;
+}
+
+.form-check-label {
+    font-weight: 500;
+    color: #0d6efd;
+}
+
+.study-card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.hidden {
+    display: none;
+}
+
+.answer {
+    font-size: 1.5rem;
+    color: #28a745;
+}
+
+#hint {
+    font-style: italic;
+}
+
+#vocabulary {
+    font-size: 2.5rem;
+    color: #0d6efd;
+}

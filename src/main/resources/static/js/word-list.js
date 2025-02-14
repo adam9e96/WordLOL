@@ -184,10 +184,12 @@ window.deleteWord = async function (id) {
             method: 'DELETE'
         });
 
-        if (!response.ok) throw new Error('단어 삭제에 실패했습니다.');
-
+        if (!response.ok) {
+            throw new Error('단어 삭제에 실패했습니다.');
+        }
         // 현재 페이지 다시 로드
-        loadWords(currentPage);
+        showToast('단어가 삭제되었습니다.', true);
+        await loadWords(currentPage);
     } catch (error) {
         console.error('Error:', error);
         showError('단어 삭제에 실패했습니다.');
@@ -235,3 +237,15 @@ document.getElementById('saveEdit')?.addEventListener('click', async function ()
         showError('단어 수정에 실패했습니다.');
     }
 });
+
+// 토스트 메시지 표시 함수 추가
+function showToast(message, isSuccess = true) {
+    const toast = document.getElementById('toast');
+    const toastBody = toast.querySelector('.toast-body');
+
+    toast.className = `toast align-items-center text-white bg-${isSuccess ? 'success' : 'danger'}`;
+    toastBody.textContent = message;
+
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+}
