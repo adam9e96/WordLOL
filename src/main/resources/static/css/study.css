@@ -164,3 +164,55 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
+
+/*
+speak 관련
+*/
+.vocabulary-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-speak {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-speak:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.btn-speak:active {
+    transform: scale(0.9);
+}
+
+.speaking-animation {
+    animation: pulse 1s infinite;
+}
+
+.hide {
+    animation: none;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

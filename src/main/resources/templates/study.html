@@ -30,9 +30,14 @@
         <div class="word-display">
             <div class="card" id="card">
                 <div class="card-face card-front">
-                    <p id="vocabulary">
-                        <i class="bi bi-hourglass-split me-2"></i>로딩중...
-                    </p>
+                    <div class="vocabulary-container">
+                        <p id="vocabulary">
+                            <i class="bi bi-hourglass-split me-2"></i>로딩중...
+                        </p>
+                        <button class="btn-speak speaking-animation hide" onclick="speakWord()" title="발음 듣기">
+                            <i class="bi bi-volume-up"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="card-face card-back">
                     <p id="meaning"></p>
