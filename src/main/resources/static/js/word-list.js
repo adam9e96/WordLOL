@@ -1,122 +1,274 @@
-// 전역 변수 선언
+/** @type {number} 현재 페이지 번호 */
 let currentPage = 0;
+
+/** @type {number} 페이지당 표시할 단어 수 */
 const pageSize = 20;
 
+/** @type {boolean} 작업 진행 중 플래그 */
+let isProcessing = false;
+
+// 초기화
 document.addEventListener('DOMContentLoaded', function () {
-    // URL에서 현재 페이지 파라미터 읽기
+    // URL 에서 현재 페이지 파라미터 읽기
     const urlParams = new URLSearchParams(window.location.search);
     const pageParam = urlParams.get('page');
-    currentPage = pageParam ? parseInt(pageParam) : 0;
-    console.log(currentPage);
+    // URL의 페이지 번호는 1-based이므로 0-based로 변환
+    currentPage = pageParam ? Math.max(0, parseInt(pageParam) - 1) : 0;
 
-    // 초기 로드
-    loadWords(currentPage).then(() => console.log("단어 로딩"));
+
+    // 초기 데이터 로드
+    loadWords(currentPage).then(() => console.log('단어 목록 로드 완료'));
+    // 이벤트 리스너 설정 - 한 번만 실행
+    setupInitialEventListeners();
 });
 
-// 전역 함수로 선언하여 onclick에서 접근 가능하도록 함
-window.loadWords = async function (page) {
+// 초기 이벤트 리스너 설정 (한 번만 실행되어야 하는 것들)
+function setupInitialEventListeners() {
+    // 페이지네이션 클릭 이벤트
+    document.getElementById('pagination').addEventListener('click', handlePaginationClick);
+
+    // 테이블 클릭 이벤트 (수정/삭제 버튼)
+    document.getElementById('wordList').addEventListener('click', handleTableClick);
+
+    // 수정 저장 버튼 이벤트
+    document.getElementById('saveEdit')?.addEventListener('click', handleEditSave);
+
+    // 브라우저 네비게이션 이벤트
+    window.addEventListener('popstate', handlePopState);
+}
+
+// 페이지네이션 클릭 핸들러
+function handlePaginationClick(e) {
+    const button = e.target.closest('button');
+    if (!button?.dataset.page) return;
+
+    e.preventDefault();
+    const page = parseInt(button.dataset.page);
+    if (!isNaN(page)) {
+        loadWords(page);
+    }
+}
+
+// 테이블 클릭 핸들러
+async function handleTableClick(e) {
+    if (isProcessing) return;
+
+    const button = e.target.closest('button');
+    if (!button) return;
+
+    const id = button.dataset.id;
+    if (!id) return;
+
+    try {
+        isProcessing = true;
+
+        if (button.classList.contains('edit-btn')) {
+            await editWord(id);
+        } else if (button.classList.contains('delete-btn')) {
+            await deleteWord(id);
+        }
+    } finally {
+        isProcessing = false;
+    }
+}
+
+/**
+ * URL 상태 업데이트
+ * @param {number} page - 페이지 번호 (0-based)
+ */
+function updateUrl(page) {
+    const url = new URL(window.location);
+    // URL에는 사용자가 보는 페이지 번호(1-based)를 사용
+    url.searchParams.set('page', (page + 1).toString());
+    window.history.pushState({}, '', url);
+}
+
+/**
+ * 단어 목록 로드 및 표시
+ */
+async function loadWords(page) {
     try {
         // URL 업데이트
-        const url = new URL(window.location);
-        url.searchParams.set('page', page);
-        window.history.pushState({}, '', url);
+        updateUrl(page);  // URL 업데이트는 별도 함수로 분리
 
+        // API 호출은 0-based 페이지 번호 사용
         const response = await fetch(`/api/v1/words/list?page=${page}&size=${pageSize}`);
-        if (!response.ok) {
-            throw new Error('단어 목록을 불러오는데 실패했습니다.s');
-        }
+        if (!response.ok) throw new Error('단어 목록을 불러오는데 실패했습니다.');
 
         const data = await response.json();
-        currentPage = page; // 현재 페이지 업데이트
+        currentPage = page;
 
-        // 테이블 내용 업데이트
-        const wordList = document.getElementById('wordList');
-        wordList.innerHTML = data.content.map(word => `
-            <tr>
-                <td>${word.id}</td>
-                <td class="fw-medium">${word.vocabulary}</td>
-                <td>${word.meaning}</td>
-                <td>${word.hint || '-'}</td>
-                <td>${getDifficultyBadge(word.difficulty)}</td>
-                <td>${formatDateTime(word.createdAt)}</td>
-                <td>
-                    <button class="btn btn-action btn-outline-primary btn-sm me-1" onclick="editWord(${word.id})">
-                        <i class="bi bi-pencil-square"></i>
-                    </button>
-                    <button class="btn btn-action btn-outline-danger btn-sm" onclick="deleteWord(${word.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-
-        // 페이지네이션 업데이트
-        updatePagination(data);
+        updateWordList(data.content);
+        updatePagination(data.totalPages);
     } catch (error) {
         console.error('Error:', error);
         showError('단어 목록을 불러오는데 실패했습니다.');
     }
-};
-
-// 페이지네이션 UI 업데이트
-function updatePagination(pageData) {
-    const pagination = document.getElementById('pagination');
-    const totalPages = pageData.totalPages;
-
-    let paginationHtml = '';
-
-    // 첫 페이지로 이동
-    paginationHtml += `
-        <li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
-            <a class="page-link" href="javascript:void(0)" onclick="loadWords(0)">
-                <i class="bi bi-chevron-double-left"></i>
-            </a>
-        </li>
-    `;
-
-    // 이전 페이지로 이동
-    paginationHtml += `
-        <li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
-            <a class="page-link" href="javascript:void(0)" onclick="loadWords(${currentPage - 1})">
-                <i class="bi bi-chevron-left"></i>
-            </a>
-        </li>
-    `;
-
-    // 페이지 번호들
-    let startPage = Math.max(0, currentPage - 2);
-    let endPage = Math.min(totalPages - 1, currentPage + 2);
-
-    for (let i = startPage; i <= endPage; i++) {
-        paginationHtml += `
-            <li class="page-item ${currentPage === i ? 'active' : ''}">
-                <a class="page-link" href="javascript:void(0)" onclick="loadWords(${i})">${i + 1}</a>
-            </li>
-        `;
-    }
-
-    // 다음 페이지로 이동
-    paginationHtml += `
-        <li class="page-item ${currentPage >= totalPages - 1 ? 'disabled' : ''}">
-            <a class="page-link" href="javascript:void(0)" onclick="loadWords(${currentPage + 1})">
-                <i class="bi bi-chevron-right"></i>
-            </a>
-        </li>
-    `;
-
-    // 마지막 페이지로 이동
-    paginationHtml += `
-        <li class="page-item ${currentPage >= totalPages - 1 ? 'disabled' : ''}">
-            <a class="page-link" href="javascript:void(0)" onclick="loadWords(${totalPages - 1})">
-                <i class="bi bi-chevron-double-right"></i>
-            </a>
-        </li>
-    `;
-
-    pagination.innerHTML = paginationHtml;
 }
 
-// 난이도 뱃지 생성 함수
+/**
+ * 단어 목록 테이블 업데이트
+ */
+function updateWordList(words) {
+    const wordList = document.getElementById('wordList');
+    wordList.innerHTML = words.map(word => `
+        <tr>
+            <td>${word.id}</td>
+            <td class="fw-medium">${word.vocabulary}</td>
+            <td>${word.meaning}</td>
+            <td>${word.hint || '-'}</td>
+            <td>${getDifficultyBadge(word.difficulty)}</td>
+            <td>${formatDateTime(word.createdAt)}</td>
+            <td>
+                <button class="btn btn-action btn-outline-primary btn-sm me-1 edit-btn" data-id="${word.id}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-action btn-outline-danger btn-sm delete-btn" data-id="${word.id}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+/**
+ * 페이지네이션 UI 업데이트
+ */
+function updatePagination(totalPages) {
+    const pagination = document.getElementById('pagination');
+    const startPage = Math.max(0, currentPage - 2);
+    const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+    const buttons = [
+        {page: 0, icon: 'bi-chevron-double-left', disabled: currentPage === 0},
+        {page: currentPage - 1, icon: 'bi-chevron-left', disabled: currentPage === 0},
+        ...Array.from({length: endPage - startPage + 1}, (_, i) => ({
+            page: startPage + i,
+            text: startPage + i + 1,
+            active: startPage + i === currentPage
+        })),
+        {page: currentPage + 1, icon: 'bi-chevron-right', disabled: currentPage >= totalPages - 1},
+        {page: totalPages - 1, icon: 'bi-chevron-double-right', disabled: currentPage >= totalPages - 1}
+    ];
+
+    pagination.innerHTML = buttons.map(btn => {
+        if (btn.icon) {
+            return `
+                <li class="page-item ${btn.disabled ? 'disabled' : ''}">
+                    <button class="page-link" data-page="${btn.page}">
+                        <i class="bi ${btn.icon}"></i>
+                    </button>
+                </li>`;
+        }
+        return `
+            <li class="page-item ${btn.active ? 'active' : ''}">
+                <button class="page-link" data-page="${btn.page}">${btn.text}</button>
+            </li>`;
+    }).join('');
+}
+
+/**
+ * 단어 수정
+ */
+async function editWord(id) {
+    try {
+        const response = await fetch(`/api/v1/words/${id}`);
+        if (!response.ok) throw new Error('단어 정보를 불러오는데 실패했습니다.');
+
+        const word = await response.json();
+        showEditModal(word);
+    } catch (error) {
+        console.error('Error:', error);
+        showError('단어 정보를 불러오는데 실패했습니다.');
+    }
+}
+
+/**
+ * 단어 삭제
+ */
+async function deleteWord(id) {
+    if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) return;
+
+    try {
+        const response = await fetch(`/api/v1/words/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('단어 삭제에 실패했습니다.');
+
+        showToast('단어가 삭제되었습니다.', true);
+        await loadWords(currentPage);
+    } catch (error) {
+        console.error('Error:', error);
+        showError('단어 삭제에 실패했습니다.');
+    }
+}
+
+/**
+ * 수정 모달 표시
+ */
+function showEditModal(word) {
+    const modalEl = document.getElementById('editModal');
+
+    // 기존 모달 제거
+    const existingModal = bootstrap.Modal.getInstance(modalEl);
+    if (existingModal) {
+        existingModal.dispose();
+    }
+
+    // 모달 데이터 설정
+    document.getElementById('editId').value = word.id;
+    document.getElementById('editVocabulary').value = word.vocabulary;
+    document.getElementById('editMeaning').value = word.meaning;
+    document.getElementById('editHint').value = word.hint || '';
+    document.getElementById('editDifficulty').value = word.difficulty;
+
+    // 새 모달 생성 및 표시
+    const modal = new bootstrap.Modal(modalEl, {
+        backdrop: 'static',
+        keyboard: false
+    });
+    modal.show();
+}
+
+/**
+ * 수정 저장 처리
+ */
+async function handleEditSave() {
+    if (isProcessing) return;
+    isProcessing = true;
+
+    try {
+        const id = document.getElementById('editId').value;
+        const data = {
+            vocabulary: document.getElementById('editVocabulary').value,
+            meaning: document.getElementById('editMeaning').value,
+            hint: document.getElementById('editHint').value,
+            difficulty: parseInt(document.getElementById('editDifficulty').value)
+        };
+
+        const response = await fetch(`/api/v1/words/${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error('단어 수정에 실패했습니다.');
+
+        const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+        editModal.hide();
+
+        showToast('단어가 수정되었습니다.', true);
+        await loadWords(currentPage);
+    } catch (error) {
+        console.error('Error:', error);
+        showError('단어 수정에 실패했습니다.');
+    } finally {
+        isProcessing = false;
+    }
+}
+
+// 유틸리티 함수들
 function getDifficultyBadge(level) {
     const badges = {
         1: ['success', '매우 쉬움'],
@@ -129,7 +281,6 @@ function getDifficultyBadge(level) {
     return `<span class="badge bg-${colorClass}">${label}</span>`;
 }
 
-// 날짜 포맷팅 함수
 function formatDateTime(dateTimeStr) {
     if (!dateTimeStr) return '-';
     const date = new Date(dateTimeStr);
@@ -142,7 +293,6 @@ function formatDateTime(dateTimeStr) {
     });
 }
 
-// 에러 메시지 표시 함수
 function showError(message) {
     const alertDiv = document.createElement('div');
     alertDiv.className = 'alert alert-danger alert-dismissible fade show';
@@ -153,99 +303,33 @@ function showError(message) {
     document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.row'));
 }
 
-// 단어 수정 함수
-window.editWord = async function (id) {
-    try {
-        const response = await fetch(`/api/v1/words/${id}`);
-        if (!response.ok) throw new Error('단어 정보를 불러오는데 실패했습니다.');
-
-        const word = await response.json();
-
-        document.getElementById('editId').value = word.id;
-        document.getElementById('editVocabulary').value = word.vocabulary;
-        document.getElementById('editMeaning').value = word.meaning;
-        document.getElementById('editHint').value = word.hint || '';
-        document.getElementById('editDifficulty').value = word.difficulty;
-
-        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
-        editModal.show();
-    } catch (error) {
-        console.error('Error:', error);
-        showError('단어 정보를 불러오는데 실패했습니다.');
-    }
-};
-
-// 단어 삭제 함수
-window.deleteWord = async function (id) {
-    if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) return;
-
-    try {
-        const response = await fetch(`/api/v1/words/${id}`, {
-            method: 'DELETE'
-        });
-
-        if (!response.ok) {
-            throw new Error('단어 삭제에 실패했습니다.');
-        }
-        // 현재 페이지 다시 로드
-        showToast('단어가 삭제되었습니다.', true);
-        await loadWords(currentPage);
-    } catch (error) {
-        console.error('Error:', error);
-        showError('단어 삭제에 실패했습니다.');
-    }
-};
-
-// 브라우저 뒤로가기/앞으로가기 처리
-window.addEventListener('popstate', function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const pageParam = urlParams.get('page');
-    currentPage = pageParam ? parseInt(pageParam) : 0;
-    loadWords(currentPage);
-});
-
-// 수정 저장 버튼 이벤트 리스너
-//
-document.getElementById('saveEdit')?.addEventListener('click', async function () {
-    const id = document.getElementById('editId').value;
-    console.log('id버튼 눌림', id.value);
-    const data = {
-        vocabulary: document.getElementById('editVocabulary').value,
-        meaning: document.getElementById('editMeaning').value,
-        hint: document.getElementById('editHint').value,
-        difficulty: parseInt(document.getElementById('editDifficulty').value)
-    };
-
-    try {
-        const response = await fetch(`/api/v1/words/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) throw new Error('단어 수정에 실패했습니다.');
-
-        const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
-        editModal.hide();
-
-        // 현재 페이지 다시 로드
-        loadWords(currentPage);
-    } catch (error) {
-        console.error('Error:', error);
-        showError('단어 수정에 실패했습니다.');
-    }
-});
-
-// 토스트 메시지 표시 함수 추가
 function showToast(message, isSuccess = true) {
     const toast = document.getElementById('toast');
     const toastBody = toast.querySelector('.toast-body');
 
+    // 기존 토스트 제거
+    const existingToast = bootstrap.Toast.getInstance(toast);
+    if (existingToast) {
+        existingToast.dispose();
+    }
+
     toast.className = `toast align-items-center text-white bg-${isSuccess ? 'success' : 'danger'}`;
     toastBody.textContent = message;
 
-    const bsToast = new bootstrap.Toast(toast);
+    const bsToast = new bootstrap.Toast(toast, {
+        delay: 2000,
+        autohide: true
+    });
     bsToast.show();
+}
+
+/**
+ * 브라우저 히스토리 이벤트 핸들러
+ */
+function handlePopState() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageParam = urlParams.get('page');
+    // URL 의 페이지 번호는 1-based 이므로 0-based 로 변환
+    currentPage = pageParam ? Math.max(0, parseInt(pageParam) - 1) : 0;
+    loadWords(currentPage);
 }

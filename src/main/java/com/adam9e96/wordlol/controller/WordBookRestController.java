@@ -7,7 +7,6 @@ import com.adam9e96.wordlol.dto.WordResponse;
 import com.adam9e96.wordlol.entity.Category;
 import com.adam9e96.wordlol.entity.EnglishWord;
 import com.adam9e96.wordlol.entity.WordBook;
-import com.adam9e96.wordlol.service.EnglishWordService;
 import com.adam9e96.wordlol.service.WordBookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WordBookRestController {
     private final WordBookService wordBookService;
-    private final EnglishWordService englishWordService;
 
 
     @PostMapping("/create")

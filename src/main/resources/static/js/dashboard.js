@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 <td>${word.vocabulary}</td>
                 <td>${word.meaning}</td>
                 <td>${word.hint || '-'}</td>
-                <td>${word.createAt || ''}</td>
+                <td>${formatDateTime(word.createdAt)}</td>
         </tr>
         `).join('');
 
@@ -25,4 +25,19 @@ document.addEventListener('DOMContentLoaded', async function () {
         // 에러 메시지 표시
         alert('데이터를 불러오는 중 오류가 발생했습니다.');
     }
+
+
 });
+
+// 날짜 포맷팅 함수
+function formatDateTime(dateTimeStr) {
+    if (!dateTimeStr) return '-';
+    const date = new Date(dateTimeStr);
+    return date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}

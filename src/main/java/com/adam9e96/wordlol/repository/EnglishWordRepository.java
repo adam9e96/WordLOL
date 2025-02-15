@@ -17,6 +17,4 @@ public interface EnglishWordRepository extends JpaRepository<EnglishWord, Long> 
 
     List<EnglishWord> findByWordBookCategory(Category category);
 
-    List<EnglishWord> findByWordBookId(Long wordBookId);
-
 }

@@ -5,6 +5,7 @@ import com.adam9e96.wordlol.dto.WordRequest;
 import com.adam9e96.wordlol.entity.Category;
 import com.adam9e96.wordlol.entity.EnglishWord;
 import com.adam9e96.wordlol.entity.WordBook;
+import com.adam9e96.wordlol.mapper.WordBookMapper;
 import com.adam9e96.wordlol.mapper.WordMapper;
 import com.adam9e96.wordlol.repository.EnglishWordRepository;
 import com.adam9e96.wordlol.repository.WordBookRepository;
@@ -25,9 +26,9 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @RequiredArgsConstructor
 public class WordBookService {
     private final WordBookRepository wordBookRepository;
-    private final EnglishWordService englishWordService;
     private final EnglishWordRepository englishWordRepository;
     private final WordMapper wordMapper;
+    private final WordBookMapper wordBookMapper;
 
     @Transactional
     public WordBook createWordBook(WordBookRequest request) {
@@ -55,7 +56,7 @@ public class WordBookService {
 
     // 카테고리별 단어장 목록 조회
     public List<WordBook> findWordBooksByCategory(Category category) {
-        return wordBookRepository.findByCategory(category);
+        return wordBookMapper.findByCategory(category);
     }
 
     public List<WordBook> findAllWordBooks() {
@@ -70,7 +71,6 @@ public class WordBookService {
     public List<EnglishWord> getWordsByCategory(Category category) {
         return englishWordRepository.findByWordBookCategory(category);
     }
-    // ================================ //
 
     @Transactional
     public void deleteWordBook(Long wordBookId) {

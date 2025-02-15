@@ -27,7 +27,7 @@ public class EnglishWordService {
     /**
      * READ
      * ID로 단어 조회
-     * study.js
+     * .js
      */
     public Optional<EnglishWord> findById(Long id) {
         return wordMapper.findById(id);

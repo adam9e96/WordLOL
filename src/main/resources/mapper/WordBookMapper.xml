@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WordBookMapper 인터페이스와 매핑되는 XML 파일 -->
+<mapper namespace="com.adam9e96.wordlol.mapper.WordBookMapper">
+    <!--
+        resultMap: 결과를 매핑할 때 사용할 resultMap을 지정
+        id: resultMap의 고유한 식별자
+        type: resultMap이 매핑할 객체의 클래스
+        property: resultMap이 매핑할 객체의 필드
+        column: 쿼리 결과의 컬럼명
+    -->
+    <resultMap id="WordBookResultMap" type="com.adam9e96.wordlol.entity.WordBook">
+        <!-- 단어장 기본 정보 매핑 -->
+        <id property="id" column="id"/> <!-- id 필드를 id 컬럼과 매핑 -->
+        <result property="name" column="name"/> <!-- name 필드를 name 컬럼과 매핑 -->
+        <result property="description" column="description"/> <!-- description 필드를 description 컬럼과 매핑 -->
+        <result property="category" column="category"/> <!-- category 필드를 category 컬럼과 매핑 -->
+        <result property="createdAt" column="created_at"/> <!-- createdAt 필드를 created_at 컬럼과 매핑 -->
+        <result property="updatedAt" column="updated_at"/> <!-- updatedAt 필드를 updated_at 컬럼과 매핑 -->
+
+        <!--
+        단어 정보 매핑 (단어장과 단어는 1:N 관계)
+        - collection: 1:N 관계를 표현
+        - property: wordBook 엔티티의 words 필드와 매핑
+        - ofType: 컬렉션의 요소 타입 (EnglishWord)
+        -->
+        <collection property="words" ofType="com.adam9e96.wordlol.entity.EnglishWord">
+            <id property="id" column="word_id"/> <!-- id 필드를 word_id 컬럼과 매핑 -->
+            <result property="vocabulary" column="vocabulary"/> <!-- vocabulary 필드를 vocabulary 컬럼과 매핑 -->
+            <result property="meaning" column="meaning"/> <!-- meaning 필드를 meaning 컬럼과 매핑 -->
+            <result property="hint" column="hint"/> <!-- hint 필드를 hint 컬럼과 매핑 -->
+            <result property="difficulty" column="difficulty"/> <!-- difficulty 필드를 difficulty 컬럼과 매핑 -->
+            <result property="createdAt" column="word_created_at"/> <!-- createdAt 필드를 word_created_at 컬럼과 매핑 -->
+            <result property="updatedAt" column="word_updated_at"/> <!-- updatedAt 필드를 word_updated_at 컬럼과 매핑 -->
+        </collection>
+    </resultMap>
+
+    <!--
+    카테고리별 단어장 조회 쿼리
+    - resultMap: 위에서 정의한 WordBookResultMap을 사용하여 결과 매핑
+    - LEFT JOIN: 단어가 없는 단어장도 조회하기 위해 사용
+    -->
+    <select id="findByCategory" resultMap="WordBookResultMap">
+        SELECT
+            /* 단어장 정보 */
+            wb.id, /* 단어장 ID */
+            wb.name, /* 단어장 이름 */
+            wb.description, /* 단어장 설명 */
+            wb.category, /* 카테고리 */
+            wb.created_at, /* 단어장 생성일시 */
+            wb.updated_at, /* 단어장 수정일시 */
+
+            /* 단어 정보 */
+            ew.id         as word_id, /* 단어 ID (별칭 사용으로 단어장 ID와 구분) */
+            ew.vocabulary, /* 영단어 */
+            ew.meaning, /* 의미 */
+            ew.hint, /* 힌트 */
+            ew.difficulty, /* 난이도 */
+            ew.created_at as word_created_at, /* 단어 생성일시 */
+            ew.updated_at as word_updated_at /* 단어 수정일시 */
+        FROM word_book wb
+                 LEFT JOIN english_word ew ON wb.id = ew.word_book_id /* 단어장-단어 테이블 조인 */
+        WHERE wb.category = #{category} /* 입력받은 카테고리로 필터링 */
+    </select>
+</mapper>
