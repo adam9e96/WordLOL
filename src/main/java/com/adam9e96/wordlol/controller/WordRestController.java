@@ -2,6 +2,9 @@ package com.adam9e96.wordlol.controller;
 
 import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.EnglishWord;
+import com.adam9e96.wordlol.exception.validation.ValidationException;
+import com.adam9e96.wordlol.exception.word.WordNotFoundException;
+import com.adam9e96.wordlol.exception.word.WordUpdateException;
 import com.adam9e96.wordlol.service.EnglishWordService;
 import com.adam9e96.wordlol.service.StudyProgressService;
 import jakarta.validation.Valid;
@@ -10,12 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,16 +35,10 @@ public class WordRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<WordResponse> getWord(@PathVariable("id") Long id) {
-        Optional<EnglishWord> wordOptional = englishWordService.findById(id);
-
-        if (wordOptional.isEmpty()) {
-            log.warn("단어를 찾을 수 없습니다. id: {}", id);
-            return ResponseEntity.notFound().build();
-        }
-
-        WordResponse response = toResponse(wordOptional.get());
+        WordResponse response = toResponse(englishWordService.findById(id));
         return ResponseEntity.ok(response);
     }
+
 
     private WordResponse toResponse(EnglishWord word) {
         return new WordResponse(
@@ -77,21 +71,27 @@ public class WordRestController {
      * 단어 수정
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @RequestBody WordRequest request) {
-        Optional<EnglishWord> updateWord = englishWordService.updateWord(
-                id,
-                request.vocabulary(),
-                request.meaning(),
-                request.hint(),
-                request.difficulty()
-        );
-
-        if (updateWord.isEmpty()) {
-            log.warn("수정할 단어를 찾을 수 없습니다. id: {}", id);
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @Valid @RequestBody WordRequest request) {
+        try {
+            englishWordService.updateWord(
+                    id,
+                    request.vocabulary(),
+                    request.meaning(),
+                    request.hint(),
+                    request.difficulty()
+            );
+            return ResponseEntity.ok().build();
+        } catch (WordNotFoundException e) {
+            // 단어를 찾을 수 없는 경우
+            throw e;
+        } catch (ValidationException ve) {
+            // 유효성 검사 실패
+            throw ve;
+        } catch (Exception e) {
+            // 그 외 다른 문제가 발생한 경우
+            log.error("단어 수정 중 오류 발생", e);
+            throw new WordUpdateException(id);
         }
-        return ResponseEntity.ok().build();
-
     }
 
 
@@ -134,14 +134,12 @@ public class WordRestController {
      */
     @GetMapping("/{id}/hint")
     public ResponseEntity<Map<String, String>> getHint(@PathVariable("id") Long id) {
-        Optional<EnglishWord> word = englishWordService.findById(id);
+//        Optional<EnglishWord> word = englishWordService.findById(id);
 
-        if (word.isEmpty()) {
-            log.warn("힌트를 찾을 수 없습니다. id: {}", id);
-            return ResponseEntity.notFound().build();
-        }
+        EnglishWord word = englishWordService.findById(id);
 
-        return ResponseEntity.ok().body(Map.of("hint", word.get().getHint()));
+
+        return ResponseEntity.ok().body(Map.of("hint", word.getHint()));
     }
 
     /**
@@ -233,25 +231,7 @@ public class WordRestController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> registerWord(
-            @Valid @RequestBody WordRequest request, BindingResult bindingResult) {
-
-        // 유효성 검사 실패 시
-        if (bindingResult.hasErrors()) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("timestamp", LocalDateTime.now());
-            errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
-            errorResponse.put("message", "입력 검증 실패");
-
-            List<String> errors = bindingResult.getFieldErrors()
-                    .stream()
-                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                    .toList();
-            errorResponse.put("errors", errors);
-
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
-        // 유효성 검사 통과시
+    public ResponseEntity<Map<String, Object>> registerWord(@Valid @RequestBody WordRequest request) {
         englishWordService.createWord(
                 request.vocabulary(),
                 request.meaning(),

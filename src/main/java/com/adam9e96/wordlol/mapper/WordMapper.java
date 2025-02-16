@@ -8,6 +8,8 @@ import java.util.Optional;
 
 @Mapper
 public interface WordMapper {
+
+    void save(EnglishWord englishWord);
     /**
      * 주어진 ID에 해당하는 영어 단어를 조회합니다.
      */

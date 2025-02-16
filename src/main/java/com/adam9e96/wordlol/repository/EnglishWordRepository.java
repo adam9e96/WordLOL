@@ -13,4 +13,6 @@ public interface EnglishWordRepository extends JpaRepository<EnglishWord, Long> 
 
     List<EnglishWord> findByWordBookCategory(Category category);
 
+    boolean existsByVocabularyIgnoreCase(String vocabulary);
+
 }

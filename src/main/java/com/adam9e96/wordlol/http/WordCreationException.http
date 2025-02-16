@@ -1,0 +1,43 @@
+### 1. 필수 필드 누락 테스트 (400 에러)
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "",
+  "meaning": "",
+  "difficulty": 2,
+  "hint": "test"
+}
+
+### 2. 잘못된 난이도 값 테스트 (400 에러)
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "test",
+  "meaning": "테스트",
+  "difficulty": 10,
+  "hint": "test"
+}
+
+### 3. 잘못된 영단어 패턴 테스트 (400 에러)
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "테스트123",
+  "meaning": "test",
+  "difficulty": 3,
+  "hint": "test"
+}
+
+### 4. 정상 요청 테스트 (200 성공)
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "test",
+  "meaning": "테스트",
+  "difficulty": 3,
+  "hint": "test hint"
+}

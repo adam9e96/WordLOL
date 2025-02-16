@@ -21,6 +21,27 @@
             <id property="id" column="word_book_id"/>
         </association>
     </resultMap>
+
+    <!-- 단어를 추가하는 INSERT 문 -->
+    <insert id="save"
+            parameterType="com.adam9e96.wordlol.entity.EnglishWord"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO english_word (vocabulary,
+                                  meaning,
+                                  hint,
+                                  difficulty,
+                                  created_at,
+                                  updated_at)
+        VALUES (#{vocabulary},
+                #{meaning},
+                #{hint},
+                #{difficulty},
+                NOW(),
+                NOW())
+    </insert>
+
+
     <!-- id에 해당되는 엔티티 삭제 -->
     <delete id="deleteById">
         DELETE

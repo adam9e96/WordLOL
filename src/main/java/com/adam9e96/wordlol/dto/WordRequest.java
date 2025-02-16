@@ -18,6 +18,7 @@ public record WordRequest(
 
         @Min(value = 1, message = "난이도는 1 이상이어야 합니다")
         @Max(value = 5, message = "난이도는 5 이하이어야 합니다")
+        @NotNull(message = "난이도는 필수 입력값입니다")
         Integer difficulty
 ) {
 }

@@ -1,0 +1,69 @@
+### 3. 단어 수정 시 유효하지 않은 데이터 (400 에러)
+PUT http://localhost:8080/api/v1/words/30
+Content-Type: application/json
+
+{
+  "vocabulary": "",
+  "meaning": "",
+  "difficulty": 10,
+  "hint": "해변1"
+}
+
+### 4. 존재하지 않는 단어 삭제 (404 에러)
+DELETE http://localhost:8080/api/v1/words/99999
+
+
+
+### 6. 정답 확인 시 잘못된 wordId (404 에러)
+### checkAnswer() 메소드에서 wordId에 해당하는 단어가 없을 때 발생하는 예외
+POST http://localhost:8080/api/v1/words/check
+Content-Type: application/json
+
+{
+  "wordId": 99999,
+  "answer": "test"
+}
+
+### 7. 정답 확인 시 빈 답안 (400 에러)
+POST http://localhost:8080/api/v1/words/check
+Content-Type: application/json
+
+{
+  "wordId": 40,
+  "answer": ""
+}
+
+### 8. 단어 등록 시 유효하지 않은 데이터 (400 에러)
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "",
+  "meaning": "",
+  "difficulty": 10,
+  "hint": "test"
+}
+
+### 9. 단어 다중 등록 시 유효하지 않은 데이터 (400 에러)
+POST http://localhost:8080/api/v1/words/book
+Content-Type: application/json
+
+[
+  {
+    "vocabulary": "",
+    "meaning": "",
+    "hint": "test",
+    "difficulty": 10
+  },
+  {
+    "vocabulary": "banana",
+    "meaning": "",
+    "hint": "yellow",
+    "difficulty": -1
+  }
+]
+
+### 10. 페이지네이션 잘못된 파라미터 (400 에러)
+GET http://localhost:8080/api/v1/words/list?page=-1&size=0
+
+

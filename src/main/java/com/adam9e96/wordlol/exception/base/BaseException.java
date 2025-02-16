@@ -13,9 +13,9 @@ import org.springframework.http.HttpStatus;
  */
 @Getter
 public class BaseException extends RuntimeException {
-    private final HttpStatus status;
-    private final String message;
-    private final String code;
+    private final HttpStatus status;     // HTTP 상태 코드 (예: 404, 500 등)
+    private final String message;        // 에러 메시지
+    private final String code;           // 에러 코드 (예: "WORD-404")
 
     protected BaseException(HttpStatus status, String message, String code) {
         super(message);

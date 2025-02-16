@@ -1,8 +1,9 @@
 ### GET 단어 1개 조회(READ)
-GET http://localhost:8080/api/v1/words/30
+### getWord() 메소드에서 wordId에 해당하는 단어 조회
+GET http://localhost:8080/api/v1/words/40
 
 ### PUT 단어 수정(UPDATE)
-PUT http://localhost:8080/api/v1/words/30
+PUT http://localhost:8080/api/v1/words/40
 Content-Type: application/json
 
 {
@@ -21,7 +22,8 @@ DELETE http://localhost:8080/api/v1/words/110
 
 
 ### 단어 힌트 조회
-GET http://localhost:8080/api/v1/words/28/hint
+### getHint() 메소드에서 wordId에 해당하는 단어의 힌트 조회
+GET http://localhost:8080/api/v1/words/40/hint
 
 ### POST 정답 확인
 POST http://localhost:8080/api/v1/words/check
