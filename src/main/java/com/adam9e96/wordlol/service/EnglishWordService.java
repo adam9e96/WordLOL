@@ -3,6 +3,7 @@ package com.adam9e96.wordlol.service;
 import com.adam9e96.wordlol.entity.EnglishWord;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
+import com.adam9e96.wordlol.exception.word.WordDeletionException;
 import com.adam9e96.wordlol.exception.word.WordNotFoundException;
 import com.adam9e96.wordlol.exception.word.WordUpdateException;
 import com.adam9e96.wordlol.mapper.WordMapper;
@@ -36,11 +37,14 @@ public class EnglishWordService {
 
     public void createWord(String vocabulary, String meaning, String hint, Integer difficulty) {
         try {
-            // 입력값 검증
-            if (!StringUtils.hasText(vocabulary)) {
-                throw new ValidationException("단어를 입력해주세요.");
+            // 1. 입력값 검증
+            validateCreateWordInput(vocabulary, meaning, hint, difficulty);
+            // 2. 중복 단어 검사
+            if (isDuplicateWord(vocabulary)) {
+                throw new ValidationException("이미 존재하는 단어입니다: " + vocabulary);
             }
 
+            // 엔티티 생성
             EnglishWord englishWord = EnglishWord.builder()
                     .vocabulary(vocabulary)
                     .meaning(meaning)
@@ -48,10 +52,46 @@ public class EnglishWordService {
                     .difficulty(difficulty)
                     .build();
 
+            // DB에 저장
             wordMapper.save(englishWord);
+        } catch (ValidationException e) {
+            // 유효성 검사 실행
+            throw e;
         } catch (Exception e) {
             // DB 저장 실패 등의 문제 발생 시
+            log.error("단어 생성 중 오류가 발생: {}", e.getMessage(), e);
             throw new WordCreationException(0L);  // 신규 생성이므로 임시 ID 0 사용
+        }
+    }
+
+    private void validateCreateWordInput(String vocabulary, String meaning, String hint, Integer difficulty) {
+        // 1. 단어 검증
+        if (!StringUtils.hasText(vocabulary)) {
+            throw new ValidationException("단어를 입력해주세요.");
+        }
+        if (!vocabulary.matches("^[a-zA-Z\\s-]+$")) {
+            throw new ValidationException("영단어는 영문자, 공백, 하이픈만 포함할 수 있습니다.");
+        }
+        if (vocabulary.length() > 100) {
+            throw new ValidationException("단어는 100자를 초과할 수 없습니다.");
+        }
+
+        // 2. 의미 검증
+        if (!StringUtils.hasText(meaning)) {
+            throw new ValidationException("뜻을 입력해주세요.");
+        }
+        if (meaning.length() > 100) {
+            throw new ValidationException("뜻은 100자를 초과할 수 없습니다.");
+        }
+
+        // 3. 힌트 길이 검증 (선택 사항)
+        if (hint.length() > 100) {
+            throw new ValidationException("힌트는 100자를 초과할 수 없습니다.");
+        }
+
+        // 4. 난이도 검증
+        if (difficulty == null || difficulty < 1 || difficulty > 5) {
+            throw new ValidationException("난이도는 1에서 5 사이의 값이어야 합니다.");
         }
     }
 
@@ -131,11 +171,18 @@ public class EnglishWordService {
      */
     public void deleteWord(Long id) {
         try {
+            // 단어 존재 여부 확인
+            if (!wordMapper.existsById(id)) {
+                throw new WordNotFoundException(id);
+            }
+            // 단어 삭제
             wordMapper.deleteById(id);
+        } catch (WordDeletionException e) {
+            log.error("단어 삭제 중 오류 발생: {}", e.getMessage(), e);
+            throw e;
         } catch (Exception e) {
-            log.error("단어 삭제 중 오류가 발생했습니다. ID: {}", id, e);
-            throw new IllegalStateException("단어 삭제 중 오류가 발생했습니다", e);
-
+            log.error("단어 삭제 중 오류 발생: {}", e.getMessage(), e);
+            throw new WordDeletionException(id);
         }
     }
 

@@ -118,5 +118,10 @@
         FROM english_word e
         WHERE word_book_id = #{wordBookId}
     </select>
+    <select id="existsById" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0
+        FROM english_word
+        WHERE id = #{id}
+    </select>
 
 </mapper>

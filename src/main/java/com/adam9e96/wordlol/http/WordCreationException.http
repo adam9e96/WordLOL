@@ -1,15 +1,28 @@
-### 1. 필수 필드 누락 테스트 (400 에러)
+### WordCreationException 관련 API 테스트
+### 1. 빈 단어로 생성 시도 (400 에러)
 POST http://localhost:8080/api/v1/words/register
 Content-Type: application/json
 
 {
   "vocabulary": "",
-  "meaning": "",
-  "difficulty": 2,
-  "hint": "test"
+  "meaning": "test",
+  "difficulty": 1,
+  "hint": "test hint"
 }
 
-### 2. 잘못된 난이도 값 테스트 (400 에러)
+### 2. 빈 의미로 생성 시도 (400 에러)
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "test",
+  "meaning": "",
+  "difficulty": 1,
+  "hint": "test hint"
+}
+
+
+### 3. 잘못된 난이도로 생성 시도 (400 에러)
 POST http://localhost:8080/api/v1/words/register
 Content-Type: application/json
 
@@ -17,27 +30,62 @@ Content-Type: application/json
   "vocabulary": "test",
   "meaning": "테스트",
   "difficulty": 10,
-  "hint": "test"
+  "hint": "test hint"
 }
 
-### 3. 잘못된 영단어 패턴 테스트 (400 에러)
+### 4. 특수문자가 포함된 단어로 생성 시도 (400 에러)
 POST http://localhost:8080/api/v1/words/register
 Content-Type: application/json
 
 {
-  "vocabulary": "테스트123",
-  "meaning": "test",
-  "difficulty": 3,
-  "hint": "test"
+  "vocabulary": "test!@#",
+  "meaning": "테스트",
+  "difficulty": 1,
+  "hint": "test hint"
 }
 
-### 4. 정상 요청 테스트 (200 성공)
+### 5. 100자 초과하는 단어로 생성 시도 (400 에러)
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "thisisaverylongwordthatexceedsonehundredcharacterstothisisaverylongwordthatexceedsonehundredcharacterstothisisaverylongwordthatexceedsonehundredcharactersto",
+  "meaning": "테스트",
+  "difficulty": 1,
+  "hint": "test hint"
+}
+
+### 6. 100자 초과하는 힌트로 생성 시도 (400 에러)
 POST http://localhost:8080/api/v1/words/register
 Content-Type: application/json
 
 {
   "vocabulary": "test",
   "meaning": "테스트",
-  "difficulty": 3,
+  "difficulty": 1,
+  "hint": "너무 긴 힌트를 입력해서 100자를 초과하는 경우입니다. 이 힌트는 길이 제한을 넘어설 것입니다. 이렇게 길게 작성하면 유효성 검증에서 제한될 것입니다.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}
+
+### 7. 중복된 단어로 생성 시도 (400 에러) #todo 중복 체크 로직 추가 필요
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "apple",
+  "meaning": "사과",
+  "difficulty": 1,
+  "hint": "이미 존재하는 단어"
+}
+
+### 8. 한글이 포함된 단어로 생성 시도 (400 에러)
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "test한글",
+  "meaning": "테스트",
+  "difficulty": 1,
   "hint": "test hint"
 }
+
+

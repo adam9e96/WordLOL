@@ -42,4 +42,6 @@ public interface WordMapper {
 
     List<EnglishWord> findAllByWordBookId(Long wordBookId);
 
+    boolean existsById(Long id);
+
 }

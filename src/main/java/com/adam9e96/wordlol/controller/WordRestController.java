@@ -134,8 +134,6 @@ public class WordRestController {
      */
     @GetMapping("/{id}/hint")
     public ResponseEntity<Map<String, String>> getHint(@PathVariable("id") Long id) {
-//        Optional<EnglishWord> word = englishWordService.findById(id);
-
         EnglishWord word = englishWordService.findById(id);
 
 

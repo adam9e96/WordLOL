@@ -4,6 +4,7 @@ import com.adam9e96.wordlol.dto.ErrorResponse;
 import com.adam9e96.wordlol.exception.base.BaseException;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
+import com.adam9e96.wordlol.exception.word.WordDeletionException;
 import com.adam9e96.wordlol.exception.word.WordNotFoundException;
 import com.adam9e96.wordlol.exception.word.WordUpdateException;
 import lombok.extern.slf4j.Slf4j;
@@ -137,4 +138,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(WordDeletionException.class)
+    public ResponseEntity<ErrorResponse> handleWordDeletion(WordDeletionException e) {
+        log.error("단어 삭제 중 오류 발생: {}", e.getMessage(), e);
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                e.getStatus().value(),
+                e.getMessage(),
+                List.of(e.getCode())
+        );
+
+        return ResponseEntity
+                .status(e.getStatus())
+                .body(response);
+    }
 }

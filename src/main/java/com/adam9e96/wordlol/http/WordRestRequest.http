@@ -17,8 +17,10 @@ Content-Type: application/json
 GET http://localhost:8080/api/v1/words/random
 
 
-### 단어 삭제
-DELETE http://localhost:8080/api/v1/words/110
+### 단어 삭제 (DELETE) START
+DELETE http://localhost:8080/api/v1/words/45
+
+### 단어 삭제 (DELETE) END
 
 
 ### 단어 힌트 조회
@@ -46,17 +48,31 @@ GET http://localhost:8080/api/v1/words/list
 ### 단어 목록 페이징 조회
 GET http://localhost:8080/api/v1/words/list?page=0&size=20
 
-
-### 단어 추가
+### WordCreate 관련 API 테스트 시작 START
+### 단어 추가 (CREATE) 200 OK
 POST http://localhost:8080/api/v1/words/register
 Content-Type: application/json
 
 {
-  "vocabulary": "test",
-  "meaning": "test2meaning",
-  "difficulty": 2,
+  "vocabulary": "testA",
+  "meaning": "test",
+  "difficulty": 1,
   "hint": "testhint1"
 }
+
+
+### 빈 힌트로 생성 (200 성공)
+POST http://localhost:8080/api/v1/words/register
+Content-Type: application/json
+
+{
+  "vocabulary": "testB",
+  "meaning": "테스트",
+  "difficulty": 1,
+  "hint": ""
+}
+
+### 단어 추가 END
 
 ### 단어 N개 추가
 POST http://localhost:8080/api/v1/words/book
