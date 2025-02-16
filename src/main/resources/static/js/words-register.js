@@ -11,33 +11,22 @@ function addRow() {
     rowDiv.className = 'word-row';
 
     rowDiv.innerHTML = `
-        <div class="row">
-            <div class="col-md-3 mb-2">
-                <input type="text" class="form-control vocabulary" placeholder="영단어" required>
-            </div>
-            <div class="col-md-3 mb-2">
-                <input type="text" class="form-control meaning" placeholder="의미" required>
-            </div>
-            <div class="col-md-3 mb-2">
-                <input type="text" class="form-control hint" placeholder="힌트">
-            </div>
-            <div class="col-md-2 mb-2">
-                <select class="form-select difficulty" required>
-                    <option value="1">level 1 (매우 쉬움)</option>
-                    <option value="2">level 2 (쉬움)</option>
-                    <option value="3" selected>level 3 (보통)</option>
-                    <option value="4">level 4 (어려움)</option>
-                    <option value="5">level 5 (매우 어려움)</option>
-                </select>
-            </div>
-            <div class="col-md-1 mb-2 d-flex align-items-center">
-                <i class="bi bi-x-lg remove-row" onclick="removeRow(this)"></i>
-            </div>
-        </div>
+        <input type="text" class="form-control vocabulary" placeholder="영단어" required>
+        <input type="text" class="form-control meaning" placeholder="의미" required>
+        <input type="text" class="form-control hint" placeholder="힌트">
+        <select class="form-select difficulty" required>
+            <option value="1">level 1 (매우 쉬움)</option>
+            <option value="2">level 2 (쉬움)</option>
+            <option value="3" selected>level 3 (보통)</option>
+            <option value="4">level 4 (어려움)</option>
+            <option value="5">level 5 (매우 어려움)</option>
+        </select>
+        <i class="bi bi-x-lg remove-row" onclick="removeRow(this)"></i>
     `;
 
     wordRows.appendChild(rowDiv);
 }
+
 
 function removeRow(element) {
     const row = element.closest('.word-row');

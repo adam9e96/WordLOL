@@ -9,5 +9,7 @@ import java.util.List;
 @Mapper
 public interface WordBookMapper {
 
+    WordBook findById(Long id);
+
     List<WordBook> findByCategory(Category category);
 }

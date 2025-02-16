@@ -1,23 +1,67 @@
-/* == 테이블 컨테이너 관련 == */
+/* Material You-inspired theme variables */
+:root {
+    --primary: #6750A4;
+    --on-primary: #ffffff;
+    --surface: #ffffff;
+    --background: #F2F2F2;
+    --error: #B3261E;
+    --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12);
+    --elevation-2: 0 4px 6px rgba(0, 0, 0, 0.16);
+    --border-radius: 16px;
+}
+
+/* 전체 페이지 레이아웃 */
+.page-grid {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    background-color: var(--background);
+}
+
+/* 단어 목록 페이지 그리드 레이아웃 */
+.word-list-grid {
+    display: grid;
+    grid-template-areas:
+        "title"
+        "table"
+        "pagination";
+    gap: 1rem;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* 페이지 타이틀 */
+.page-title {
+    grid-area: title;
+    text-align: center;
+}
+
+.page-title h2 {
+    color: var(--primary);
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* 테이블 컨테이너 */
 .table-container {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    grid-area: table;
+    background: var(--surface);
+    border-radius: var(--border-radius);
+    box-shadow: var(--elevation-1);
     overflow: hidden;
-    padding: 20px;
+    padding: 1rem;
 }
 
-/* == 토스트 메시지 관련 == */
-.toast-container {
-    z-index: 1050;
+/* 페이지네이션 */
+.pagination-container {
+    grid-area: pagination;
+    display: flex;
+    justify-content: center;
 }
 
-.toast {
-    min-width: 200px;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-
-/* == 테이블 기본 스타일 == */
+/* 기존 테이블 스타일 유지 */
 .custom-table {
     border-radius: 10px;
     overflow: hidden;
@@ -32,38 +76,28 @@
     font-weight: 600;
 }
 
-
 .custom-table td,
 .custom-table th {
     vertical-align: middle;
     padding: 15px;
 }
 
-.table td {
-    vertical-align: middle;
-}
-
-/*
-== 호버 효과 ==
-*/
-/* 테이블 행 hover 효과 */
+/* 테이블 행 호버 효과 */
 .custom-table tbody tr {
-    transition: all 0.2s ease; /* 부드러운 전환 효과 */
+    transition: all 0.2s ease;
 }
 
 .custom-table tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.05); /* 연한 회색 배경 */
-    border-radius: 8px; /* 모서리 둥글게 */
-    overflow: hidden; /* 둥근 모서리가 잘리지 않도록 */
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-/* 각 셀에도 transition 효과 적용 */
 .custom-table td {
     transition: all 0.2s ease;
-    padding: 15px; /* 셀 내부 여백 */
+    padding: 15px;
 }
 
-/* hover 시 첫 번째와 마지막 셀의 모서리를 둥글게 */
 .custom-table tbody tr:hover td:first-child {
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
@@ -74,9 +108,9 @@
     border-bottom-right-radius: 8px;
 }
 
-/* == 페이지네이션 관련 == */
+/* 페이지네이션 스타일 */
 .pagination {
-    gap: 5px;
+    gap: 0.5rem;
 }
 
 .page-link {
@@ -94,26 +128,45 @@
 }
 
 .page-item.active .page-link {
-    background-color: #0d6efd;
-    color: white;
+    background-color: var(--primary);
+    color: var(--on-primary);
 }
 
-/**/
-
-/* == 버튼 관련 == */
+/* 버튼 관련 */
 .btn-action {
     padding: 5px 10px;
     border-radius: 6px;
     transition: all 0.3s ease;
 }
 
-/* == 뱃지 관련 == */
-.badge {
-    font-size: 0.8rem;
-    padding: 0.5em 0.8em;
+/* 토스트 메시지 */
+.toast-container {
+    z-index: 1050;
 }
 
-/* == 필터 관련 == */
-.difficulty-filter {
-    margin-bottom: 1rem;
+.toast {
+    min-width: 200px;
+    box-shadow: var(--elevation-1);
+    border-radius: var(--border-radius);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .word-list-grid {
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+
+    .table-container {
+        padding: 0.5rem;
+    }
+
+    .custom-table {
+        font-size: 0.9rem;
+    }
+
+    .custom-table td,
+    .custom-table th {
+        padding: 10px;
+    }
 }

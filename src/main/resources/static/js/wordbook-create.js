@@ -15,36 +15,22 @@ function addWordRow() {
     row.className = 'word-row';
 
     row.innerHTML = `
-        <div class="row">
-            <div class="col-md-3 mb-2">
-                <input type="text" class="form-control vocabulary" placeholder="영단어" required>
-                <div class="invalid-feedback">영단어를 입력해주세요.</div>
-            </div>
-            <div class="col-md-3 mb-2">
-                <input type="text" class="form-control meaning" placeholder="의미" required>
-                <div class="invalid-feedback">의미를 입력해주세요.</div>
-            </div>
-            <div class="col-md-3 mb-2">
-                <input type="text" class="form-control hint" placeholder="힌트">
-            </div>
-            <div class="col-md-2 mb-2">
-                <select class="form-select difficulty" required>
-                    <option value="1">level 1 (매우 쉬움)</option>
-                    <option value="2">level 2 (쉬움)</option>
-                    <option value="3" selected>level 3 (보통)</option>
-                    <option value="4">level 4 (어려움)</option>
-                    <option value="5">level 5 (매우 어려움)</option>
-                </select>
-                <div class="invalid-feedback">난이도를 선택해주세요.</div>
-            </div>
-            <div class="col-md-1 mb-2 d-flex align-items-center justify-content-center">
-                <i class="bi bi-x-lg remove-row" onclick="removeWordRow(this)"></i>
-            </div>
-        </div>
+        <input type="text" class="form-control vocabulary" placeholder="영단어" required>
+        <input type="text" class="form-control meaning" placeholder="의미" required>
+        <input type="text" class="form-control hint" placeholder="힌트">
+        <select class="form-select difficulty" required>
+            <option value="1">1 (매우 쉬움)</option>
+            <option value="2">2 (쉬움)</option>
+            <option value="3" selected>3 (보통)</option>
+            <option value="4">4 (어려움)</option>
+            <option value="5">5 (매우 어려움)</option>
+        </select>
+        <i class="bi bi-x-lg remove-row" onclick="removeWordRow(this)"></i>
     `;
 
     wordList.appendChild(row);
 }
+
 
 function addWordRows(count) {
     for (let i = 0; i < count; i++) {
@@ -111,7 +97,7 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
     }
 });
 
-// 초기에 3개의 빈 행 추가
+// 초기에 2개의 빈 행 추가
 window.addEventListener('DOMContentLoaded', () => {
-    addWordRows(3);
+    addWordRows(2);
 });

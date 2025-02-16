@@ -63,4 +63,10 @@
                  LEFT JOIN english_word ew ON wb.id = ew.word_book_id /* 단어장-단어 테이블 조인 */
         WHERE wb.category = #{category} /* 입력받은 카테고리로 필터링 */
     </select>
+    <select id="findById" resultMap="WordBookResultMap">
+        SELECT *
+        FROM word_book
+        WHERE id = #{id}
+        LIMIT 1  <!-- 명시적으로 1개만 가져오도록 -->
+    </select>
 </mapper>

@@ -20,35 +20,37 @@ async function loadWordBooks() {
         }
 
         wordBookList.innerHTML = wordBooks.map(book => `
-            <div class="col-md-4 mb-4">
-                <div class="card wordbook-card">
-                    <span class="badge bg-${getCategoryColor(book.category)} category-badge">
-                        ${getCategoryDisplayName(book.category)}
-                    </span>
-                    <div class="card-body">
-                        <h5 class="card-title">${book.name}</h5>
-                        <p class="card-text">${book.description}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">단어 수: ${book.wordCount}</small>
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-outline-primary"
-                                        onclick="location.href='/word/study/${book.id}'">
-                                    <i class="bi bi-play-fill"></i> 학습
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary"
-                                        onclick="location.href='/word/wordbook/edit/${book.id}'">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger"
-                                        onclick="confirmDelete(${book.id})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
+            <div class="wordbook-card">
+                <span class="category-badge bg-${getCategoryColor(book.category)}">
+                    ${getCategoryDisplayName(book.category)}
+                </span>
+                <h3 class="card-title">${book.name}</h3>
+                <p class="card-text">${book.description}</p>
+                <div class="card-footer">
+                    <div class="word-count">
+                        <i class="bi bi-book"></i> 
+                        <span>단어 수: ${book.wordCount}</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-sm btn-outline-primary"
+                                onclick="location.href='/word/study/${book.id}'">
+                            <i class="bi bi-play-fill"></i>
+                            <span>학습</span>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary"
+                                onclick="location.href='/word/wordbook/edit/${book.id}'">
+                            <i class="bi bi-pencil"></i>
+                            <span>수정</span>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger"
+                                onclick="confirmDelete(${book.id})">
+                            <i class="bi bi-trash"></i>
+                            <span>삭제</span>
+                        </button>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            </div>`
+        ).join('');
     } catch (error) {
         console.error('Error loading wordbooks:', error);
         alert('단어장 목록을 불러오는 중 오류가 발생했습니다.');

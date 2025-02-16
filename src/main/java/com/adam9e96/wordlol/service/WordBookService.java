@@ -5,6 +5,7 @@ import com.adam9e96.wordlol.dto.WordRequest;
 import com.adam9e96.wordlol.entity.Category;
 import com.adam9e96.wordlol.entity.EnglishWord;
 import com.adam9e96.wordlol.entity.WordBook;
+import com.adam9e96.wordlol.exception.wordbook.WordBookNotFoundException;
 import com.adam9e96.wordlol.mapper.WordBookMapper;
 import com.adam9e96.wordlol.mapper.WordMapper;
 import com.adam9e96.wordlol.repository.EnglishWordRepository;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
@@ -82,9 +82,14 @@ public class WordBookService {
     }
 
     @Transactional
-    public Optional<WordBook> findById(Long id) {
-        return wordBookRepository.findById(id);
+    public WordBook findById(Long id) {
+        WordBook wordBook = wordBookMapper.findById(id);
+        if (wordBook == null) {
+            throw new WordBookNotFoundException(id);
+        }
+        return wordBook;
     }
+
 
     @Transactional
     public WordBook updateWordBook(Long id, WordBookRequest request) {

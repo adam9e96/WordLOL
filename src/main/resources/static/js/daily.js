@@ -37,6 +37,10 @@ async function loadDailyWords() {
     }
 }
 
+/**
+ * 단어 목록을 HTML 로 렌더링합니다.
+ * @param words 단어 목록
+ */
 function renderWords(words) {
     const container = document.getElementById('word-cards');
 

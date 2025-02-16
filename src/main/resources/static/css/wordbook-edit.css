@@ -1,0 +1,232 @@
+/* Material You 3 테마 변수 */
+:root {
+    --primary: #6750A4;
+    --primary-container: #EADDFF;
+    --on-primary: #ffffff;
+    --on-primary-container: #21005D;
+    --secondary: #625B71;
+    --on-secondary: #ffffff;
+    --surface: #ffffff;
+    --surface-variant: #E7E0EC;
+    --background: #F2F2F2;
+    --error: #B3261E;
+    --success: #149767;
+    --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12);
+    --elevation-2: 0 4px 6px rgba(0, 0, 0, 0.16);
+    --border-radius: 16px;
+    --spacing-unit: 1rem;
+}
+
+/* 페이지 그리드 레이아웃 */
+.page-grid {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    background-color: var(--background);
+}
+
+/* 편집 그리드 레이아웃 */
+.edit-grid {
+    display: grid;
+    place-items: center;
+    padding: var(--spacing-unit);
+}
+
+.edit-container {
+    width: 100%;
+    max-width: 1000px;
+}
+
+/* 단어장 편집 카드 */
+.wordbook-edit-card {
+    background: var(--surface);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--elevation-1);
+}
+
+/* 편집 헤더 */
+.edit-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.edit-header i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.edit-header h2 {
+    margin: 0;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* 기본 정보 섹션 */
+.basic-info-section {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.name-category-row, .date-info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.description-section {
+    margin-bottom: 1rem;
+}
+
+/* 단어 목록 섹션 */
+.word-list-section {
+    background: var(--surface-variant);
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+}
+
+.word-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--surface);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.word-list-header h5 {
+    margin: 0;
+    color: var(--primary);
+}
+
+.btn-add-word {
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-add-word:hover {
+    background: color-mix(in srgb, var(--primary) 90%, white);
+}
+
+.word-list-content {
+    padding: 1rem;
+}
+
+.word-row {
+    background: var(--surface);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--elevation-1);
+}
+
+.word-row .row {
+    align-items: center;
+}
+
+/* 입력 필드 스타일 */
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+    border-color: var(--surface-variant);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem var(--primary-container);
+}
+
+/* 폼 액션 섹션 */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-secondary, .btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary {
+    background: var(--surface-variant);
+    color: var(--primary);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--on-primary);
+}
+
+.btn-secondary:hover, .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--elevation-2);
+}
+
+.btn-secondary i, .btn-primary i {
+    margin-right: 0.5rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .name-category-row,
+    .date-info-row {
+        grid-template-columns: 1fr;
+    }
+
+    .edit-container {
+        padding: 0.5rem;
+    }
+
+    .wordbook-edit-card {
+        padding: 1rem;
+    }
+
+    .btn-add-word {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn-secondary,
+    .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* 토스트 메시지 스타일 */
+.toast {
+    background-color: var(--surface);
+    border-radius: var(--border-radius);
+    box-shadow: var(--elevation-2);
+}
+
+.toast-header {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.toast-body {
+    color: var(--secondary);
+}

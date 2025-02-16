@@ -1,9 +1,6 @@
 package com.adam9e96.wordlol.controller;
 
-import com.adam9e96.wordlol.dto.WordBookRequest;
-import com.adam9e96.wordlol.dto.WordBookResponse;
-import com.adam9e96.wordlol.dto.WordBookStudyResponse;
-import com.adam9e96.wordlol.dto.WordResponse;
+import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.Category;
 import com.adam9e96.wordlol.entity.EnglishWord;
 import com.adam9e96.wordlol.entity.WordBook;
@@ -59,12 +56,29 @@ public class WordBookRestController {
                         .toList());
     }
 
+
+    // 단어장 목록 조회용 (리스트 페이지에서 사용)
+    // createAt, updatedAt은 추구 필터링 기능을 위해 넘겨줌
     @GetMapping
-    public ResponseEntity<List<WordBookResponse>> getAllWordBooks() {
+    public ResponseEntity<List<WordBookListResponse>> getAllWordBooks() {
         return ResponseEntity.ok()
                 .body(wordBookService.findAllWordBooks().stream()
-                        .map(this::toResponse)
+                        .map(this::toListResponse)
                         .toList());
+    }
+
+
+    // 목록용 DTO 변환 (리스트 페이지용)
+    private WordBookListResponse toListResponse(WordBook wordBook) {
+        return new WordBookListResponse(
+                wordBook.getId(),
+                wordBook.getName(),
+                wordBook.getDescription(),
+                wordBook.getCategory(),
+                wordBook.getWords().size(),
+                wordBook.getCreatedAt(),
+                wordBook.getUpdatedAt()
+        );
     }
 
     @GetMapping("/category")
@@ -90,14 +104,33 @@ public class WordBookRestController {
     }
 
     /**
-     * id 로 단어장을 조회하는 API
+     * @param id 단어장 ID
+     * @since 2025-02-15
+     * 단어장 상세 조회용 (수정 페이지에서 사용)
      */
     @GetMapping("/{id}")
-    public ResponseEntity<WordBookResponse> getWordBook(@PathVariable("id") Long id) {
-        return wordBookService.findById(id)
-                .map(this::toResponse)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<WordBookDetailResponse> getWordBookDetail(@PathVariable("id") Long id) {
+        WordBook wordBook = wordBookService.findById(id);
+        return ResponseEntity.ok(toDetailResponse(wordBook));
+    }
+
+
+    /**
+     * 단어장 상세 정보 응답 DTO 변환
+     *
+     * @param wordBook 단어장 엔티티
+     * @return 단어장 상세 정보 응답 DTO
+     * @see WordBookDetailResponse
+     */
+    private WordBookDetailResponse toDetailResponse(WordBook wordBook) {
+        return new WordBookDetailResponse(
+                wordBook.getId(),
+                wordBook.getName(),
+                wordBook.getDescription(),
+                wordBook.getCategory(),
+                wordBook.getCreatedAt(),
+                wordBook.getUpdatedAt()
+        );
     }
 
     @PutMapping("/{id}")

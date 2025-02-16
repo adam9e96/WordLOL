@@ -1,72 +1,159 @@
-body {
+/* CSS 변수 정의: 헤더 높이와 배경 이미지 설정 */
+:root {
+    --header-height: 75px;
+    --blur-background: url('../images/trail.jpg');
+}
+
+/* HTML, 바디 기본 스타일: 여백 제거, 전체 높이/너비 설정 */
+html, body {
     margin: 0;
     padding: 0;
-    height: 100vh;
-    background: url('../images/trail.jpg') no-repeat center center fixed;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* 바디 배경: 고정된 배경 이미지, 전체 화면 커버 */
+body {
+    background: var(--blur-background) no-repeat center center fixed;
     background-size: cover;
+    position: relative;
 }
 
-/* .vocabulary {
-    font-weight: 600;
+/* 페이지 전체 레이아웃 그리드: 헤더와 메인 콘텐츠 수직 배치 */
+.page-grid {
+    display: grid;
+    grid-template-rows: auto 1fr; /* 헤더 높이 자동, 나머지 영역 채움 */
+    min-height: 100vh;
+    position: relative;
 }
 
-.meaning {
-    font-weight: 400;
-} */
+/* 전체 배경 블러 효과: 페이지 배경에 오버레이 블러 적용 */
+.page-grid::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--blur-background) no-repeat center center fixed;
+    background-size: cover;
+    filter: blur(5px); /* 배경 블러 효과 */
+    z-index: -1; /* 다른 요소 뒤에 배치 */
+}
 
+/* 헤더 스타일링: 다른 요소 위에 표시 */
+.header {
+    position: relative;
+    z-index: 10; /* 다른 요소 위에 표시 */
+}
+
+/* 헤더 배경: 반투명, 블러 효과 */
+.navbar.material-header {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 메인 콘텐츠 레이아웃: 중앙 정렬, 스크롤 가능 */
+.main-content {
+    display: grid;
+    place-items: center; /* 수평, 수직 중앙 정렬 */
+    padding: 1rem;
+    position: relative;
+    z-index: 5; /* 배경 위에 표시 */
+    overflow-y: auto; /* 내용 많을 경우 스크롤 */
+}
+
+/* 오늘의 단어 컨테이너: 중앙 정렬, 최대 너비 설정 */
 .today-words-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - var(--header-height));
-    backdrop-filter: blur(3px);
+    display: grid;
+    place-items: center;
+    width: 100%;
+    max-width: 1000px;
 }
 
+/* 단어 카드 래퍼: 반투명 배경, 블러 효과 */
 .word-cards-wrapper {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 2rem;
-    width: 80%;
+    width: 100%;
     max-width: 800px;
 }
 
+/* 단어 카드 그리드: 반응형 레이아웃 */
 .word-cards {
     display: grid;
     gap: 1.5rem;
+    /* 화면 너비에 따라 카드 크기/개수 자동 조정 */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
+/* 개별 단어 카드 스타일
+   js 에서 동적으로 생성되는 word-card 클래스에 적용
+ */
 .word-card {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 15px;
     padding: 1.5rem;
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* 카드 호버 효과 */
 .word-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px); /* 살짝 위로 올라가는 효과 */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
+/* 카드 내용 레이아웃 */
 .card-content {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: 0.8rem;
 }
 
+/* 단어 스타일 */
 .vocabulary {
     font-size: 1.8rem;
     font-weight: bold;
     color: #2c3e50;
 }
 
+/* 의미 스타일 */
 .meaning {
     font-size: 1.2rem;
     color: #34495e;
 }
 
+/* 난이도 표시 스타일 */
 .difficulty {
     font-size: 0.9rem;
     color: #f1c40f;
+}
+/*
+동적으로 생성되는 word-card 클래스 END
+*/
+
+/* 로딩/에러 메시지 중앙 정렬 */
+#loading, #error-message {
+    grid-column: 1 / -1; /* 그리드의 전체 너비 차지 */
+    justify-self: center;
+}
+
+/* 모바일 반응형 디자인 */
+@media (max-width: 768px) {
+    /* 모바일에서 카드를 1열로 표시 */
+    .word-cards {
+        grid-template-columns: 1fr;
+    }
+
+    /* 래퍼 패딩 및 너비 조정 */
+    .word-cards-wrapper {
+        padding: 1rem;
+        margin: 0 auto;
+        width: 95%;
+    }
 }

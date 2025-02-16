@@ -1,0 +1,105 @@
+/* dashboard.css */
+:root {
+    --section-bg-light: #f8f9fa;
+    --card-hover-bg: #f3f4f6;
+}
+
+/* 전체 배경색 */
+body {
+    background-color: #f0f2f5;
+}
+
+/* 카드 스타일링 */
+.card {
+    transition: all 0.2s ease;
+    border: none !important;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+}
+
+/* 상단 통계 카드 아이콘 컨테이너 */
+.stat-icon-container {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+/* 각 통계 카드별 아이콘 배경색 */
+.stat-icon-total {
+    background-color: rgba(13, 110, 253, 0.15);
+}
+
+.stat-icon-today {
+    background-color: rgba(25, 135, 84, 0.15);
+}
+
+.stat-icon-streak {
+    background-color: rgba(255, 193, 7, 0.15);
+}
+
+.stat-icon-rate {
+    background-color: rgba(13, 202, 240, 0.15);
+}
+
+/* 섹션 구분을 위한 배경색 */
+.section-bg {
+    background-color: var(--section-bg-light);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* 테이블 스타일링 */
+.table-custom {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table-custom thead {
+    background-color: #e9ecef;
+}
+
+.table-custom th {
+    border-bottom: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+/* 단어장 카드 스타일링 */
+.wordbook-card {
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb !important;
+}
+
+.wordbook-card:hover {
+    background-color: var(--card-hover-bg);
+}
+
+/* 카테고리 통계 아이템 */
+.category-stat-item {
+    background-color: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+/* 섹션 제목 스타일링 */
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #344767;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
