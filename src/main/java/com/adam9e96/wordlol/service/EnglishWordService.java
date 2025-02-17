@@ -13,13 +13,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 
@@ -235,19 +235,25 @@ public class EnglishWordService {
     }
 
     /**
-     * 페이징 처리된 단어 목록을 조회합니다.
-     *
-     * @param pageable 페이징 정보
-     * @return 페이징 처리된 단어 목록
+     * @apiNote 전체 단어 목록을 조회합니다.
+     * // 예를 들어 다음과 같은 상황이라면:
+     * List<EnglishWord> words = ["단어1", "단어2", "단어3"]; // 현재 페이지 데이터
+     * Pageable pageable = PageRequest.of(0, 3); // 0페이지, 페이지당 3개
+     * long total = 10; // 전체 데이터 10개
+     * <p>
+     * Page<EnglishWord> page = new PageImpl<>(words, pageable, total);
+     * <p>
+     * // 이제 다음 정보들을 얻을 수 있습니다:
+     * page.getTotalPages(); // 4 (전체 페이지 수)
+     * page.isFirst(); // true (첫 페이지인가?)
+     * page.isLast(); // false (마지막 페이지인가?)
+     * page.hasNext(); // true (다음 페이지가 있는가?)
+     * page.hasPrevious(); // false (이전 페이지가 있는가?)
      */
-    public Page<EnglishWord> findAllWordsWithPaging(Pageable pageable) {
-        try {
-            return englishWordRepository.findAll(pageable);
-        } catch (Exception e) {
-            log.error("페이징된 단어 목록 조회 중 실패했습니다", e);
-            throw new IllegalStateException("단어 목록 조회 중 오류가 발생했습니다", e);
-        }
+    @Transactional
+    public Page<EnglishWord> findAllWords(Pageable pageable) {
+        long total = wordMapper.countTotal();
+        List<EnglishWord> words = wordMapper.findAllWithPaging(pageable);
+        return new PageImpl<>(words, pageable, total);
     }
-
-
 }

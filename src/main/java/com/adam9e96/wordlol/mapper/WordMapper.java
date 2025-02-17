@@ -2,6 +2,8 @@ package com.adam9e96.wordlol.mapper;
 
 import com.adam9e96.wordlol.entity.EnglishWord;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +12,7 @@ import java.util.Optional;
 public interface WordMapper {
 
     void save(EnglishWord englishWord);
+
     /**
      * 주어진 ID에 해당하는 영어 단어를 조회합니다.
      */
@@ -43,5 +46,9 @@ public interface WordMapper {
     List<EnglishWord> findAllByWordBookId(Long wordBookId);
 
     boolean existsById(Long id);
+
+    List<EnglishWord> findAllWithPaging(Pageable pageable);
+    long countTotal();  // 전체 개수를 위한 메서드 추가
+
 
 }

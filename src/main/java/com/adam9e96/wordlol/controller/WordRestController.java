@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -177,18 +178,24 @@ public class WordRestController {
          * offset = 2 * 20 = 40 (41번째 레코드부터)
          * limit = 20 (20개 레코드)
          */
-        Pageable pageable = PageRequest.of(page, size);
 
-        // 서비스에서 페이징된 데이터 조회
-        Page<EnglishWord> wordPage = englishWordService.findAllWordsWithPaging(pageable);
-
-        Page<WordResponse> responsePage = wordPage.map(this::toResponse);
-
-        // 커스텀 응답 객체 생성
-        PageResponse<WordResponse> pageResponse = new PageResponse<>(responsePage);
-
-        return ResponseEntity.ok(pageResponse);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<EnglishWord> wordPage = englishWordService.findAllWords(pageable);
+        PageResponse<WordResponse> response = new PageResponse<>(
+                wordPage.map(this::toWordResponse)
+        );
+        return ResponseEntity.ok(response);
     }
 
-
+    private WordResponse toWordResponse(EnglishWord englishWord) {
+        return new WordResponse(
+                englishWord.getId(),
+                englishWord.getVocabulary(),
+                englishWord.getMeaning(),
+                englishWord.getHint(),
+                englishWord.getDifficulty(),
+                englishWord.getCreatedAt(),
+                englishWord.getUpdatedAt()
+        );
+    }
 }

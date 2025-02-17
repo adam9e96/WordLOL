@@ -123,5 +123,23 @@
         FROM english_word
         WHERE id = #{id}
     </select>
+    <select id="findAllWithPaging" resultMap="EnglishWordResultMap">
+        SELECT id,
+               vocabulary,
+               meaning,
+               hint,
+               difficulty,
+               created_at,
+               updated_at
+        FROM english_word
+        ORDER BY id DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+    <!-- 전체 단어 수 조회 -->
+    <select id="countTotal" resultType="long">
+        SELECT COUNT(*)
+        FROM english_word
+    </select>
+
 
 </mapper>
