@@ -140,7 +140,7 @@ public class EnglishWordService {
         try {
             // 3. 단어 업데이트
             word.update(vocabulary, meaning, hint, difficulty);
-            englishWordRepository.save(word);
+            wordMapper.save(word);
         } catch (Exception e) {
             log.error("단어 업데이트 중 오류가 발생했습니다. ID: {}", id, e);
             throw new WordUpdateException(id);
@@ -226,6 +226,13 @@ public class EnglishWordService {
                 .anyMatch(answer -> answer.equalsIgnoreCase(userAnswer.trim()));
     }
 
+    public List<EnglishWord> findRandom5Words() {
+        List<EnglishWord> randomWords = wordMapper.findRandom5Words();
+        if (randomWords.isEmpty()) {
+            throw new WordNotFoundException(0L);
+        }
+        return randomWords;
+    }
 
     /**
      * 페이징 처리된 단어 목록을 조회합니다.
@@ -242,9 +249,5 @@ public class EnglishWordService {
         }
     }
 
-
-    public List<EnglishWord> findRandom5Words() {
-        return wordMapper.findRandom5Words();
-    }
 
 }
