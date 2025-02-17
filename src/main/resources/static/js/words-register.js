@@ -75,7 +75,7 @@ async function saveWords() {
     }
 
     try {
-        const response = await fetch('/api/v1/words/book', {
+        const response = await fetch('/api/v1/words/registers', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

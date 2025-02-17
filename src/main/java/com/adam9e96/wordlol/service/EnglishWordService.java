@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.service;
 
+import com.adam9e96.wordlol.dto.WordRequest;
 import com.adam9e96.wordlol.entity.EnglishWord;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
@@ -30,11 +31,6 @@ public class EnglishWordService {
     private final WordMapper wordMapper;
     private final Random random = new Random();
 
-    public EnglishWord findById(Long id) {
-        return wordMapper.findById(id)
-                .orElseThrow(() -> new WordNotFoundException(id));
-    }
-
     public void createWord(String vocabulary, String meaning, String hint, Integer difficulty) {
         try {
             // 1. 입력값 검증
@@ -44,7 +40,7 @@ public class EnglishWordService {
                 throw new ValidationException("이미 존재하는 단어입니다: " + vocabulary);
             }
 
-            // 엔티티 생성
+            // 3. 엔티티 생성
             EnglishWord englishWord = EnglishWord.builder()
                     .vocabulary(vocabulary)
                     .meaning(meaning)
@@ -52,7 +48,7 @@ public class EnglishWordService {
                     .difficulty(difficulty)
                     .build();
 
-            // DB에 저장
+            // 4. DB에 저장
             wordMapper.save(englishWord);
         } catch (ValidationException e) {
             // 유효성 검사 실행
@@ -65,6 +61,7 @@ public class EnglishWordService {
     }
 
     private void validateCreateWordInput(String vocabulary, String meaning, String hint, Integer difficulty) {
+
         // 1. 단어 검증
         if (!StringUtils.hasText(vocabulary)) {
             throw new ValidationException("단어를 입력해주세요.");
@@ -95,14 +92,51 @@ public class EnglishWordService {
         }
     }
 
+    private boolean isDuplicateWord(String vocabulary) {
+        // 대소문자 구분 없이 중복 확인
+        return englishWordRepository.existsByVocabularyIgnoreCase(vocabulary);
+    }
+
+    @Transactional
+    public int createWords(List<WordRequest> requests) {
+        // 1. 요청이 없으면 0 반환
+        if (requests == null || requests.isEmpty()) {
+            return 0;
+        }
+        // 2. 성공한 단어 개수
+        int successCount = 0;
+        // 3. 요청 단어들을 순회하며 단어 생성 시도
+        for (WordRequest request : requests) {
+            try {
+                createWord(
+                        request.vocabulary(),
+                        request.meaning(),
+                        request.hint(),
+                        request.difficulty()
+                );
+                // 단어 생성 성공 시 성공 카운트 증가
+                successCount++;
+            } catch (Exception e) {
+                log.error("단어 생성 실패: {}", request.vocabulary(), e);
+                // 예외를 잡아서 계속 진행할지, 아니면 전체 트랜잭션을 실패시킬지는
+                // 비즈니스 요구사항에 따라 결정
+            }
+        }
+        return successCount;
+    }
+
+
+    public EnglishWord findById(Long id) {
+        return wordMapper.findById(id)
+                .orElseThrow(() -> new WordNotFoundException(id));
+    }
+
     @Transactional
     public void updateWord(Long id, String vocabulary, String meaning, String hint, Integer difficulty) {
         // 1. 기존 단어 존재 여부 확인
         EnglishWord word = wordMapper.findById(id).orElseThrow(() -> new WordNotFoundException(id));
-
         // 2. 비즈니스 로직 유효성 검증
         validateWordUpdateBusinessRules(vocabulary, meaning, hint, difficulty);
-
         try {
             // 3. 단어 업데이트
             word.update(vocabulary, meaning, hint, difficulty);
@@ -118,46 +152,18 @@ public class EnglishWordService {
         if (isDuplicateWord(vocabulary)) {
             throw new ValidationException("이미 존재하는 단어입니다.");
         }
-
-
-        // 2. 단어와 의미의 길이 추가 검증
-        validateWordAndMeaningLength(vocabulary, meaning);
-
-        // 3. 힌트 길이 추가 검증 (선택사항)
-        validateHintLength(hint);
-
-        // 4. 난이도 추가 검증
-        validateDifficulty(difficulty);
-    }
-
-    private boolean isDuplicateWord(String vocabulary) {
-        // 대소문자 구분 없이 중복 확인
-        return englishWordRepository.existsByVocabularyIgnoreCase(vocabulary);
-    }
-
-    private void validateWordAndMeaningLength(String vocabulary, String meaning) {
         // 단어와 의미의 실제 길이 검증 (공백 제거 후)
         // 2. 단어와 의미의 길이 검증
         if (vocabulary.trim().isEmpty() || vocabulary.trim().length() > 100) {
             throw new ValidationException("단어는 1자 이상 100자 이하로 입력해주세요.");
         }
-
         if (meaning.trim().isEmpty() || meaning.trim().length() > 100) {
             throw new ValidationException("뜻은 1자 이상 100자 이하로 입력해주세요.");
         }
-
-    }
-
-
-    private void validateHintLength(String hint) {
-        // 3. 힌트 길이 검증
+        // 3. 힌트 길이 추가 검증 (선택사항)
         if (hint.trim().length() > 100) {
             throw new ValidationException("힌트는 100자 이하로 입력해주세요.");
         }
-
-    }
-
-    private void validateDifficulty(Integer difficulty) {
         // 4. 난이도 검증
         if (difficulty == null || difficulty < 1 || difficulty > 5) {
             throw new ValidationException("난이도는 1에서 5 사이여야 합니다.");
@@ -186,6 +192,41 @@ public class EnglishWordService {
         }
     }
 
+    // ================================================================================================================
+
+    public EnglishWord getRandomWord() {
+        // 1. 전체 단어 ID 목록 조회
+        List<Long> ids = wordMapper.findAllIds();
+        if (ids.isEmpty()) {
+            throw new WordNotFoundException(0L); // 또는 NoWordsAvailableException 생성 고려
+        }
+        // 2. 랜덤 ID 선택
+        Long randomId = ids.get(random.nextInt(ids.size()));
+        // 3. 선택된 ID로 단어 조회
+        return findById(randomId);
+    }
+
+    // 답이 2개인경우 가능
+    // 답안중에 중간에 띄어쓰기는 아직 안됨(띄어 쓰기도 포함해야 인정됨)
+    public Boolean checkAnswer(Long id, String userAnswer) {
+        // 1. 단어 조회
+        EnglishWord englishWord = findById(id);
+        log.info("정답: {}, 사용자 입력: {}", englishWord.getMeaning(), userAnswer);
+        // 2. 정답 확인
+        return validateAnswer(englishWord.getMeaning(), userAnswer);
+    }
+
+    private boolean validateAnswer(String correctMeaning, String userAnswer) {
+        if (userAnswer == null || userAnswer.trim().isEmpty()) {
+            throw new ValidationException("답을 입력해주세요.");
+        }
+        // 쉼표로 구분된 여러 정답 처리
+        return Arrays.stream(correctMeaning.split(","))
+                .map(String::trim)
+                .anyMatch(answer -> answer.equalsIgnoreCase(userAnswer.trim()));
+    }
+
+
     /**
      * 페이징 처리된 단어 목록을 조회합니다.
      *
@@ -201,46 +242,6 @@ public class EnglishWordService {
         }
     }
 
-
-    /**
-     * 랜덤 단어를 조회합니다.
-     * 단어가 없으면 빈 Optional 반환
-     * study.js
-     */
-    public Optional<EnglishWord> getRandomWord() {
-        // 전체 단어 개수 조회
-        List<Long> ids = wordMapper.findAllIds();
-
-        if (ids.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Long randomId = ids.get(random.nextInt(ids.size()));
-        return wordMapper.findById(randomId);
-
-
-    }
-
-    /**
-     * study.js
-     * 사용자가 입력한 답변이 해당 영어 단어의 의미와 일치하는지 확인합니다.
-     *
-     * @param id         검증할 영어 단어의 고유 ID
-     * @param userAnswer 사용자가 입력한 답변
-     * @return 정답이 맞으면 true, 틀리면 false
-     * @throws IllegalArgumentException 단어가 존재하지 않는 경우
-     */
-    public Boolean checkAnswer(Long id, String userAnswer) {
-        // 단어 조회
-        EnglishWord wordResponse = findById(id);
-
-        // 정답 배열 생성 및 공백 제거
-        String[] correctAnswers = wordResponse.getMeaning().split(",");
-
-        return Arrays.stream(correctAnswers)
-                .map(String::trim)
-                .anyMatch(word -> word.equals(userAnswer));
-    }
 
     public List<EnglishWord> findRandom5Words() {
         return wordMapper.findRandom5Words();

@@ -2,9 +2,6 @@ package com.adam9e96.wordlol.controller;
 
 import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.EnglishWord;
-import com.adam9e96.wordlol.exception.validation.ValidationException;
-import com.adam9e96.wordlol.exception.word.WordNotFoundException;
-import com.adam9e96.wordlol.exception.word.WordUpdateException;
 import com.adam9e96.wordlol.service.EnglishWordService;
 import com.adam9e96.wordlol.service.StudyProgressService;
 import jakarta.validation.Valid;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/words")
@@ -27,18 +23,40 @@ import java.util.Optional;
 @AllArgsConstructor
 public class WordRestController {
 
-    // #todo perfectRun 변수 대신 db 를 통해 관리되도록 하기 
+    // #todo perfectRun 변수 대신 db 를 통해 관리되도록 하기
     private static int perfectRun = 0; // 연속 정답 횟수를 추적하는 변수.
     private final EnglishWordService englishWordService;
     private final StudyProgressService studyProgressService;
 
+
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, Object>> registerWord(@Valid @RequestBody WordRequest request) {
+        englishWordService.createWord(
+                request.vocabulary(),
+                request.meaning(),
+                request.hint(),
+                request.difficulty()
+        );
+        return ResponseEntity.ok(Map.of("message", "success"));
+    }
+
+
+    @PostMapping("/registers")
+    public ResponseEntity<Map<String, Object>> registerWords(@Valid @RequestBody List<WordRequest> requests) {
+        int successCount = englishWordService.createWords(requests);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "success");
+        response.put("count", successCount);
+
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<WordResponse> getWord(@PathVariable("id") Long id) {
         WordResponse response = toResponse(englishWordService.findById(id));
         return ResponseEntity.ok(response);
     }
-
 
     private WordResponse toResponse(EnglishWord word) {
         return new WordResponse(
@@ -52,63 +70,31 @@ public class WordRestController {
         );
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @Valid @RequestBody WordRequest request) {
+        englishWordService.updateWord(
+                id,
+                request.vocabulary(),
+                request.meaning(),
+                request.hint(),
+                request.difficulty()
+        );
+        return ResponseEntity.ok().build();
+    }
 
-    /**
-     * 단어 삭제
-     *
-     * @param id 삭제할 ID
-     * @return void
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWord(@PathVariable("id") Long id) {
         englishWordService.deleteWord(id);
-
         return ResponseEntity.ok().build();
     }
 
 
-    /**
-     * 단어 수정
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @Valid @RequestBody WordRequest request) {
-        try {
-            englishWordService.updateWord(
-                    id,
-                    request.vocabulary(),
-                    request.meaning(),
-                    request.hint(),
-                    request.difficulty()
-            );
-            return ResponseEntity.ok().build();
-        } catch (WordNotFoundException e) {
-            // 단어를 찾을 수 없는 경우
-            throw e;
-        } catch (ValidationException ve) {
-            // 유효성 검사 실패
-            throw ve;
-        } catch (Exception e) {
-            // 그 외 다른 문제가 발생한 경우
-            log.error("단어 수정 중 오류 발생", e);
-            throw new WordUpdateException(id);
-        }
-    }
-
-
-    /**
-     * study.js
-     */
+    // ========================================================================================================
     @GetMapping("/random")
     public ResponseEntity<WordResponse> getRandomWord() {
-        Optional<EnglishWord> randomWord = englishWordService.getRandomWord();
-
-        if (randomWord.isEmpty()) {
-            log.warn("랜덤 단어를 찾을 수 없습니다.");
-            return ResponseEntity.notFound().build();
-        }
-        WordResponse response = toResponseWithoutAnswer(randomWord.get());
+        EnglishWord randomWord = englishWordService.getRandomWord();
+        WordResponse response = toResponseWithoutAnswer(randomWord);
         return ResponseEntity.ok(response);
-
     }
 
     private WordResponse toResponseWithoutAnswer(EnglishWord word) {
@@ -123,47 +109,27 @@ public class WordRestController {
         );
     }
 
-
-    /**
-     * study.js
-     * 단어의 힌트를 조회
-     * 해당 단어가 존재하면 힌트를 반환하고, 없으면 404 응답을 반환합니다.
-     *
-     * @param id 조회할 단어의 고유 ID
-     * @return 단어의 힌트를 담은 Map
-     */
-    @GetMapping("/{id}/hint")
-    public ResponseEntity<Map<String, String>> getHint(@PathVariable("id") Long id) {
-        EnglishWord word = englishWordService.findById(id);
-
-
-        return ResponseEntity.ok().body(Map.of("hint", word.getHint()));
-    }
-
-    /**
-     * study.js
-     */
     @PostMapping("/check")
     public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request) {
         boolean isCorrect = englishWordService.checkAnswer(request.wordId(), request.answer());
 
-
         AnswerResponse response;
-
         if (isCorrect) {
             perfectRun++;
             response = new AnswerResponse(true, "정답입니다!", perfectRun);
         } else {
             perfectRun = 0;
             response = new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", perfectRun);
-
         }
         return ResponseEntity.ok().body(response);
     }
 
-    /**
-     * study.js
-     */
+    @GetMapping("/{id}/hint")
+    public ResponseEntity<Map<String, String>> getHint(@PathVariable("id") Long id) {
+        EnglishWord word = englishWordService.findById(id);
+        return ResponseEntity.ok().body(Map.of("hint", word.getHint()));
+    }
+
     @GetMapping("/perfectRun")
     public Map<String, Integer> getPerfectRun() {
         return Map.of("perfectRun", perfectRun);
@@ -173,16 +139,13 @@ public class WordRestController {
     @GetMapping("/daily-words")
     public ResponseEntity<List<WordResponse>> getDailyWords() {
         List<EnglishWord> words = englishWordService.findRandom5Words();
-        List<WordResponse> response = toResponseList(words);
-
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(toResponseList(words));
     }
 
     private List<WordResponse> toResponseList(List<EnglishWord> words) {
         return words.stream()
                 .map(this::toResponse)
                 .toList();
-
     }
 
     /**
@@ -228,48 +191,4 @@ public class WordRestController {
     }
 
 
-    @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> registerWord(@Valid @RequestBody WordRequest request) {
-        englishWordService.createWord(
-                request.vocabulary(),
-                request.meaning(),
-                request.hint(),
-                request.difficulty()
-        );
-        return ResponseEntity.ok(Map.of("message", "success"));
-    }
-
-
-    @PostMapping("/book")
-    public ResponseEntity<Map<String, Object>> registerWords(@Valid @RequestBody List<WordRequest> requests) {
-        try {
-            int successCount = 0;
-            for (WordRequest request : requests) {
-                englishWordService.createWord(
-                        request.vocabulary(),
-                        request.meaning(),
-                        request.hint(),
-                        request.difficulty()
-                );
-                successCount++;
-            }
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "success");
-            response.put("count", successCount);
-
-            log.info("response: {}", response);
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            log.error("단어 일괄 등록 실패", e);
-
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("message", "error");
-            errorResponse.put("error", e.getMessage());
-
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
-    }
 }
