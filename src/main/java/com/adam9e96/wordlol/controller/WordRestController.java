@@ -31,7 +31,7 @@ public class WordRestController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> registerWord(@Valid @RequestBody WordRequest request) {
+    public ResponseEntity<Map<String, Object>> createWord(@Valid @RequestBody WordRequest request) {
         englishWordService.createWord(
                 request.vocabulary(),
                 request.meaning(),
@@ -43,8 +43,8 @@ public class WordRestController {
 
 
     @PostMapping("/registers")
-    public ResponseEntity<Map<String, Object>> registerWords(@Valid @RequestBody List<WordRequest> requests) {
-        int successCount = englishWordService.createWords(requests);
+    public ResponseEntity<Map<String, Object>> createWords(@Valid @RequestBody List<WordRequest> requests) {
+        int successCount = englishWordService.createWordsBatch(requests);
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "success");
@@ -54,7 +54,7 @@ public class WordRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WordResponse> getWord(@PathVariable("id") Long id) {
+    public ResponseEntity<WordResponse> findWord(@PathVariable("id") Long id) {
         WordResponse response = toResponse(englishWordService.findById(id));
         return ResponseEntity.ok(response);
     }
@@ -93,7 +93,7 @@ public class WordRestController {
     // ========================================================================================================
     @GetMapping("/random")
     public ResponseEntity<WordResponse> getRandomWord() {
-        EnglishWord randomWord = englishWordService.getRandomWord();
+        EnglishWord randomWord = englishWordService.findRandomWord();
         WordResponse response = toResponseWithoutAnswer(randomWord);
         return ResponseEntity.ok(response);
     }
@@ -111,8 +111,8 @@ public class WordRestController {
     }
 
     @PostMapping("/check")
-    public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request) {
-        boolean isCorrect = englishWordService.checkAnswer(request.wordId(), request.answer());
+    public ResponseEntity<AnswerResponse> validateAnswer(@Valid @RequestBody AnswerRequest request) {
+        boolean isCorrect = englishWordService.validateAnswer(request.wordId(), request.answer());
 
         AnswerResponse response;
         if (isCorrect) {
@@ -138,8 +138,8 @@ public class WordRestController {
 
 
     @GetMapping("/daily-words")
-    public ResponseEntity<List<WordResponse>> getDailyWords() {
-        List<EnglishWord> words = englishWordService.findRandom5Words();
+    public ResponseEntity<List<WordResponse>> getTodayWords() {
+        List<EnglishWord> words = englishWordService.findRandomWords();
         return ResponseEntity.ok().body(toResponseList(words));
     }
 
@@ -159,7 +159,7 @@ public class WordRestController {
      * @return 단어 목록
      */
     @GetMapping("/list")
-    public ResponseEntity<PageResponse<WordResponse>> getAllWords(
+    public ResponseEntity<PageResponse<WordResponse>> findWordsWithPaging(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size) {
 
@@ -180,7 +180,7 @@ public class WordRestController {
          */
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<EnglishWord> wordPage = englishWordService.findAllWords(pageable);
+        Page<EnglishWord> wordPage = englishWordService.findAllWithPaging(pageable);
         PageResponse<WordResponse> response = new PageResponse<>(
                 wordPage.map(this::toWordResponse)
         );

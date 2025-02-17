@@ -98,7 +98,7 @@ public class EnglishWordService {
     }
 
     @Transactional
-    public int createWords(List<WordRequest> requests) {
+    public int createWordsBatch(List<WordRequest> requests) {
         // 1. 요청이 없으면 0 반환
         if (requests == null || requests.isEmpty()) {
             return 0;
@@ -136,7 +136,7 @@ public class EnglishWordService {
         // 1. 기존 단어 존재 여부 확인
         EnglishWord word = wordMapper.findById(id).orElseThrow(() -> new WordNotFoundException(id));
         // 2. 비즈니스 로직 유효성 검증
-        validateWordUpdateBusinessRules(vocabulary, meaning, hint, difficulty);
+        validateUpdateWordInput(vocabulary, meaning, hint, difficulty);
         try {
             // 3. 단어 업데이트
             word.update(vocabulary, meaning, hint, difficulty);
@@ -147,7 +147,7 @@ public class EnglishWordService {
         }
     }
 
-    private void validateWordUpdateBusinessRules(String vocabulary, String meaning, String hint, Integer difficulty) {
+    private void validateUpdateWordInput(String vocabulary, String meaning, String hint, Integer difficulty) {
         // 1. 단어 중복 검사
         if (isDuplicateWord(vocabulary)) {
             throw new ValidationException("이미 존재하는 단어입니다.");
@@ -194,7 +194,7 @@ public class EnglishWordService {
 
     // ================================================================================================================
 
-    public EnglishWord getRandomWord() {
+    public EnglishWord findRandomWord() {
         // 1. 전체 단어 ID 목록 조회
         List<Long> ids = wordMapper.findAllIds();
         if (ids.isEmpty()) {
@@ -208,7 +208,7 @@ public class EnglishWordService {
 
     // 답이 2개인경우 가능
     // 답안중에 중간에 띄어쓰기는 아직 안됨(띄어 쓰기도 포함해야 인정됨)
-    public Boolean checkAnswer(Long id, String userAnswer) {
+    public Boolean validateAnswer(Long id, String userAnswer) {
         // 1. 단어 조회
         EnglishWord englishWord = findById(id);
         log.info("정답: {}, 사용자 입력: {}", englishWord.getMeaning(), userAnswer);
@@ -226,7 +226,7 @@ public class EnglishWordService {
                 .anyMatch(answer -> answer.equalsIgnoreCase(userAnswer.trim()));
     }
 
-    public List<EnglishWord> findRandom5Words() {
+    public List<EnglishWord> findRandomWords() {
         List<EnglishWord> randomWords = wordMapper.findRandom5Words();
         if (randomWords.isEmpty()) {
             throw new WordNotFoundException(0L);
@@ -251,7 +251,7 @@ public class EnglishWordService {
      * page.hasPrevious(); // false (이전 페이지가 있는가?)
      */
     @Transactional
-    public Page<EnglishWord> findAllWords(Pageable pageable) {
+    public Page<EnglishWord> findAllWithPaging(Pageable pageable) {
         long total = wordMapper.countTotal();
         List<EnglishWord> words = wordMapper.findAllWithPaging(pageable);
         return new PageImpl<>(words, pageable, total);
