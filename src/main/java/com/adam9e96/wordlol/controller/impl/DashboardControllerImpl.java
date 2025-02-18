@@ -1,8 +1,10 @@
-package com.adam9e96.wordlol.controller;
+package com.adam9e96.wordlol.controller.impl;
 
 
+import com.adam9e96.wordlol.controller.interfaces.DashboardController;
 import com.adam9e96.wordlol.dto.DashBoardResponse;
-import com.adam9e96.wordlol.service.DashboardService;
+import com.adam9e96.wordlol.service.impl.DashboardServiceImpl;
+import com.adam9e96.wordlol.service.interfaces.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,15 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/dashboard")
 @RequiredArgsConstructor
-public class DashboardController {
+public class DashboardControllerImpl implements DashboardController {
 
     private final DashboardService dashboardService;
 
+    @Override
     @GetMapping
     public ResponseEntity<DashBoardResponse> getDashboard() {
         return ResponseEntity.ok().body(dashboardService.getDashboardData());
     }
-
-
 
 }

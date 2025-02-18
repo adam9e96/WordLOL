@@ -1,8 +1,7 @@
 package com.adam9e96.wordlol.mapper;
 
-import com.adam9e96.wordlol.entity.EnglishWord;
+import com.adam9e96.wordlol.entity.Word;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -11,21 +10,21 @@ import java.util.Optional;
 @Mapper
 public interface WordMapper {
 
-    void save(EnglishWord englishWord);
+    void save(Word word);
 
     /**
      * 주어진 ID에 해당하는 영어 단어를 조회합니다.
      */
-    Optional<EnglishWord> findById(Long id);
+    Optional<Word> findById(Long id);
 
 
-    Optional<EnglishWord> findEnglishWordByHint(Long id);
+    Optional<Word> findEnglishWordByHint(Long id);
 
     /**
      * 랜덤하게 5개의 영어 단어를 조회합니다.
      * 결과가 없으면 빈 리스트를 반환합니다.
      */
-    List<EnglishWord> findRandom5Words();
+    List<Word> findRandom5Words();
 
     List<Long> findAllIds();
 
@@ -33,21 +32,21 @@ public interface WordMapper {
     int countAll();
 
 
-    List<EnglishWord> findRecent5Words();
+    List<Word> findRecent5Words();
 
 
-    List<EnglishWord> findByWordBookId(Long wordBookId);
+    List<Word> findByWordBookId(Long wordBookId);
 
     /**
      * ID에 해당하는 영어 단어를 삭제합니다.
      */
     void deleteById(Long id);
 
-    List<EnglishWord> findAllByWordBookId(Long wordBookId);
+    List<Word> findAllByWordBookId(Long wordBookId);
 
     boolean existsById(Long id);
 
-    List<EnglishWord> findAllWithPaging(Pageable pageable);
+    List<Word> findAllWithPaging(Pageable pageable);
     long countTotal();  // 전체 개수를 위한 메서드 추가
 
 

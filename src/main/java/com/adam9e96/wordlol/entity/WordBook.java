@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class WordBook {
     @OneToMany(mappedBy = "wordBook", cascade = CascadeType.ALL)
-    private List<EnglishWord> words = new ArrayList<>(); // 초기화 추가
+    private List<Word> words = new ArrayList<>(); // 초기화 추가
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,7 +43,7 @@ public class WordBook {
         return wordBook;
     }
 
-    public void addWord(EnglishWord word) {
+    public void addWord(Word word) {
         if (this.words == null) {
             this.words = new ArrayList<>();
         }

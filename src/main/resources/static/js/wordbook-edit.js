@@ -64,11 +64,6 @@ function addWordRow(word = null) {
                        placeholder="영단어" required>
             </div>
             <div class="col-md-3">
-                <input type="text" class="form-control vocabulary"
-                       value="${word ? word.vocabulary : ''}"
-                       placeholder="영단어" required>
-            </div>
-            <div class="col-md-3">
                 <input type="text" class="form-control meaning"
                        value="${word ? word.meaning : ''}"
                        placeholder="의미" required>

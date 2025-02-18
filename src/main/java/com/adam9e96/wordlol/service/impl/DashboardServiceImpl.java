@@ -1,9 +1,9 @@
-package com.adam9e96.wordlol.service;
+package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.dto.DashBoardResponse;
-import com.adam9e96.wordlol.entity.EnglishWord;
+import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.mapper.WordMapper;
-import com.adam9e96.wordlol.repository.EnglishWordRepository;
+import com.adam9e96.wordlol.service.interfaces.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DashboardService {
+public class DashboardServiceImpl implements DashboardService {
 
-    private final EnglishWordService englishWordService;
-    private final EnglishWordRepository englishWordRepository;
     private final WordMapper wordMapper;
 
     public DashBoardResponse getDashboardData() {
@@ -22,7 +20,7 @@ public class DashboardService {
         int totalWords = wordMapper.countAll();
 
         // 최근에 추가된 단어 5개 조회
-        List<EnglishWord> recent5Words = wordMapper.findRecent5Words();
+        List<Word> recent5Words = wordMapper.findRecent5Words();
 
 
         // TODO : 추구 구현할 기능

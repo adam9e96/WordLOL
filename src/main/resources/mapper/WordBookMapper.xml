@@ -25,7 +25,7 @@
         - property: wordBook 엔티티의 words 필드와 매핑
         - ofType: 컬렉션의 요소 타입 (EnglishWord)
         -->
-        <collection property="words" ofType="com.adam9e96.wordlol.entity.EnglishWord">
+        <collection property="words" ofType="com.adam9e96.wordlol.entity.Word">
             <id property="id" column="word_id"/> <!-- id 필드를 word_id 컬럼과 매핑 -->
             <result property="vocabulary" column="vocabulary"/> <!-- vocabulary 필드를 vocabulary 컬럼과 매핑 -->
             <result property="meaning" column="meaning"/> <!-- meaning 필드를 meaning 컬럼과 매핑 -->
@@ -60,7 +60,7 @@
             ew.created_at as word_created_at, /* 단어 생성일시 */
             ew.updated_at as word_updated_at /* 단어 수정일시 */
         FROM word_book wb
-                 LEFT JOIN english_word ew ON wb.id = ew.word_book_id /* 단어장-단어 테이블 조인 */
+                 LEFT JOIN word ew ON wb.id = ew.word_book_id /* 단어장-단어 테이블 조인 */
         WHERE wb.category = #{category} /* 입력받은 카테고리로 필터링 */
     </select>
     <select id="findById" resultMap="WordBookResultMap">

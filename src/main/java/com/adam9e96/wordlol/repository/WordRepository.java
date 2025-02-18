@@ -1,7 +1,7 @@
 package com.adam9e96.wordlol.repository;
 
 import com.adam9e96.wordlol.entity.Category;
-import com.adam9e96.wordlol.entity.EnglishWord;
+import com.adam9e96.wordlol.entity.Word;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,9 +9,9 @@ import java.util.List;
 
 
 @Repository
-public interface EnglishWordRepository extends JpaRepository<EnglishWord, Long> {
+public interface WordRepository extends JpaRepository<Word, Long> {
 
-    List<EnglishWord> findByWordBookCategory(Category category);
+    List<Word> findByWordBookCategory(Category category);
 
     boolean existsByVocabularyIgnoreCase(String vocabulary);
 

@@ -7,14 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class EnglishWordRepositoryTest {
+class WordRepositoryTest {
 
     @Autowired
-    private EnglishWordRepository englishWordRepository;
+    private WordRepository wordRepository;
 
     @Test
     public void findVocabularyById() {
-        String ee = englishWordRepository.findById(1L).get().getVocabulary();
+        String ee = wordRepository.findById(1L).get().getVocabulary();
         assertEquals("abandon", ee);
     }
 

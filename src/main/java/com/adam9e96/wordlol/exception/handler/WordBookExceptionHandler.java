@@ -62,4 +62,15 @@ public class WordBookExceptionHandler {
         return ResponseEntity.status(e.getStatus()).body(response);
     }
 
+    @ExceptionHandler(WordBookEmptyException.class)
+    public ResponseEntity<ErrorResponse> handleWordBookEmpty(WordBookEmptyException e) {
+        log.error("단어장이 비어있음: {}", e.getMessage(), e);
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                e.getStatus().value(),
+                e.getMessage(),
+                List.of(e.getCode())
+        );
+        return ResponseEntity.status(e.getStatus()).body(response);
+    }
 }

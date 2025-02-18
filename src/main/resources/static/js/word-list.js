@@ -294,14 +294,9 @@ function formatDateTime(dateTimeStr) {
 }
 
 function showError(message) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.row'));
+    showToast(message, 'danger');
 }
+
 
 function showToast(message, isSuccess = true) {
     const toast = document.getElementById('toast');

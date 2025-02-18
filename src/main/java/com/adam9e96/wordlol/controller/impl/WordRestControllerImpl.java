@@ -1,11 +1,11 @@
-package com.adam9e96.wordlol.controller;
+package com.adam9e96.wordlol.controller.impl;
 
+import com.adam9e96.wordlol.controller.interfaces.WordRestController;
 import com.adam9e96.wordlol.dto.*;
-import com.adam9e96.wordlol.entity.EnglishWord;
-import com.adam9e96.wordlol.service.EnglishWordService;
-import com.adam9e96.wordlol.service.StudyProgressService;
+import com.adam9e96.wordlol.entity.Word;
+import com.adam9e96.wordlol.service.interfaces.WordService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,30 +21,23 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/words")
 @Slf4j
-@AllArgsConstructor
-public class WordRestController {
+@RequiredArgsConstructor
+public class WordRestControllerImpl implements WordRestController {
 
-    // #todo perfectRun 변수 대신 db 를 통해 관리되도록 하기
-    private static int perfectRun = 0; // 연속 정답 횟수를 추적하는 변수.
-    private final EnglishWordService englishWordService;
-    private final StudyProgressService studyProgressService;
+    private static int perfectRun = 0;
+    private final WordService wordService;
 
-
+    @Override
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> createWord(@Valid @RequestBody WordRequest request) {
-        englishWordService.createWord(
-                request.vocabulary(),
-                request.meaning(),
-                request.hint(),
-                request.difficulty()
-        );
+        wordService.createWord(request);
         return ResponseEntity.ok(Map.of("message", "success"));
     }
 
-
+    @Override
     @PostMapping("/registers")
     public ResponseEntity<Map<String, Object>> createWords(@Valid @RequestBody List<WordRequest> requests) {
-        int successCount = englishWordService.createWordsBatch(requests);
+        int successCount = wordService.createWords(requests);
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "success");
@@ -53,27 +46,17 @@ public class WordRestController {
         return ResponseEntity.ok(response);
     }
 
+    @Override
     @GetMapping("/{id}")
     public ResponseEntity<WordResponse> findWord(@PathVariable("id") Long id) {
-        WordResponse response = toResponse(englishWordService.findById(id));
+        WordResponse response = toResponse(wordService.findById(id));
         return ResponseEntity.ok(response);
     }
 
-    private WordResponse toResponse(EnglishWord word) {
-        return new WordResponse(
-                word.getId(),
-                word.getVocabulary(),
-                word.getMeaning(),
-                word.getHint(),
-                word.getDifficulty(),
-                word.getCreatedAt(),
-                word.getUpdatedAt()
-        );
-    }
-
+    @Override
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @Valid @RequestBody WordRequest request) {
-        englishWordService.updateWord(
+        wordService.updateWord(
                 id,
                 request.vocabulary(),
                 request.meaning(),
@@ -83,36 +66,25 @@ public class WordRestController {
         return ResponseEntity.ok().build();
     }
 
+    @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWord(@PathVariable("id") Long id) {
-        englishWordService.deleteWord(id);
+        wordService.deleteWord(id);
         return ResponseEntity.ok().build();
     }
 
-
-    // ========================================================================================================
+    @Override
     @GetMapping("/random")
     public ResponseEntity<WordResponse> getRandomWord() {
-        EnglishWord randomWord = englishWordService.findRandomWord();
+        Word randomWord = wordService.findRandomWord();
         WordResponse response = toResponseWithoutAnswer(randomWord);
         return ResponseEntity.ok(response);
     }
 
-    private WordResponse toResponseWithoutAnswer(EnglishWord word) {
-        return new WordResponse(
-                word.getId(),
-                word.getVocabulary(),
-                null, // 정답 숨김
-                null, // 힌트 숨김
-                word.getDifficulty(),
-                null, // 등록일 숨김
-                null // 업데이트 숨김
-        );
-    }
-
+    @Override
     @PostMapping("/check")
     public ResponseEntity<AnswerResponse> validateAnswer(@Valid @RequestBody AnswerRequest request) {
-        boolean isCorrect = englishWordService.validateAnswer(request.wordId(), request.answer());
+        boolean isCorrect = wordService.validateAnswer(request.wordId(), request.answer());
 
         AnswerResponse response;
         if (isCorrect) {
@@ -125,28 +97,25 @@ public class WordRestController {
         return ResponseEntity.ok().body(response);
     }
 
+    @Override
     @GetMapping("/{id}/hint")
     public ResponseEntity<Map<String, String>> getHint(@PathVariable("id") Long id) {
-        EnglishWord word = englishWordService.findById(id);
+        Word word = wordService.findById(id);
         return ResponseEntity.ok().body(Map.of("hint", word.getHint()));
     }
 
+    @Override
     @GetMapping("/perfectRun")
     public Map<String, Integer> getPerfectRun() {
         return Map.of("perfectRun", perfectRun);
     }
 
 
+    @Override
     @GetMapping("/daily-words")
     public ResponseEntity<List<WordResponse>> getTodayWords() {
-        List<EnglishWord> words = englishWordService.findRandomWords();
+        List<Word> words = wordService.findRandomWords();
         return ResponseEntity.ok().body(toResponseList(words));
-    }
-
-    private List<WordResponse> toResponseList(List<EnglishWord> words) {
-        return words.stream()
-                .map(this::toResponse)
-                .toList();
     }
 
     /**
@@ -158,6 +127,7 @@ public class WordRestController {
      * @param size 한 페이지에 보여줄 데이터(단어) 수
      * @return 단어 목록
      */
+    @Override
     @GetMapping("/list")
     public ResponseEntity<PageResponse<WordResponse>> findWordsWithPaging(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -180,22 +150,54 @@ public class WordRestController {
          */
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<EnglishWord> wordPage = englishWordService.findAllWithPaging(pageable);
+        Page<Word> wordPage = wordService.findAllWithPaging(pageable);
         PageResponse<WordResponse> response = new PageResponse<>(
                 wordPage.map(this::toWordResponse)
         );
         return ResponseEntity.ok(response);
     }
 
-    private WordResponse toWordResponse(EnglishWord englishWord) {
+
+    private WordResponse toResponse(Word word) {
         return new WordResponse(
-                englishWord.getId(),
-                englishWord.getVocabulary(),
-                englishWord.getMeaning(),
-                englishWord.getHint(),
-                englishWord.getDifficulty(),
-                englishWord.getCreatedAt(),
-                englishWord.getUpdatedAt()
+                word.getId(),
+                word.getVocabulary(),
+                word.getMeaning(),
+                word.getHint(),
+                word.getDifficulty(),
+                word.getCreatedAt(),
+                word.getUpdatedAt()
+        );
+    }
+
+    private WordResponse toResponseWithoutAnswer(Word word) {
+        return new WordResponse(
+                word.getId(),
+                word.getVocabulary(),
+                null, // 정답 숨김
+                null, // 힌트 숨김
+                word.getDifficulty(),
+                null, // 등록일 숨김
+                null // 업데이트 숨김
+        );
+    }
+
+    private List<WordResponse> toResponseList(List<Word> words) {
+        return words.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+
+    private WordResponse toWordResponse(Word word) {
+        return new WordResponse(
+                word.getId(),
+                word.getVocabulary(),
+                word.getMeaning(),
+                word.getHint(),
+                word.getDifficulty(),
+                word.getCreatedAt(),
+                word.getUpdatedAt()
         );
     }
 }

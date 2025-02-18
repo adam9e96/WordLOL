@@ -4,7 +4,7 @@
 <mapper namespace="com.adam9e96.wordlol.mapper.WordMapper">
 
     <!-- EnglishWord 엔티티의 결과 매핑 -->
-    <resultMap id="EnglishWordResultMap" type="com.adam9e96.wordlol.entity.EnglishWord">
+    <resultMap id="EnglishWordResultMap" type="com.adam9e96.wordlol.entity.Word">
         <!-- 기본 키 매핑 -->
         <id property="id" column="id"/>
         <!-- 일반 컬럼 매핑 -->
@@ -24,15 +24,15 @@
 
     <!-- 단어를 추가하는 INSERT 문 -->
     <insert id="save"
-            parameterType="com.adam9e96.wordlol.entity.EnglishWord"
+            parameterType="com.adam9e96.wordlol.entity.Word"
             useGeneratedKeys="true"
             keyProperty="id">
-        INSERT INTO english_word (vocabulary,
-                                  meaning,
-                                  hint,
-                                  difficulty,
-                                  created_at,
-                                  updated_at)
+        INSERT INTO word(vocabulary,
+                         meaning,
+                         hint,
+                         difficulty,
+                         created_at,
+                         updated_at)
         VALUES (#{vocabulary},
                 #{meaning},
                 #{hint},
@@ -45,7 +45,7 @@
     <!-- id에 해당되는 엔티티 삭제 -->
     <delete id="deleteById">
         DELETE
-        FROM english_word
+        FROM word
         WHERE id = #{id}
     </delete>
 
@@ -59,12 +59,12 @@
                created_at,
                updated_at,
                word_book_id
-        FROM english_word
+        FROM word
         WHERE id = #{id}
     </select>
     <select id="findEnglishWordByHint" resultMap="EnglishWordResultMap">
         SELECT hint
-        FROM english_word
+        FROM word
         WHERE id = #{id}
     </select>
 
@@ -77,13 +77,13 @@
                difficulty,
                null as created_at,
                null as updated_at
-        FROM english_word
+        FROM  word
         ORDER BY RAND()
         LIMIT 5
     </select>
     <select id="findAllIds" resultType="java.lang.Long">
         SELECT id
-        FROM english_word
+        FROM word
     </select>
     <!-- 최근 5개 단어 조회-->
     <select id="findRecent5Words" resultMap="EnglishWordResultMap">
@@ -94,18 +94,25 @@
                difficulty,
                created_at,
                null as updated_at
-        FROM english_word
+        FROM word
         ORDER BY id DESC
         LIMIT 5
     </select>
     <select id="countAll" resultType="int">
         SELECT COUNT(*)
-        FROM english_word
+        FROM word
     </select>
     <select id="findByWordBookId" resultMap="EnglishWordResultMap">
-        SELECT *
-        FROM english_word
-        WHERE word_book_id = #{wordBookId}
+        SELECT e.id,
+               e.vocabulary,
+               e.meaning,
+               e.hint,
+               e.difficulty,
+               e.created_at,
+               e.updated_at
+        FROM  word e
+        WHERE e.word_book_id = #{wordBookId}
+        ORDER BY e.id DESC /* 최신 단어부터 조회 */
     </select>
     <select id="findAllByWordBookId" resultMap="EnglishWordResultMap">
         SELECT e.id,
@@ -115,12 +122,12 @@
                e.difficulty,
                e.created_at,
                e.updated_at
-        FROM english_word e
+        FROM word e
         WHERE word_book_id = #{wordBookId}
     </select>
     <select id="existsById" resultType="java.lang.Boolean">
         SELECT COUNT(*) > 0
-        FROM english_word
+        FROM word
         WHERE id = #{id}
     </select>
     <select id="findAllWithPaging" resultMap="EnglishWordResultMap">
@@ -131,14 +138,14 @@
                difficulty,
                created_at,
                updated_at
-        FROM english_word
+        FROM word
         ORDER BY id DESC
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
     <!-- 전체 단어 수 조회 -->
     <select id="countTotal" resultType="long">
         SELECT COUNT(*)
-        FROM english_word
+        FROM word
     </select>
 
 

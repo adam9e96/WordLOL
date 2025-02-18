@@ -11,10 +11,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "english_word")
+@Table(name = "word")
 @Getter
 @NoArgsConstructor
-public class EnglishWord {
+public class Word {
 
     /**
      * 영어 단어의 고유 식별자입니다.
@@ -89,7 +89,7 @@ public class EnglishWord {
      * @param wordBook   해당 단어가 속하는 단어장(WordBook)
      */
     @Builder
-    public EnglishWord(Long id, String vocabulary, String meaning, String hint, Integer difficulty, WordBook wordBook) {
+    public Word(Long id, String vocabulary, String meaning, String hint, Integer difficulty, WordBook wordBook) {
         this.id = id;
         this.vocabulary = vocabulary;
         this.meaning = meaning;

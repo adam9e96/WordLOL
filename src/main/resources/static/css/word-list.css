@@ -141,14 +141,15 @@
 
 /* 토스트 메시지 */
 .toast-container {
-    z-index: 1050;
+    z-index: 1056; /* 모달의 z-index보다 높게 설정 */
 }
 
 .toast {
     min-width: 200px;
-    box-shadow: var(--elevation-1);
-    border-radius: var(--border-radius);
+    background-color: rgba(0, 0, 0, 0.85);
+    color: white;
 }
+
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
