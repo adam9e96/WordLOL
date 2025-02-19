@@ -14,64 +14,64 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class WordViewControllerImpl implements WordViewController {
 
     @Override
-    @RequestMapping("/study")
-    public String showStudy() {
-        return "study";
+    @GetMapping("/study")
+    public String showStudyPage() {
+        return "word/study";
     }
 
     @Override
     @GetMapping("/register")
-    public String showRegister() {
-        return "word-register";
+    public String showRegisterPage() {
+        return "word/register";
+    }
+
+    @Override
+    @GetMapping("/words/register")
+    public String showWordsRegisterPage() {
+        return "words/register";
     }
 
     @Override
     @GetMapping("/list")
-    public String showList() {
-        return "word-list";
+    public String showListPage() {
+        return "word/list";
     }
 
     @Override
     @GetMapping("/dashboard")
-    public String showMain() {
+    public String showDashboardPage() {
         return "dashboard";
     }
 
     @Override
     @GetMapping("/daily")
-    public String showDaily() {
-        return "daily"; // 빈 템플릿 반환
+    public String showDailyPage() {
+        return "daily";
     }
 
     @Override
-    @GetMapping("/wordbook-list")
-    public String showWordBookList() {
-        return "wordbook-list";
+    @GetMapping("/wordbook/create")
+    public String showWordBookCreatePage() {
+        return "wordbook/create";
     }
 
     @Override
-    @GetMapping("/wordbook-create")
-    public String showWordBookRegister() {
-        return "wordbook-create";
+    @GetMapping("/wordbook/list")
+    public String showWordBookListPage() {
+        return "wordbook/list";
     }
 
     @Override
-    @GetMapping("/register-all")
-    public String showWordBook() {
-        return "words-register";
-    }
-
-    @Override
-    @GetMapping("/wordbook/edit/{id}")
-    public String showWordBookEdit(@PathVariable("id") Long id, Model model) {
+    @GetMapping("/wordbook/{id}/edit")
+    public String showWordBookEditPage(@PathVariable("id") Long id, Model model) {
         model.addAttribute("wordBookId", id);
-        return "wordbook-edit";
+        return "wordbook/edit";
     }
 
     @Override
-    @GetMapping("/study/{wordBookId}")
-    public String showWordBookStudy(@PathVariable("wordBookId") Long wordBookId, Model model) {
-        model.addAttribute("wordBookId", wordBookId);
-        return "wordbook-study";
+    @GetMapping("/wordbook/{id}/study")
+    public String showWordBookStudyPage(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("wordBookId", id);
+        return "wordbook/study";
     }
 }

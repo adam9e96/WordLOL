@@ -6,32 +6,32 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 public interface WordViewController {
     @GetMapping("/study")
-    String showStudy();
+    String showStudyPage();
 
     @GetMapping("/register")
-    String showRegister();
+    String showRegisterPage();
+
+    @GetMapping("/words/register")
+    String showWordsRegisterPage();
 
     @GetMapping("/list")
-    String showList();
+    String showListPage();
 
     @GetMapping("/dashboard")
-    String showMain();
+    String showDashboardPage();
 
     @GetMapping("/daily")
-    String showDaily();
+    String showDailyPage();
 
-    @GetMapping("/wordbook-list")
-    String showWordBookList();
+    @GetMapping("/wordbook/create")
+    String showWordBookCreatePage();
 
-    @GetMapping("/wordbook-create")
-    String showWordBookRegister();
+    @GetMapping("/wordbook/list")
+    String showWordBookListPage();
 
-    @GetMapping("/register-all")
-    String showWordBook();
+    @GetMapping("/wordbook/{id}/edit")
+    String showWordBookEditPage(@PathVariable("id") Long id, Model model);
 
-    @GetMapping("/wordbook/edit/{id}")
-    String showWordBookEdit(@PathVariable("id") Long id, Model model);
-
-    @GetMapping("/study/{wordBookId}")
-    String showWordBookStudy(@PathVariable("wordBookId") Long wordBookId, Model model);
+    @GetMapping("/wordbook/{id}/study")
+    String showWordBookStudyPage(@PathVariable("id") Long id, Model model);
 }

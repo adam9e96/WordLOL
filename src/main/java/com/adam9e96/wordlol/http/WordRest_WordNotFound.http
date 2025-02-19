@@ -45,7 +45,7 @@ Content-Type: application/json
 }
 
 ### 9. 단어 다중 등록 시 유효하지 않은 데이터 (400 에러)
-POST http://localhost:8080/api/v1/words/registers
+POST http://localhost:8080/api/v1/words/batch
 Content-Type: application/json
 
 [

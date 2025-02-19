@@ -14,13 +14,13 @@ GET http://localhost:8080/word/dashboard
 GET http://localhost:8080/word/daily
 
 ### GET 단어장 목록 페이지 반환
-GET http://localhost:8080/word/wordbook-list
+GET http://localhost:8080/word/wordbook/list
 
 ### GET 단어장 생성 페이지 반환
-GET http://localhost:8080/word/wordbook-create
+GET http://localhost:8080/word/wordbook/create
 
 ### GET 단어 일괄 등록 페이지 반환
-GET http://localhost:8080/word/register-all
+GET http://localhost:8080/word/words/register
 
 ### GET 단어장 수정 페이지 반환
 GET http://localhost:8080/word/wordbook/edit/1

@@ -15,7 +15,7 @@ public interface WordService {
 
     Word findById(Long id);
 
-    void updateWord(Long id, String vocabulary, String meaning, String hint, Integer difficulty);
+    void updateWord(Long id, WordRequest request);
 
     void deleteWord(Long id);
 

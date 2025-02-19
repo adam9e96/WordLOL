@@ -2,6 +2,7 @@ let currentWords = [];
 let currentIndex = 0;
 let history = [];
 let showingHint = false;
+const API_BASE_URL = '/api/v1/wordbooks';
 
 function getDifficultyStars(level) {
     return '<i class="bi bi-star-fill"></i>'.repeat(level);
@@ -9,7 +10,7 @@ function getDifficultyStars(level) {
 
 async function loadWords() {
     try {
-        const response = await fetch(`/api/v1/wordbooks/study/${wordBookId}`);
+        const response = await fetch(`${API_BASE_URL}/${wordBookId}/study`);
         if (!response.ok) {
             throw new Error('단어를 불러오는데 실패했습니다');
         }

@@ -2,10 +2,13 @@
 let currentPage = 0;
 
 /** @type {number} 페이지당 표시할 단어 수 */
-const pageSize = 20;
+const size = 20;
 
 /** @type {boolean} 작업 진행 중 플래그 */
 let isProcessing = false;
+
+
+const API_BASE_URL = '/api/v1/words'; // API 기본 URL
 
 // 초기화
 document.addEventListener('DOMContentLoaded', function () {
@@ -92,7 +95,7 @@ async function loadWords(page) {
         updateUrl(page);  // URL 업데이트는 별도 함수로 분리
 
         // API 호출은 0-based 페이지 번호 사용
-        const response = await fetch(`/api/v1/words/list?page=${page}&size=${pageSize}`);
+        const response = await fetch(`${API_BASE_URL}/list?page=${page}&size=${size}`);
         if (!response.ok) throw new Error('단어 목록을 불러오는데 실패했습니다.');
 
         const data = await response.json();
@@ -172,7 +175,7 @@ function updatePagination(totalPages) {
  */
 async function editWord(id) {
     try {
-        const response = await fetch(`/api/v1/words/${id}`);
+        const response = await fetch(`${API_BASE_URL}/${id}`);
         if (!response.ok) throw new Error('단어 정보를 불러오는데 실패했습니다.');
 
         const word = await response.json();
@@ -190,7 +193,7 @@ async function deleteWord(id) {
     if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) return;
 
     try {
-        const response = await fetch(`/api/v1/words/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/${id}`, {
             method: 'DELETE'
         });
 

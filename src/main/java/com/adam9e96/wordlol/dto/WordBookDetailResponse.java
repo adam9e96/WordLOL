@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  * WordBookDetailResponse
  * 단어장 상세 정보 응답 DTO
  * <p>
- * wordbook-edit.js 에서 사용
+ * edit.js 에서 사용
  *
  * @param id
  * @param name

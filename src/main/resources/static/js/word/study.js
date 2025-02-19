@@ -105,7 +105,6 @@ async function loadNewWord() {
         if (!response.ok) {
             console.error('단어 로드 에러:', response);
             messageEl.textContent = '단어를 불러오는데 실패했습니다.';
-            // document.getElementById('message').textContent = '단어를 불러오는데 실패했습니다.';
             return;
         }
 
@@ -132,7 +131,6 @@ async function loadNewWord() {
     } catch (error) {
         console.error('단어 로드 에러:', error);
         messageEl.textContent = '단어를 불러오는데 실패했습니다.';
-        // document.getElementById('message').textContent = '단어를 불러오는데 실패했습니다.';
     }
 }// loadNewWord() 함수 끝
 

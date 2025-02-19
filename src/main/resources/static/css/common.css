@@ -30,17 +30,22 @@ body {
 
 /* Material You 헤더 스타일 */
 .navbar.material-header {
-    background-color: var(--surface);
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     box-shadow: var(--elevation-3);
     border-radius: var(--border-radius);
-    margin: 0 auto;
+    margin: 1rem auto;
     padding: 0.5rem 1rem;
     max-width: 1200px;
-    width: 100%;
-    position: relative;
+    width: min(calc(100% - 2rem), 1200px);
+    position: sticky;
+    top: 1rem;
     z-index: 1000;
-    overflow-x: hidden; /* 헤더 내부 가로 스크롤 방지 */
+    overflow: hidden;
 }
+
+
 
 .navbar.material-header .container {
     max-width: 960px;
@@ -118,3 +123,5 @@ body {
         flex-direction: column; /* 모바일에서 세로 정렬 */
     }
 }
+
+

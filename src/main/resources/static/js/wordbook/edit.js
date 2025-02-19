@@ -1,5 +1,7 @@
 const toast = new bootstrap.Toast(document.getElementById('toast'));
 const wordBookId = document.getElementById('wordBookId').value;
+const API_BASE_URL = '/api/v1/wordbooks';
+const API_BASE_URL_WORD = '/api/v1/words';
 
 function showToast(message, type = 'success') {
     const toastElement = document.getElementById('toast');
@@ -14,14 +16,14 @@ function showToast(message, type = 'success') {
 async function loadWordBook(wordBookId) {
     try {
         // 1. 단어장 기본 정보 조회
-        const wordBookResponse = await fetch(`/api/v1/wordbooks/${wordBookId}`);
+        const wordBookResponse = await fetch(`${API_BASE_URL}/${wordBookId}`);
         if (!wordBookResponse.ok) {
             throw new Error('단어장을 찾을 수 없습니다.');
         }
         const wordBook = await wordBookResponse.json();
 
         // 2. 단어장의 단어 목록 조회
-        const wordsResponse = await fetch(`/api/v1/wordbooks/words/${wordBookId}`);
+        const wordsResponse = await fetch(`${API_BASE_URL}/${wordBookId}/words`);
         if (!wordsResponse.ok) {
             throw new Error('단어 목록을 불러올 수 없습니다.');
         }
@@ -122,7 +124,7 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
     };
 
     try {
-        const response = await fetch(`/api/v1/wordbooks/${wordBookId}`, {
+        const response = await fetch(`${API_BASE_URL}/${wordBookId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -133,7 +135,7 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
         if (response.ok) {
             showToast('단어장이 성공적으로 수정되었습니다.');
             setTimeout(() => {
-                window.location.href = '/word/wordbook-list';
+                window.location.href = '/wordbook/list';
             }, 1500);
         } else {
             const error = await response.json();

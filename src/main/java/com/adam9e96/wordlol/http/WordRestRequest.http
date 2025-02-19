@@ -37,10 +37,10 @@ Content-Type: application/json
 }
 
 ### 연속 정답 확인
-GET http://localhost:8080/api/v1/words/perfectRun
+GET http://localhost:8080/api/v1/words/streak
 
 ### 단어 5개 랜덤 조회
-GET http://localhost:8080/api/v1/words/daily-words
+GET http://localhost:8080/api/v1/words/daily
 
 ### 단어 리스트 조회 with 페이징 정보
 GET http://localhost:8080/api/v1/words/list
@@ -75,7 +75,7 @@ Content-Type: application/json
 ### 단어 추가 END
 
 ### 단어 N개 추가
-POST http://localhost:8080/api/v1/words/registers
+POST http://localhost:8080/api/v1/words/batch
 Content-Type: application/json
 
 [

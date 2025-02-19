@@ -52,30 +52,29 @@ async function saveWords() {
     const rows = document.getElementsByClassName('word-row');
     const words = [];
 
-    // 각 행의 데이터 수집
+    // 각 행의 데이터 검증
     for (let row of rows) {
         const vocabulary = row.querySelector('.vocabulary').value.trim();
         const meaning = row.querySelector('.meaning').value.trim();
         const hint = row.querySelector('.hint').value.trim();
         const difficulty = row.querySelector('.difficulty').value;
 
-        if (vocabulary && meaning) {  // 필수 필드가 채워져 있는 경우만 추가
-            words.push({
-                vocabulary: vocabulary,
-                meaning: meaning,
-                hint: hint,
-                difficulty: difficulty
-            });
+        // 필수 필드 검증
+        if (!vocabulary || !meaning) {
+            showToast('모든 필수 항목을 입력해주세요.', 'danger');
+            return;
         }
-    }
 
-    if (words.length === 0) {
-        showToast('저장할 단어가 없습니다.', 'danger');
-        return;
+        words.push({
+            vocabulary: vocabulary,
+            meaning: meaning,
+            hint: hint,
+            difficulty: parseInt(difficulty)
+        });
     }
 
     try {
-        const response = await fetch('/api/v1/words/registers', {
+        const response = await fetch('/api/v1/words/batch', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -88,7 +87,7 @@ async function saveWords() {
         if (response.ok) {
             showToast(`${result.count}개의 단어가 저장되었습니다.`, 'success');
             setTimeout(() => {
-                window.location.href = '/word/list';
+                window.location.href = '/word/study';
             }, 2000);
         } else {
             showToast('저장 중 오류가 발생했습니다.', 'danger');

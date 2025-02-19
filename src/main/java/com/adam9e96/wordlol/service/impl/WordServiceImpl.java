@@ -9,6 +9,7 @@ import com.adam9e96.wordlol.exception.word.WordNotFoundException;
 import com.adam9e96.wordlol.exception.word.WordUpdateException;
 import com.adam9e96.wordlol.mapper.WordMapper;
 import com.adam9e96.wordlol.repository.WordRepository;
+import com.adam9e96.wordlol.service.interfaces.WordService;
 import com.adam9e96.wordlol.validator.WordValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ import java.util.Random;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class WordServiceImpl implements com.adam9e96.wordlol.service.interfaces.WordService {
+public class WordServiceImpl implements WordService {
     private final WordRepository wordRepository;
     private final WordMapper wordMapper;
     private final WordValidator wordValidator;
@@ -91,14 +92,14 @@ public class WordServiceImpl implements com.adam9e96.wordlol.service.interfaces.
 
     @Transactional
     @Override
-    public void updateWord(Long id, String vocabulary, String meaning, String hint, Integer difficulty) {
+    public void updateWord(Long id, WordRequest request) {
         // 1. 기존 단어 존재 여부 확인
         Word word = wordMapper.findById(id).orElseThrow(() -> new WordNotFoundException(id));
         // 2. 비즈니스 로직 유효성 검증
-        validateUpdateWordInput(vocabulary, meaning, hint, difficulty);
+        validateUpdateWordInput(request.vocabulary(), request.meaning(), request.hint(), request.difficulty());
         try {
             // 3. 단어 업데이트
-            word.update(vocabulary, meaning, hint, difficulty);
+            word.update(request.vocabulary(), request.meaning(), request.hint(), request.difficulty());
             wordMapper.save(word);
         } catch (Exception e) {
             log.error("단어 업데이트 중 오류가 발생했습니다. ID: {}", id, e);

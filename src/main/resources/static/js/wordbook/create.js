@@ -74,7 +74,7 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
     };
 
     try {
-        const response = await fetch('/api/v1/wordbooks/create', {
+        const response = await fetch('/api/v1/wordbooks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -85,7 +85,7 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
         if (response.ok) {
             showToast('단어장이 성공적으로 생성되었습니다.');
             setTimeout(() => {
-                window.location.href = '/word/wordbook-list';
+                window.location.href = '/word/wordbook/list';  // 컨트롤러의 매핑과 일치하는 URL로 수정
             }, 1500);
         } else {
             const error = await response.json();

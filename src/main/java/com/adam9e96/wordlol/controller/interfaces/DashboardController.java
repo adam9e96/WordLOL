@@ -6,5 +6,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 public interface DashboardController {
     @GetMapping
-    ResponseEntity<DashBoardResponse> getDashboard();
+    ResponseEntity<DashBoardResponse> getDashboardData();
 }

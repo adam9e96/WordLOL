@@ -82,7 +82,7 @@ function updateWordBooksSummary(wordBooks) {
                     <p class="card-text small text-muted mb-2">${book.description}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">단어 수: ${book.wordCount}</small>
-                        <a href="/word/study/${book.id}" class="btn btn-sm btn-outline-primary">
+                        <a href="/word/${book.id}/study" class="btn btn-sm btn-outline-primary">
                             학습하기
                         </a>
                     </div>

@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             // API 요청 전송
-            const response = await fetch('/api/v1/words/register', {
+            const response = await fetch('/api/v1/words', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

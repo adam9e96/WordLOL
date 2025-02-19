@@ -28,15 +28,15 @@ public class WordRestControllerImpl implements WordRestController {
     private final WordService wordService;
 
     @Override
-    @PostMapping("/register")
+    @PostMapping
     public ResponseEntity<Map<String, Object>> createWord(@Valid @RequestBody WordRequest request) {
         wordService.createWord(request);
         return ResponseEntity.ok(Map.of("message", "success"));
     }
 
     @Override
-    @PostMapping("/registers")
-    public ResponseEntity<Map<String, Object>> createWords(@Valid @RequestBody List<WordRequest> requests) {
+    @PostMapping("/batch")
+    public ResponseEntity<Map<String, Object>> createWords(@RequestBody List<WordRequest> requests) {
         int successCount = wordService.createWords(requests);
 
         Map<String, Object> response = new HashMap<>();
@@ -48,21 +48,15 @@ public class WordRestControllerImpl implements WordRestController {
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<WordResponse> findWord(@PathVariable("id") Long id) {
+    public ResponseEntity<WordResponse> getWord(@PathVariable("id") Long id) {
         WordResponse response = toResponse(wordService.findById(id));
         return ResponseEntity.ok(response);
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @Valid @RequestBody WordRequest request) {
-        wordService.updateWord(
-                id,
-                request.vocabulary(),
-                request.meaning(),
-                request.hint(),
-                request.difficulty()
-        );
+    public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @RequestBody WordRequest request) {
+        wordService.updateWord(id, request);
         return ResponseEntity.ok().build();
     }
 
@@ -83,7 +77,7 @@ public class WordRestControllerImpl implements WordRestController {
 
     @Override
     @PostMapping("/check")
-    public ResponseEntity<AnswerResponse> validateAnswer(@Valid @RequestBody AnswerRequest request) {
+    public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request) {
         boolean isCorrect = wordService.validateAnswer(request.wordId(), request.answer());
 
         AnswerResponse response;
@@ -99,21 +93,21 @@ public class WordRestControllerImpl implements WordRestController {
 
     @Override
     @GetMapping("/{id}/hint")
-    public ResponseEntity<Map<String, String>> getHint(@PathVariable("id") Long id) {
+    public ResponseEntity<Map<String, String>> getWordHint(@PathVariable("id") Long id) {
         Word word = wordService.findById(id);
         return ResponseEntity.ok().body(Map.of("hint", word.getHint()));
     }
 
     @Override
-    @GetMapping("/perfectRun")
-    public Map<String, Integer> getPerfectRun() {
+    @GetMapping("/streak")
+    public Map<String, Integer> getCurrentStreak() {
         return Map.of("perfectRun", perfectRun);
     }
 
 
     @Override
-    @GetMapping("/daily-words")
-    public ResponseEntity<List<WordResponse>> getTodayWords() {
+    @GetMapping("/daily")
+    public ResponseEntity<List<WordResponse>> getDailyWords() {
         List<Word> words = wordService.findRandomWords();
         return ResponseEntity.ok().body(toResponseList(words));
     }
@@ -129,13 +123,13 @@ public class WordRestControllerImpl implements WordRestController {
      */
     @Override
     @GetMapping("/list")
-    public ResponseEntity<PageResponse<WordResponse>> findWordsWithPaging(
+    public ResponseEntity<PageResponse<WordResponse>> getWords(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size) {
 
 
         // 페이징 및 정렬 정보 생성
-        // offset 과 limit 은 내부적으로 Pageable에서 계산함
+        // offset 과 limit 은 내부적으로 Pageable 에서 계산함
         /*
          * page : 페이지 번호 (0부터 시작)
          * size : 한 페이지당 항목 수

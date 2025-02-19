@@ -9,30 +9,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 public interface WordBookRestController {
-    @PostMapping("/create")
+    @PostMapping
     ResponseEntity<WordBookResponse> createWordBook(@RequestBody WordBookRequest request);
 
-    @GetMapping("/words/{wordBookId}")
-    ResponseEntity<List<WordResponse>> getWordsInWordBook(@PathVariable("wordBookId") Long wordBookId);
+    @GetMapping("/{id}/words")
+    ResponseEntity<List<WordResponse>> getWordBookWords(@PathVariable("id") Long id);
 
     @GetMapping("/category/{category}/words")
-    ResponseEntity<List<WordResponse>> getWordsByBookCategory(@PathVariable("category") Category category);
+    ResponseEntity<List<WordResponse>> getWordsByCategoryName(@PathVariable("category") Category category);
 
     @GetMapping
-    ResponseEntity<List<WordBookListResponse>> getWordBookList();
+    ResponseEntity<List<WordBookListResponse>> getWordBooks();
 
     @GetMapping("/category")
-    ResponseEntity<List<WordBookResponse>> getWordBookListByCategory(@RequestParam("category") Category category);
+    ResponseEntity<List<WordBookResponse>> getWordBooksByCategory(@RequestParam("category") Category category);
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteWordBookById(@PathVariable("id") Long id);
+    ResponseEntity<Void> deleteWordBook(@PathVariable("id") Long id);
 
     @GetMapping("/{id}")
-    ResponseEntity<WordBookDetailResponse> getWordBookDetailById(@PathVariable("id") Long id);
+    ResponseEntity<WordBookDetailResponse> getWordBook(@PathVariable("id") Long id);
 
     @PutMapping("/{id}")
-    ResponseEntity<WordBookResponse> updateWordBookById(@PathVariable("id") Long id, @RequestBody WordBookRequest request);
+    ResponseEntity<WordBookResponse> updateWordBook(@PathVariable("id") Long id, @RequestBody WordBookRequest request);
 
-    @GetMapping("/study/{wordBookId}")
-    ResponseEntity<List<WordBookStudyResponse>> getWordBookStudyData(@PathVariable("wordBookId") Long wordBookId);
+    @GetMapping("/{id}/study")
+    ResponseEntity<List<WordBookStudyResponse>> getWordBookStudyData(@PathVariable("id") Long id);
 }

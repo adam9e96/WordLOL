@@ -1,10 +1,13 @@
 let currentCategory = 'ALL';
+const API_BASE_URL = '/api/v1/wordbooks';
 
 async function loadWordBooks() {
     try {
+// 현재
         const url = currentCategory === 'ALL'
-            ? '/api/v1/wordbooks'
-            : `/api/v1/wordbooks/category?category=${currentCategory}`;
+            ? `${API_BASE_URL}`                                  // /api/v1/wordbooks
+            : `${API_BASE_URL}/category?category=${currentCategory}` // /api/v1/wordbooks/category?category=TOEIC
+
 
         const response = await fetch(url);
         if (!response.ok) {
@@ -33,12 +36,12 @@ async function loadWordBooks() {
                     </div>
                     <div class="card-actions">
                         <button class="btn btn-sm btn-outline-primary"
-                                onclick="location.href='/word/study/${book.id}'">
+                                onclick="location.href='/word/wordbook/${book.id}/study'">
                             <i class="bi bi-play-fill"></i>
                             <span>학습</span>
                         </button>
                         <button class="btn btn-sm btn-outline-secondary"
-                                onclick="location.href='/word/wordbook/edit/${book.id}'">
+                                onclick="location.href='/word/wordbook/${book.id}/edit'">
                             <i class="bi bi-pencil"></i>
                             <span>수정</span>
                         </button>
@@ -103,7 +106,7 @@ function confirmDelete(id) {
 
 document.getElementById('confirmDelete').addEventListener('click', async () => {
     try {
-        const response = await fetch(`/api/v1/wordbooks/${deleteWordBookId}`, {
+        const response = await fetch(`${API_BASE_URL}/${deleteWordBookId}`, {
             method: 'DELETE'
         });
 

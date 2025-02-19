@@ -10,7 +10,7 @@ import java.util.List;
 public interface WordBookService {
     WordBook createWordBook(WordBookRequest request);
 
-    List<Word> findWordsInWordBook(Long wordBookId);
+    List<Word> findWordsByWordBookId(Long wordBookId);
 
     List<WordBook> findWordBookListByCategory(Category category);
 

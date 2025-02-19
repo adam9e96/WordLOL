@@ -77,7 +77,7 @@ public class WordBookServiceImpl implements WordBookService {
      */
     @Transactional
     @Override
-    public List<Word> findWordsInWordBook(Long wordBookId) {
+    public List<Word> findWordsByWordBookId(Long wordBookId) {
         // 단어장의 존재 여부 먼저 확인
         if (!wordBookRepository.existsById(wordBookId)) {
             throw new WordBookNotFoundException(wordBookId);

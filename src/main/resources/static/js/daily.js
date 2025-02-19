@@ -8,7 +8,7 @@ async function loadDailyWords() {
         loadingEl.classList.remove('d-none');
         wordCardsEl.innerHTML = ''; // 기존 내용 초기화
 
-        const response = await fetch('/api/v1/words/daily-words');
+        const response = await fetch('/api/v1/words/daily');
 
         if (!response.ok) {
             throw new Error(`HTTP 오류! 상태: ${response.status}`);

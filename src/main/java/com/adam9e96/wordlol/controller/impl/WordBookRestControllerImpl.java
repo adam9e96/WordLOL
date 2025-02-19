@@ -22,19 +22,16 @@ public class WordBookRestControllerImpl implements WordBookRestController {
     private final WordBookService wordBookService;
 
     @Override
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<WordBookResponse> createWordBook(@RequestBody WordBookRequest request) {
-        log.info("단어장 생성 요청 : {}", request);
         WordBook wordBook = wordBookService.createWordBook(request);
         return ResponseEntity.ok().body(convertToWordBookResponse(wordBook));
     }
 
     @Override
-    @GetMapping("/words/{wordBookId}")
-    public ResponseEntity<List<WordResponse>> getWordsInWordBook(@PathVariable("wordBookId") Long wordBookId) {
-        log.info("단어장 ID {}의 단어 목록 조회 요청", wordBookId);
-
-        List<Word> words = wordBookService.findWordsInWordBook(wordBookId);
+    @GetMapping("{id}/words")
+    public ResponseEntity<List<WordResponse>> getWordBookWords(@PathVariable("id") Long id) {
+        List<Word> words = wordBookService.findWordsByWordBookId(id);
         List<WordResponse> response = words.stream()
                 .map(this::toWordResponse)
                 .toList();
@@ -44,7 +41,7 @@ public class WordBookRestControllerImpl implements WordBookRestController {
     // 아직 안씀
     @Override
     @GetMapping("/category/{category}/words")
-    public ResponseEntity<List<WordResponse>> getWordsByBookCategory(@PathVariable("category") Category category) {
+    public ResponseEntity<List<WordResponse>> getWordsByCategoryName(@PathVariable("category") Category category) {
         return ResponseEntity.ok().body(
                 wordBookService.findWordsByBookCategory(category).stream()
                         .map(this::toWordResponse)
@@ -55,7 +52,7 @@ public class WordBookRestControllerImpl implements WordBookRestController {
     // createAt, updatedAt은 추구 필터링 기능을 위해 넘겨줌
     @Override
     @GetMapping
-    public ResponseEntity<List<WordBookListResponse>> getWordBookList() {
+    public ResponseEntity<List<WordBookListResponse>> getWordBooks() {
         log.info("모든 단어장 목록 조회 요청");
         List<WordBook> wordBooks = wordBookService.findAllWordBookList();
         List<WordBookListResponse> response = wordBooks.stream()
@@ -66,7 +63,7 @@ public class WordBookRestControllerImpl implements WordBookRestController {
 
     @Override
     @GetMapping("/category")
-    public ResponseEntity<List<WordBookResponse>> getWordBookListByCategory(@RequestParam("category") Category category) {
+    public ResponseEntity<List<WordBookResponse>> getWordBooksByCategory(@RequestParam("category") Category category) {
         log.info("카테고리별 단어장 조회 요청 - category: {}", category);
         List<WordBook> wordBooks = wordBookService.findWordBookListByCategory(category);
         List<WordBookResponse> response = wordBooks.stream()
@@ -77,7 +74,7 @@ public class WordBookRestControllerImpl implements WordBookRestController {
 
     @Override
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWordBookById(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteWordBook(@PathVariable("id") Long id) {
         log.info("단어장 삭제 요청 - id: {}", id);
         wordBookService.deleteWordBookById(id);
         return ResponseEntity.ok().build();
@@ -90,14 +87,14 @@ public class WordBookRestControllerImpl implements WordBookRestController {
      */
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<WordBookDetailResponse> getWordBookDetailById(@PathVariable("id") Long id) {
+    public ResponseEntity<WordBookDetailResponse> getWordBook(@PathVariable("id") Long id) {
         WordBook wordBook = wordBookService.findWordBookById(id);
         return ResponseEntity.ok(convertToWordBookDetailResponse(wordBook));
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<WordBookResponse> updateWordBookById(
+    public ResponseEntity<WordBookResponse> updateWordBook(
             @PathVariable("id") Long id,
             @Valid @RequestBody WordBookRequest request) {
         log.info("단어장 수정 요청 - id: {}", id);
@@ -106,11 +103,11 @@ public class WordBookRestControllerImpl implements WordBookRestController {
     }
 
     @Override
-    @GetMapping("/study/{wordBookId}")
+    @GetMapping("/{id}/study")
     public ResponseEntity<List<WordBookStudyResponse>> getWordBookStudyData(
-            @PathVariable("wordBookId") Long wordBookId) {
-        log.info("단어장 학습 데이터 조회 요청 - wordBookId: {}", wordBookId);
-        List<Word> words = wordBookService.findWordBookStudyData(wordBookId);
+            @PathVariable("id") Long id) {
+        log.info("단어장 학습 데이터 조회 요청 - wordBookId: {}", id);
+        List<Word> words = wordBookService.findWordBookStudyData(id);
         List<WordBookStudyResponse> response = words.stream()
                 .map(this::convertToStudyResponse)
                 .toList();

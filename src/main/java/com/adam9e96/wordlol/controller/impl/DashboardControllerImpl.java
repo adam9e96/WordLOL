@@ -3,7 +3,6 @@ package com.adam9e96.wordlol.controller.impl;
 
 import com.adam9e96.wordlol.controller.interfaces.DashboardController;
 import com.adam9e96.wordlol.dto.DashBoardResponse;
-import com.adam9e96.wordlol.service.impl.DashboardServiceImpl;
 import com.adam9e96.wordlol.service.interfaces.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class DashboardControllerImpl implements DashboardController {
 
     @Override
     @GetMapping
-    public ResponseEntity<DashBoardResponse> getDashboard() {
+    public ResponseEntity<DashBoardResponse> getDashboardData() {
         return ResponseEntity.ok().body(dashboardService.getDashboardData());
     }
 
