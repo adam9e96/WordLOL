@@ -1,9 +1,6 @@
 package com.adam9e96.wordlol.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,15 +16,14 @@ public class UserStudyProgress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId; // 사용자 식별자
-    private int perfectRun; // 연속 정답 수
-    private LocalDateTime lastStudyDate; // 마지막 학습 날짜
+    @Column(nullable = false, unique = true)
+    private String sessionId; // userId 대신 sessionId 사용
+    private int perfectRun;
+    private LocalDateTime lastStudyDate;
 
-    // 생성자, 게터, 세터
-    public void update(Long userId, int perfectRun, LocalDateTime lastStudyDate) {
-        this.userId = userId;
+    public void update(String sessionId, int perfectRun, LocalDateTime lastStudyDate) {
+        this.sessionId = sessionId;
         this.perfectRun = perfectRun;
         this.lastStudyDate = lastStudyDate;
     }
 }
-

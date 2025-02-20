@@ -1,6 +1,7 @@
 package com.adam9e96.wordlol.controller.interfaces;
 
 import com.adam9e96.wordlol.dto.*;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +29,13 @@ public interface WordRestController {
     ResponseEntity<WordResponse> getRandomWord();
 
     @PostMapping("/check")
-    ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request);
+    ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request, HttpSession session);
 
     @GetMapping("/{id}/hint")
     ResponseEntity<Map<String, String>> getWordHint(@PathVariable("id") Long id);
 
     @GetMapping("/streak")
-    Map<String, Integer> getCurrentStreak();
+    Map<String, Integer> getCurrentStreak(HttpSession session);
 
     @GetMapping("/daily")
     ResponseEntity<List<WordResponse>> getDailyWords();

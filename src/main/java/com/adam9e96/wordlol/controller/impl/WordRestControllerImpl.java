@@ -3,7 +3,9 @@ package com.adam9e96.wordlol.controller.impl;
 import com.adam9e96.wordlol.controller.interfaces.WordRestController;
 import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.Word;
+import com.adam9e96.wordlol.service.interfaces.StudyProgressService;
 import com.adam9e96.wordlol.service.interfaces.WordService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +26,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WordRestControllerImpl implements WordRestController {
 
-    private static int perfectRun = 0;
+//    private static int perfectRun = 0;
     private final WordService wordService;
+
+    private final StudyProgressService studyProgressService;
 
     @Override
     @PostMapping
@@ -77,16 +81,24 @@ public class WordRestControllerImpl implements WordRestController {
 
     @Override
     @PostMapping("/check")
-    public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request) {
+    public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request
+   , HttpSession session) {
         boolean isCorrect = wordService.validateAnswer(request.wordId(), request.answer());
 
         AnswerResponse response;
+
+        String sessionId = session.getId();
         if (isCorrect) {
-            perfectRun++;
-            response = new AnswerResponse(true, "정답입니다!", perfectRun);
+
+            int newPerfectRun = studyProgressService.incrementPerfectRun(sessionId);
+//            perfectRun++;
+//            response = new AnswerResponse(true, "정답입니다!", perfectRun);
+            response = new AnswerResponse(true, "정답입니다!", newPerfectRun);
         } else {
-            perfectRun = 0;
-            response = new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", perfectRun);
+            studyProgressService.resetPerfectRun(sessionId);
+            response = new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", 0);
+//            perfectRun = 0;
+//            response = new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", perfectRun);
         }
         return ResponseEntity.ok().body(response);
     }
@@ -100,8 +112,11 @@ public class WordRestControllerImpl implements WordRestController {
 
     @Override
     @GetMapping("/streak")
-    public Map<String, Integer> getCurrentStreak() {
-        return Map.of("perfectRun", perfectRun);
+    public Map<String, Integer> getCurrentStreak(HttpSession session) {
+        String sessionId = session.getId();
+        int currentPerfectRun = studyProgressService.getCurrentPerfectRun(sessionId);
+        return Map.of("perfectRun", currentPerfectRun);
+//        return Map.of("perfectRun", perfectRun);
     }
 
 
