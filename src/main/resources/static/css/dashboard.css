@@ -1,105 +1,101 @@
-/* dashboard.css */
+/* dashboard.css 수정 */
 :root {
-    --section-bg-light: #f8f9fa;
-    --card-hover-bg: #f3f4f6;
+    --md-surface-1: #FEF7FF;
+    --md-surface-2: #F9F1FE;
+    --md-surface-3: #F3EAFA;
+    --md-container-1: rgba(103, 80, 164, 0.05);
+    --md-container-2: rgba(103, 80, 164, 0.08);
+    --md-container-3: rgba(103, 80, 164, 0.11);
+    --border-radius-xl: 28px; /* 더 큰 둥근 모서리 */
+    --border-radius-lg: 24px; /* 큰 둥근 모서리 */
+    --border-radius-md: 20px; /* 중간 둥근 모서리 */
 }
 
-/* 전체 배경색 */
-body {
-    background-color: #f0f2f5;
-}
-
-/* 카드 스타일링 */
+/* 카드 공통 스타일 */
 .card {
-    transition: all 0.2s ease;
-    border: none !important;
+    background-color: var(--md-surface-1);
+    border-radius: var(--border-radius-xl);
+    border: none;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all var(--transition-normal);
 }
 
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
-}
-
-/* 상단 통계 카드 아이콘 컨테이너 */
+/* 통계 카드 아이콘 컨테이너 */
 .stat-icon-container {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: var(--border-radius-lg);
+    transition: all var(--transition-normal);
 }
 
-/* 각 통계 카드별 아이콘 배경색 */
-.stat-icon-total {
-    background-color: rgba(13, 110, 253, 0.15);
+/* 통계 섹션 */
+.stats-section .card {
+    padding: var(--spacing-4);
 }
 
-.stat-icon-today {
-    background-color: rgba(25, 135, 84, 0.15);
+/* 카테고리 통계 */
+.list-group-item {
+    border: none;
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-2);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--md-surface-2);
+    transition: all var(--transition-normal);
 }
 
-.stat-icon-streak {
-    background-color: rgba(255, 193, 7, 0.15);
+/* 뱃지 스타일 */
+.badge {
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    font-size: 0.875rem;
 }
 
-.stat-icon-rate {
-    background-color: rgba(13, 202, 240, 0.15);
-}
-
-/* 섹션 구분을 위한 배경색 */
-.section-bg {
-    background-color: var(--section-bg-light);
-    border-radius: 15px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-/* 테이블 스타일링 */
-.table-custom {
-    background-color: white;
-    border-radius: 10px;
+/* 테이블 컨테이너와 테이블 스타일 수정 */
+.table-container {
+    border-radius: var(--border-radius-xl);
     overflow: hidden;
+    background-color: var(--md-surface-1);
+    box-shadow: var(--shadow-sm);
+    padding: 0; /* 패딩 제거 */
 }
 
+.table-custom {
+    margin: 0;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* 테이블 헤더 */
 .table-custom thead {
-    background-color: #e9ecef;
+    background-color: var(--md-surface-2);
 }
 
 .table-custom th {
+    padding: var(--spacing-3);
+    color: var(--color-primary);
+    font-weight: 600;
+    border: none;
+}
+
+/* 테이블 셀 */
+.table-custom td {
+    padding: var(--spacing-3);
+    border-bottom: 1px solid var(--md-container-1);
+    transition: background-color var(--transition-normal);
+}
+
+/* 테이블 행 호버 효과 */
+.table-custom tbody tr:hover td {
+    background-color: var(--md-surface-2);
+}
+
+/* 마지막 행의 border 제거 */
+.table-custom tbody tr:last-child td {
     border-bottom: none;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-}
-
-/* 단어장 카드 스타일링 */
-.wordbook-card {
-    background-color: white;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb !important;
-}
-
-.wordbook-card:hover {
-    background-color: var(--card-hover-bg);
-}
-
-/* 카테고리 통계 아이템 */
-.category-stat-item {
-    background-color: white;
-    border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid #e5e7eb;
-}
-
-/* 섹션 제목 스타일링 */
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #344767;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }

@@ -21,9 +21,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         // 카테고리별 통계 업데이트
         updateCategoryStats(wordBooksData);
 
-        // 단어장 요약 업데이트
-        updateWordBooksSummary(wordBooksData);
-
     } catch (error) {
         console.error('데이터 로딩 중 오류 발생:', error);
         showError('데이터를 불러오는 중 오류가 발생했습니다.');
@@ -63,31 +60,6 @@ function updateCategoryStats(wordBooks) {
                 <span class="badge bg-${getCategoryColor(category)} me-2">${getCategoryDisplayName(category)}</span>
             </div>
             <span class="badge bg-primary rounded-pill">${count}</span>
-        </div>
-    `).join('');
-}
-
-function updateWordBooksSummary(wordBooks) {
-    const wordBooksSummary = document.getElementById('wordBooksSummary');
-    wordBooksSummary.innerHTML = wordBooks.map(book => `
-        <div class="col-md-4">
-            <div class="card h-100 border">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="card-title mb-0">${book.name}</h6>
-                        <span class="badge bg-${getCategoryColor(book.category)}">
-                            ${getCategoryDisplayName(book.category)}
-                        </span>
-                    </div>
-                    <p class="card-text small text-muted mb-2">${book.description}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">단어 수: ${book.wordCount}</small>
-                        <a href="/word/${book.id}/study" class="btn btn-sm btn-outline-primary">
-                            학습하기
-                        </a>
-                    </div>
-                </div>
-            </div>
         </div>
     `).join('');
 }

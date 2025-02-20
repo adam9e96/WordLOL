@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 public class StudyProgressServiceImpl implements StudyProgressService {
     private final UserStudyProgressRepository progressRepository;
 
-    @Override
     public int incrementPerfectRun(Long userId) {
         UserStudyProgress progress = progressRepository.findByUserId(userId)
                 .orElse(new UserStudyProgress(null, userId, 0, LocalDateTime.now()));
@@ -24,12 +23,17 @@ public class StudyProgressServiceImpl implements StudyProgressService {
         return progress.getPerfectRun();
     }
 
-    @Override
     public void resetPerfectRun(Long userId) {
         UserStudyProgress progress = progressRepository.findByUserId(userId)
                 .orElse(new UserStudyProgress(null, userId, 0, LocalDateTime.now()));
 
         progress.update(userId, 0, LocalDateTime.now());
         progressRepository.save(progress);
+    }
+
+    public int getCurrentPerfectRun(Long userId) {
+        return progressRepository.findByUserId(userId)
+                .map(UserStudyProgress::getPerfectRun)
+                .orElse(0);
     }
 }

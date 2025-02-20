@@ -1,0 +1,81 @@
+/* 단어 목록 페이지 레이아웃 */
+.word-list-grid {
+    display: grid;
+    grid-template-areas:
+        "title"
+        "table"
+        "pagination";
+    gap: var(--spacing-4);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--spacing-3);
+}
+
+/* 페이지 제목 */
+.page-title {
+    grid-area: title;
+    text-align: center;
+}
+
+.page-title h2 {
+    color: var(--color-primary);
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* 토스트 메시지 */
+.toast-container {
+    z-index: 1056;
+}
+
+.toast {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+/* 모달 */
+.modal-content {
+    border-radius: var(--radius-lg);
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid #eee;
+    padding: var(--spacing-3);
+}
+
+.modal-body {
+    padding: var(--spacing-3);
+}
+
+.modal-footer {
+    border-top: 1px solid #eee;
+    padding: var(--spacing-3);
+}
+
+/* 폼 요소 */
+.form-control, .form-select {
+    border-radius: var(--radius-md);
+    border: 1px solid #eee;
+    padding: var(--spacing-2);
+    transition: all var(--transition-normal);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(103, 80, 164, 0.1);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .word-list-grid {
+        padding: var(--spacing-2);
+        gap: var(--spacing-3);
+    }
+
+    .page-title h2 {
+        font-size: 1.5rem;
+    }
+}

@@ -46,7 +46,6 @@ body {
 }
 
 
-
 .navbar.material-header .container {
     max-width: 960px;
     padding: 0;
@@ -111,6 +110,44 @@ body {
 .navbar.material-header .navbar-nav .nav-link:active {
     background-color: rgba(103, 80, 164, 0.2);
     transform: scale(0.95);
+}
+
+/* 네비게이션 래퍼 스타일 */
+.navbar-nav-wrapper {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+/* 인증 네비게이션 영역 스타일 */
+.auth-nav {
+    margin-left: auto;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.auth-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: var(--primary) !important;
+    font-weight: 500;
+}
+
+.auth-link:hover {
+    background-color: rgba(103, 80, 164, 0.1);
+}
+
+/* 모바일 대응 */
+@media (max-width: 991px) {
+    .auth-nav {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 0.5rem;
+        margin-top: 0.5rem;
+    }
 }
 
 @media (max-width: 991px) {

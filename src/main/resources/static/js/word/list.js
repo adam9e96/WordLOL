@@ -114,8 +114,13 @@ async function loadWords(page) {
  */
 function updateWordList(words) {
     const wordList = document.getElementById('wordList');
-    wordList.innerHTML = words.map(word => `
-        <tr>
+    wordList.innerHTML = ''; // 기존 내용 클리어
+
+    // 각 행을 개별적으로 추가하여 애니메이션 적용
+    words.forEach((word, index) => {
+        const row = document.createElement('tr');
+        row.style.animationDelay = `${index * 0.05}s`; // 각 행마다 지연 시간 추가
+        row.innerHTML = `
             <td>${word.id}</td>
             <td class="fw-medium">${word.vocabulary}</td>
             <td>${word.meaning}</td>
@@ -130,8 +135,9 @@ function updateWordList(words) {
                     <i class="bi bi-trash"></i>
                 </button>
             </td>
-        </tr>
-    `).join('');
+        `;
+        wordList.appendChild(row);
+    });
 }
 
 /**
@@ -143,29 +149,57 @@ function updatePagination(totalPages) {
     const endPage = Math.min(totalPages - 1, currentPage + 2);
 
     const buttons = [
-        {page: 0, icon: 'bi-chevron-double-left', disabled: currentPage === 0},
-        {page: currentPage - 1, icon: 'bi-chevron-left', disabled: currentPage === 0},
+        {
+            page: 0,
+            icon: 'bi-chevron-double-left',
+            disabled: currentPage === 0,
+            title: '첫 페이지'
+        },
+        {
+            page: currentPage - 1,
+            icon: 'bi-chevron-left',
+            disabled: currentPage === 0,
+            title: '이전 페이지'
+        },
         ...Array.from({length: endPage - startPage + 1}, (_, i) => ({
             page: startPage + i,
             text: startPage + i + 1,
-            active: startPage + i === currentPage
+            active: startPage + i === currentPage,
+            title: `${startPage + i + 1} 페이지`
         })),
-        {page: currentPage + 1, icon: 'bi-chevron-right', disabled: currentPage >= totalPages - 1},
-        {page: totalPages - 1, icon: 'bi-chevron-double-right', disabled: currentPage >= totalPages - 1}
+        {
+            page: currentPage + 1,
+            icon: 'bi-chevron-right',
+            disabled: currentPage >= totalPages - 1,
+            title: '다음 페이지'
+        },
+        {
+            page: totalPages - 1,
+            icon: 'bi-chevron-double-right',
+            disabled: currentPage >= totalPages - 1,
+            title: '마지막 페이지'
+        }
     ];
 
     pagination.innerHTML = buttons.map(btn => {
         if (btn.icon) {
             return `
                 <li class="page-item ${btn.disabled ? 'disabled' : ''}">
-                    <button class="page-link" data-page="${btn.page}">
+                    <button class="page-link" 
+                            data-page="${btn.page}" 
+                            title="${btn.title}"
+                            ${btn.disabled ? 'disabled' : ''}>
                         <i class="bi ${btn.icon}"></i>
                     </button>
                 </li>`;
         }
         return `
             <li class="page-item ${btn.active ? 'active' : ''}">
-                <button class="page-link" data-page="${btn.page}">${btn.text}</button>
+                <button class="page-link" 
+                        data-page="${btn.page}"
+                        title="${btn.title}">
+                    ${btn.text}
+                </button>
             </li>`;
     }).join('');
 }
