@@ -1,144 +1,50 @@
-/* ====================================================
-   Material You 3 Theme Variables
-   ==================================================== */
-:root {
-    --primary: #6750A4;
-    --primary-container: #EADDFF;
-    --on-primary: #ffffff;
-    --on-primary-container: #21005D;
-    --secondary: #625B71;
-    --on-secondary: #ffffff;
-    --surface: #ffffff;
-    --surface-variant: #E7E0EC;
-    --background: #F2F2F2;
-    --error: #B3261E;
-    --success: #149767;
-    --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12);
-    --elevation-2: 0 4px 6px rgba(0, 0, 0, 0.16);
-    --border-radius: 16px;
-    --spacing-unit: 1rem;
-
-    /* 공통 버튼 변수 */
-    --btn-grid-gap: 0.25rem;
-    --btn-padding: 0.75rem 1.5rem;
-    --btn-border-radius: 16px;
-}
-
-/* ====================================================
-   Global Layout Styles
-   ==================================================== */
-
-/* 전체 페이지 레이아웃: 페이지 그리드 컨테이너 */
-.page-grid {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    min-height: 100vh;
-    background-color: var(--background);
-}
-
-/* 학습 영역 레이아웃: 중앙 정렬을 위한 grid */
+/* Study Page Layout */
 .study-grid {
     display: grid;
     place-items: center;
     padding: var(--spacing-unit);
+    background: var(--surface-container-lowest);
+    min-height: 100%;
 }
 
-/* 학습 컨테이너: 내부 요소들의 간격 및 최대 너비 설정 */
 .study-container {
     display: grid;
     gap: 1.5rem;
     max-width: 800px;
     width: 100%;
-    background: transparent;
 }
 
-/* ====================================================
-   Button Styles
-   ==================================================== */
-
-/* 공통 버튼 스타일 (Primary, Secondary, Hint) */
-.btn-primary,
-.btn-secondary,
-.btn-hint {
-    display: grid;
-    grid-template-rows: auto auto;
-    gap: var(--btn-grid-gap);
-    align-items: center;
-    justify-items: center;
-    padding: var(--btn-padding);
-    border: none;
-    border-radius: var(--btn-border-radius);
-    font-weight: 500;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-/* Primary 버튼: 주요 작업용 */
-.btn-primary {
-    background: var(--primary);
-    color: var(--on-primary);
-}
-
-/* Secondary 버튼: 보조 작업용 */
-.btn-secondary {
-    background: var(--secondary);
-    color: var(--on-secondary);
-}
-
-/* Hint 버튼: 힌트 요청용 */
-.btn-hint {
-    background: var(--surface-variant);
-    color: var(--primary);
-}
-
-/* 버튼 호버 효과: 마우스 올렸을 때 */
-.btn-primary:hover,
-.btn-secondary:hover,
-.btn-hint:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--elevation-2);
-}
-
-/* ====================================================
-   Status Section Styles
-   ==================================================== */
-
-/* 상태 영역: 연속 정답 및 난이도 정보를 표시 */
+/* Status Section */
 .status-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    background: var(--surface);
-    padding: 1rem 1.5rem;
+    background: var(--surface-container);
+    padding: 1.25rem;
     border-radius: var(--border-radius);
-    box-shadow: var(--elevation-1);
-    align-items: center;
+    box-shadow: var(--shadow-1);
 }
 
-/* 상태 정보 내부: 아이콘과 텍스트 정렬 */
-.perfectRun-info, .difficulty-info {
+.perfectRun-info,
+.difficulty-info {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: var(--primary);
+    gap: 0.75rem;
+    color: var(--on-surface);
     font-weight: 500;
     justify-content: center;
 }
 
-.perfectRun-info i, .difficulty-info i {
+.perfectRun-info i {
+    color: var(--primary);
     font-size: 1.25rem;
 }
 
-/* ====================================================
-   Word Section & Card Styles
-   ==================================================== */
-
-/* 단어 영역: 카드에 3D 효과를 주기 위한 perspective */
+/* Word Card */
 .word-section {
     perspective: 1000px;
 }
 
-/* 단어 카드: 앞면과 뒷면을 포함하는 컨테이너 */
 .word-card {
     position: relative;
     width: 100%;
@@ -146,10 +52,9 @@
     transform-style: preserve-3d;
     transition: transform 0.8s ease;
     border-radius: var(--border-radius);
-    overflow: hidden;
+    box-shadow: var(--shadow-2);
 }
 
-/* 카드의 공통 스타일: 앞면과 뒷면에 공통 적용 */
 .card-side {
     position: absolute;
     width: 100%;
@@ -160,27 +65,22 @@
     justify-content: center;
     font-size: 2rem;
     font-weight: 500;
+    padding: 1.5rem;
     text-align: center;
-    padding: 1rem;
-    transition: transform 0.8s ease;
 }
 
-/* 카드 앞면: 초기 상태 및 기본 색상 */
 .card-front {
-    z-index: 2;
-    transform: rotateY(0deg);
-    background: var(--primary);
-    color: var(--on-primary);
-}
-
-/* 카드 뒷면: 단어 의미 표시용 */
-.card-back {
     background: var(--primary-container);
     color: var(--on-primary-container);
+    transform: rotateY(0deg);
+}
+
+.card-back {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
     transform: rotateY(180deg);
 }
 
-/* 카드 플립 애니메이션: 정답 시 앞면과 뒷면 전환 */
 .word-card.flip .card-front {
     transform: rotateY(180deg);
 }
@@ -189,11 +89,106 @@
     transform: rotateY(0deg);
 }
 
-/* ====================================================
-   Animation Styles
-   ==================================================== */
+/* Input Section */
+.input-section {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+}
 
-/* Shake 애니메이션: 오답 시 흔들림 효과 */
+.input-section input {
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--border-radius);
+    background: var(--surface-container);
+    color: var(--on-surface);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.input-section input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--surface-container-high);
+    box-shadow: var(--shadow-1);
+}
+
+/* Control Section */
+.control-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary,
+.btn-hint {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--on-primary);
+}
+
+.btn-secondary {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+}
+
+.btn-hint {
+    background: var(--surface-container);
+    color: var(--on-surface);
+    border: 1px solid var(--outline-variant);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-hint:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+/* Message Section */
+.message-section {
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    text-align: center;
+    min-height: 50px;
+    color: var(--on-surface);
+    box-shadow: var(--shadow-1);
+}
+
+/* TTS Button */
+.btn-speak {
+    background: var(--surface-container-highest);
+    border-radius: 50%;
+    border: none;
+    color: var(--on-surface);
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-1);
+}
+
+.btn-speak:hover {
+    background: var(--surface-container-high);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-2);
+}
+
+/* Animations */
 @keyframes shake {
     0%, 100% {
         transform: translateX(0);
@@ -208,125 +203,17 @@
 
 .word-card.shake {
     animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    perspective: 1000px;
 }
 
-/* Pulse 애니메이션 (현재 주석 처리됨) */
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* ====================================================
-   Message Section Styles
-   ==================================================== */
-
-/* 메시지 영역: 힌트 및 오류 메시지 표시 */
-.message-section {
-    background: var(--surface-variant);
-    border-radius: var(--border-radius);
-    padding: 1rem;
-    text-align: center;
-    min-height: 50px;
-}
-
-/* ====================================================
-   Input Section Styles
-   ==================================================== */
-
-/* 입력 영역: 답안 입력 필드와 제출 버튼 */
-.input-section {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 1rem;
-}
-
-.input-section input {
-    padding: 1rem 1.5rem;
-    border: 2px solid var(--surface-variant);
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.input-section input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary-container);
-}
-
-/* ====================================================
-   Control Section Styles
-   ==================================================== */
-
-/* 컨트롤 영역: 힌트 요청 및 다음 단어 버튼 */
-.control-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-/* ====================================================
-   Additional Component Styles
-   ==================================================== */
-
-/* 단어와 발음 버튼을 감싸는 컨테이너 */
-.vocabulary-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    width: 100%;
-}
-
-/* 발음 듣기 버튼 스타일 */
-.btn-speak {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    border: none;
-    color: var(--on-primary);
-    padding: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-speak i {
-    font-size: 1.5rem;
-}
-
-.btn-speak:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-/* ====================================================
-   Responsive Design (Media Queries)
-   ==================================================== */
-
+/* Responsive Design */
 @media (max-width: 768px) {
     .study-container {
         gap: 1rem;
+        padding: 1rem;
     }
 
     .status-section {
         grid-template-columns: 1fr;
-        text-align: center;
-    }
-
-    .perfectRun-info,
-    .difficulty-info {
-        justify-content: center;
     }
 
     .input-section {
@@ -335,12 +222,12 @@
 
     .control-section {
         grid-template-columns: 1fr;
-        gap: 0.5rem;
+        gap: 0.75rem;
     }
 
     .btn-primary,
     .btn-secondary,
     .btn-hint {
-        padding: 0.5rem;
+        width: 100%;
     }
 }

@@ -16,13 +16,13 @@ public class WordViewControllerImpl implements WordViewController {
     @Override
     @GetMapping("/study")
     public String showStudyPage() {
-        return "word/study";
+        return "views/word/study";
     }
 
     @Override
     @GetMapping("/register")
     public String showRegisterPage() {
-        return "word/register";
+        return "views/word/register";
     }
 
     @Override
@@ -73,5 +73,15 @@ public class WordViewControllerImpl implements WordViewController {
     public String showWordBookStudyPage(@PathVariable("id") Long id, Model model) {
         model.addAttribute("wordBookId", id);
         return "wordbook/study";
+    }
+
+    @GetMapping("/header")
+    public String showHeaderPage() {
+        return "fragments/header";
+    }
+
+    @GetMapping("/test")
+    public String showTestPage() {
+        return "fragments/test";
     }
 }

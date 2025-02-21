@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>단어 학습</title>
+    <!-- 페이지별 CSS -->
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/study.css}">
+    </th:block>
+</head>
+<body>
+<!-- 메인 콘텐츠 영역 -->
+<main layout:fragment="content" class="study-grid">
+    <div class="study-container">
+        <!-- 상태 섹션: 연속 정답 및 난이도 표시 -->
+        <div class="status-section">
+            <div class="perfectRun-info">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span>연속 정답: <span id="perfectRun">0</span></span>
+            </div>
+            <div class="difficulty-info">
+                <span>난이도: </span>
+                <span id="difficulty"></span>
+            </div>
+        </div>
+
+        <!-- 단어 섹션: 카드 형태로 단어와 관련 정보를 표시 -->
+        <div class="word-section">
+            <div class="word-card" id="card">
+                <!-- 카드 앞면: 단어 및 TTS 버튼 -->
+                <div class="card-side card-front">
+                    <div class="vocabulary-container">
+                        <span id="vocabulary">
+                            <i class="bi bi-hourglass-split"></i>로딩중...
+                        </span>
+                        <button class="btn-speak" onclick="speakWord()" title="발음 듣기">
+                            <i class="bi bi-volume-up"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- 카드 뒷면: 단어 뜻 -->
+                <div class="card-side card-back">
+                    <span id="meaning"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메시지 섹션: 힌트나 피드백 표시 -->
+        <div class="message-section" id="message"></div>
+
+        <!-- 입력 섹션: 답안 입력 필드와 제출 버튼 -->
+        <div class="input-section">
+            <input type="text" id="answer" placeholder="정답을 입력하세요" autocomplete="off">
+            <button class="btn-primary" onclick="submitAnswer()">
+                <i class="bi bi-check-lg"></i>
+                <span>정답 확인</span>
+            </button>
+        </div>
+
+        <!-- 컨트롤 섹션: 힌트와 다음 단어 버튼 -->
+        <div class="control-section">
+            <button class="btn-hint" onclick="showHint()">
+                <i class="bi bi-lightbulb"></i>
+                <span>힌트</span>
+            </button>
+            <button class="btn-secondary" onclick="loadNewWord()">
+                <i class="bi bi-skip-forward"></i>
+                <span>다음 단어</span>
+            </button>
+        </div>
+    </div>
+</main>
+
+<!-- 페이지별 스크립트 -->
+<th:block layout:fragment="script">
+    <script th:src="@{/js/study.js}"></script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,121 @@
+/* Header Layout */
+.header {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--surface-container-low);
+    border-bottom: 1px solid var(--outline-variant);
+    box-shadow: var(--shadow-1);
+}
+
+.header-container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Top Row Layout */
+.header-top-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem;
+    background: var(--surface-container-lowest);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-1);
+}
+
+.header-brand-section {
+    padding: 0.5rem 1rem;
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    transition: background-color var(--transition-fast);
+}
+
+.header-brand-section:hover {
+    background: var(--surface-container-high);
+}
+
+.header-search-section {
+    flex: 1;
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all var(--transition-fast);
+}
+
+.header-search-section:focus-within {
+    background: var(--surface-container-high);
+    box-shadow: var(--shadow-2);
+}
+
+.header-auth-section {
+    padding: 0.5rem 1rem;
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    transition: background-color var(--transition-fast);
+}
+
+.header-auth-section:hover {
+    background: var(--surface-container-high);
+}
+
+/* Navigation Layout */
+.header-bottom-row {
+    width: 100%;
+}
+
+.header-nav-section {
+    background: var(--surface-container-lowest);
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    box-shadow: var(--shadow-1);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.header-nav-section::-webkit-scrollbar {
+    display: none;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.nav-item {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* Search Container */
+.search-container {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+}
+
+/* Mobile Responsive */
+@media (max-width: 991px) {
+    .header-top-row {
+        flex-direction: column;
+    }
+
+    .header-brand-section,
+    .header-search-section,
+    .header-auth-section {
+        width: 100%;
+    }
+
+    .header-nav-section {
+        overflow-x: auto;
+    }
+}

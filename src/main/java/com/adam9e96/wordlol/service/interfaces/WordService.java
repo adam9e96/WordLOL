@@ -28,25 +28,4 @@ public interface WordService {
 
     List<Word> findRandomWords();
 
-//    WordResponse getWord(Long id);
-//
-//    Page<WordResponse> getWords(Pageable pageable);
-//
-//    List<WordResponse> getWords();
-//
-//    List<WordResponse> getWordsByDifficulty(Integer difficulty);
-//
-//    List<WordResponse> getWordsByRandom(Integer count);
-//
-//    List<WordResponse> getWordsByVocabulary(String vocabulary);
-//
-//    List<WordResponse> getWordsByMeaning(String meaning);
-//
-//    List<WordResponse> getWordsByHint(String hint);
-//
-//    List<WordResponse> getWordsByVocabularyContaining(String vocabulary);
-//
-//    List<WordResponse> getWordsByMeaningContaining(String meaning);
-//
-//    List<WordResponse> getWordsByHintContaining(String hint);
 }
