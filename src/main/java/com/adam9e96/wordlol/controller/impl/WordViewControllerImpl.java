@@ -34,7 +34,7 @@ public class WordViewControllerImpl implements WordViewController {
     @Override
     @GetMapping("/list")
     public String showListPage() {
-        return "word/list";
+        return "views/word/list";
     }
 
     @Override
@@ -46,7 +46,7 @@ public class WordViewControllerImpl implements WordViewController {
     @Override
     @GetMapping("/daily")
     public String showDailyPage() {
-        return "daily";
+        return "views/word/daily";
     }
 
     @Override

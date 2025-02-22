@@ -10,25 +10,43 @@ function showToast(message, type = 'success') {
 }
 
 function addWordRow() {
-    const wordList = document.getElementById('wordList');
     const row = document.createElement('div');
     row.className = 'word-row';
 
     row.innerHTML = `
-        <input type="text" class="form-control vocabulary" placeholder="영단어" required>
-        <input type="text" class="form-control meaning" placeholder="의미" required>
-        <input type="text" class="form-control hint" placeholder="힌트">
-        <select class="form-select difficulty" required>
-            <option value="1">1 (매우 쉬움)</option>
-            <option value="2">2 (쉬움)</option>
-            <option value="3" selected>3 (보통)</option>
-            <option value="4">4 (어려움)</option>
-            <option value="5">5 (매우 어려움)</option>
-        </select>
-        <i class="bi bi-x-lg remove-row" onclick="removeWordRow(this)"></i>
+        <div class="col" data-label="영단어">
+            <input type="text" class="form-control vocabulary" 
+                   placeholder="영단어" required
+                   pattern="^[a-zA-Z\\s-]+$">
+            <div class="invalid-feedback">올바른 영단어를 입력해주세요.</div>
+        </div>
+        <div class="col" data-label="의미">
+            <input type="text" class="form-control meaning" 
+                   placeholder="의미" required>
+            <div class="invalid-feedback">의미를 입력해주세요.</div>
+        </div>
+        <div class="col" data-label="힌트">
+            <input type="text" class="form-control hint" 
+                   placeholder="힌트">
+        </div>
+        <div class="col" data-label="난이도">
+            <select class="form-select difficulty" required>
+                <option value="1">⭐ 매우 쉬움</option>
+                <option value="2">⭐⭐ 쉬움</option>
+                <option value="3" selected>⭐⭐⭐ 보통</option>
+                <option value="4">⭐⭐⭐⭐ 어려움</option>
+                <option value="5">⭐⭐⭐⭐⭐ 매우 어려움</option>
+            </select>
+            <div class="invalid-feedback">난이도를 선택해주세요.</div>
+        </div>
+        <div class="col-action">
+            <button type="button" class="btn-remove" onclick="removeRow(this)" title="행 삭제">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
     `;
 
-    wordList.appendChild(row);
+    document.getElementById('wordList').appendChild(row);
 }
 
 
@@ -38,7 +56,7 @@ function addWordRows(count) {
     }
 }
 
-function removeWordRow(element) {
+function removeRow(element) {
     const row = element.closest('.word-row');
     if (document.querySelectorAll('.word-row').length > 1) {
         row.remove();

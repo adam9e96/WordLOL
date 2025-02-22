@@ -1,63 +1,47 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>단어장 만들기</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/wordbook-create.css}" type="text/css">
-    <link rel="stylesheet" th:href="@{/css/common.css}">
-    <link href="data:;base64,ivborw0kggo=" rel="icon">
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/pages/wordbook/create.css}">
+    </th:block>
 </head>
 <body>
-<!-- 페이지 전체 그리드 컨테이너 -->
-<div class="page-grid">
-    <!-- 헤더 영역 -->
-    <header th:replace="~{fragments/header :: header}"></header>
-
-    <!-- 메인 콘텐츠 영역 -->
-    <main class="wordbook-create-grid">
-        <!-- 토스트 메시지 -->
-        <div class="toast-container">
-            <div aria-atomic="true" aria-live="assertive" class="toast" id="toast" role="alert">
-                <div class="toast-header">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong class="me-auto">알림</strong>
-                    <button class="btn-close" data-bs-dismiss="toast" type="button"></button>
-                </div>
-                <div class="toast-body"></div>
+    <main layout:fragment="content" class="create-grid">
+        <div class="content-container">
+            <!-- 헤더 섹션 -->
+            <div class="page-header">
+                <h2 class="page-title">
+                    <i class="bi bi-journal-plus"></i>
+                    <span>새 단어장 만들기</span>
+                </h2>
             </div>
-        </div>
 
-        <!-- 메인 컨텐츠 카드 -->
-        <div class="content-card">
-            <!-- 폼 시작 -->
-            <form class="wordbook-form needs-validation" id="wordBookForm" novalidate>
-                <!-- 타이틀 섹션 -->
-                <div class="form-header">
-                    <h2 class="page-title">
-                        <i class="bi bi-journal-plus me-2"></i>새 단어장 만들기
-                    </h2>
-                </div>
-
+            <!-- 단어장 생성 폼 -->
+            <form id="wordBookForm" class="wordbook-form needs-validation" novalidate>
                 <!-- 기본 정보 섹션 -->
-                <div class="basic-info-section">
-                    <div class="form-grid-2">
+                <section class="form-section">
+                    <h3 class="section-title">기본 정보</h3>
+                    <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label" for="name">
                                 <i class="bi bi-journal-text"></i>
                                 단어장 이름
                             </label>
-                            <input class="form-control" id="name" placeholder="예: 토익 Day 1" required type="text">
+                            <input type="text" id="name" class="form-control"
+                                   placeholder="예: 토익 Day 1" required>
                             <div class="invalid-feedback">단어장 이름을 입력해주세요.</div>
                         </div>
+
                         <div class="form-group">
                             <label class="form-label" for="category">
                                 <i class="bi bi-folder"></i>
                                 카테고리
                             </label>
-                            <select class="form-select" id="category" required>
+                            <select id="category" class="form-select" required>
                                 <option value="">카테고리 선택</option>
                                 <option value="TOEIC">토익</option>
                                 <option value="TOEFL">토플</option>
@@ -66,60 +50,81 @@
                             </select>
                             <div class="invalid-feedback">카테고리를 선택해주세요.</div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="description">
-                            <i class="bi bi-card-text"></i>
-                            설명
-                        </label>
-                        <textarea class="form-control" id="description" placeholder="단어장에 대한 설명을 입력해주세요." required
-                                  rows="2"></textarea>
-                        <div class="invalid-feedback">설명을 입력해주세요.</div>
+                        <div class="form-group full-width">
+                            <label class="form-label" for="description">
+                                <i class="bi bi-card-text"></i>
+                                설명
+                            </label>
+                            <textarea id="description" class="form-control"
+                                      placeholder="단어장에 대한 설명을 입력해주세요."
+                                      required rows="3"></textarea>
+                            <div class="invalid-feedback">설명을 입력해주세요.</div>
+                        </div>
                     </div>
-                </div>
-
+                </section>
 
                 <!-- 단어 목록 섹션 -->
-                <div class="words-section">
+                <section class="form-section">
                     <div class="section-header">
-                        <h5 class="section-title">
-                            <i class="bi bi-list-ul me-2"></i>단어 목록
-                        </h5>
+                        <h3 class="section-title">
+                            <i class="bi bi-list-ul"></i>
+                            단어 목록
+                        </h3>
                         <div class="bulk-actions">
-                            <button class="btn btn-secondary" onclick="addWordRows(5)" type="button">
-                                <i class="bi bi-plus-lg me-1"></i>5줄 추가
+                            <button type="button" class="btn btn-surface" onclick="addWordRows(5)">
+                                <i class="bi bi-plus-lg"></i>
+                                5줄 추가
                             </button>
-                            <button class="btn btn-secondary" onclick="addWordRows(10)" type="button">
-                                <i class="bi bi-plus-lg me-1"></i>10줄 추가
+                            <button type="button" class="btn btn-surface" onclick="addWordRows(10)">
+                                <i class="bi bi-plus-lg"></i>
+                                10줄 추가
                             </button>
                         </div>
                     </div>
 
-                    <div id="wordList" class="word-list">
-                        <!-- 단어 입력 행이 여기에 동적으로 추가됩니다 -->
+                    <div class="words-container">
+                        <div class="word-list-header">
+                            <div class="col">영단어</div>
+                            <div class="col">의미</div>
+                            <div class="col">힌트</div>
+                            <div class="col">난이도</div>
+                            <div class="col-action">관리</div>
+                        </div>
+                        <div id="wordList" class="word-list">
+                            <!-- 단어 행들이 여기에 동적으로 추가됩니다 -->
+                        </div>
+                        <button type="button" class="btn btn-text-primary add-word-btn" onclick="addWordRow()">
+                            <i class="bi bi-plus-lg"></i>
+                            단어 추가
+                        </button>
                     </div>
+                </section>
 
-                    <button class="btn btn-outline-primary add-word-btn" onclick="addWordRow()" type="button">
-                        <i class="bi bi-plus-lg me-2"></i>단어 추가
+                <!-- 버튼 그룹 -->
+                <div class="button-group">
+                    <button type="button" class="btn btn-text" onclick="history.back()">
+                        <i class="bi bi-arrow-left"></i>
+                        취소
                     </button>
-                </div>
-
-                <!-- 하단 버튼 영역 -->
-                <div class="form-actions">
-                    <button class="btn btn-secondary" onclick="history.back()" type="button">
-                        <i class="bi bi-arrow-left me-2"></i>뒤로 가기
-                    </button>
-                    <button class="btn btn-primary" type="submit">
-                        <i class="bi bi-check-lg me-2"></i>단어장 생성
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i>
+                        단어장 생성
                     </button>
                 </div>
             </form>
         </div>
-    </main>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script defer th:src="@{/js/wordbook/create.js}" type="text/javascript"></script>
+        <!-- 토스트 메시지 -->
+        <div class="toast-container">
+            <div id="toast" class="toast" role="alert">
+                <div class="toast-body"></div>
+            </div>
+        </div>
+    </main>
+
+    <th:block layout:fragment="script">
+        <script th:src="@{/js/wordbook/create.js}"></script>
+    </th:block>
 </body>
 </html>

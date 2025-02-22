@@ -98,7 +98,9 @@ function getDifficultyStars(level) {
  * 새로운 단어를 API에서 불러와 UI를 업데이트하는 함수
  */
 async function loadNewWord() {
-    isProcessing = false; // 상태 초기화
+    const card = document.getElementById('card');
+    card.classList.remove('flip');  // 카드 상태 초기화
+    isProcessing = false;
 
     try {
         const response = await fetch(`${API_BASE_URL}/random`);
@@ -170,14 +172,15 @@ async function checkAnswer() {
         if (result.correct) {
             // 정답인 경우: 단어의 의미 표시 후 카드 플립 애니메이션 실행
             meaningEl.textContent = currentWord.meaning;
-            card.classList.add('flip');
+            card.classList.add('flip');  // 카드 뒤집기 애니메이션 적용
 
             // 1.5초 후 다음 단어로 전환
             setTimeout(() => {
+                card.classList.remove('flip');  // 카드 뒤집기 초기화
                 loadNewWord();
             }, 1500);
         } else {
-            // 오답인 경우: 카드 흔들림 애니메이션 실행
+            // 오답인 경우
             card.classList.add('shake');
             setTimeout(() => {
                 card.classList.remove('shake');

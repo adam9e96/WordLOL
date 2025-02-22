@@ -1,113 +1,139 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>단어 등록</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/common.css}">
-    <link rel="stylesheet" th:href="@{/css/word-register.css}">
-    <link href="data:;base64,ivborw0kggo=" rel="icon">
+    <th:block layout:fragment="additionalStyles">
+        <link rel="stylesheet" th:href="@{/css/pages/word/register.css}">
+    </th:block>
 </head>
 <body>
-    <!-- 페이지 전체 그리드 컨테이너 -->
-    <div class="page-grid">
-        <!-- 헤더 영역 -->
-        <header th:replace="~{fragments/header :: header}"></header>
+<main layout:fragment="content" class="register-grid">
+    <div class="form-container">
+        <h2 class="page-title">
+            <i class="bi bi-plus-circle"></i>
+            <span>단어 등록</span>
+        </h2>
 
-        <!-- 토스트 메시지 컨테이너 -->
-        <div class="toast-container position-fixed top-0 end-0 p-3">
-            <div aria-atomic="true" aria-live="assertive" class="toast align-items-center text-white border-0" id="toast" role="alert">
-                <div class="d-flex">
-                    <div class="toast-body"></div>
-                    <button aria-label="Close" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" type="button"></button>
+        <form class="needs-validation word-form" id="wordForm" novalidate>
+            <div class="form-group">
+                <label class="form-label" for="vocabulary">
+                    <i class="bi bi-book"></i>
+                    <span>영단어</span>
+                </label>
+                <input class="form-control" id="vocabulary"
+                       type="text"
+                       placeholder="등록할 영단어를 입력하세요"
+                       required
+                       autofocus
+                       pattern="^[a-zA-Z\s\-]+$"
+                       minlength="2"
+                       maxlength="100">
+                <div class="invalid-feedback">영어 단어는 최소 2자 이상 입력해야 합니다.</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="meaning">
+                    <i class="bi bi-translate"></i>
+                    <span>뜻</span>
+                </label>
+                <input class="form-control" id="meaning"
+                       type="text"
+                       placeholder="단어의 뜻을 입력하세요"
+                       required>
+                <div class="invalid-feedback">뜻을 입력해주세요.</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="hint">
+                    <i class="bi bi-lightbulb"></i>
+                    <span>힌트</span>
+                </label>
+                <input class="form-control" id="hint"
+                       type="text"
+                       placeholder="정답에 도움이 되는 힌트를 입력해주세요">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="bi bi-bar-chart"></i>
+                    <span>난이도</span>
+                </label>
+                <div class="difficulty-options">
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="1" class="difficulty-input">
+                        <span class="difficulty-box">
+                <i class="bi bi-star-fill"></i>
+                <span>매우 쉬움</span>
+            </span>
+                    </label>
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="2" class="difficulty-input">
+                        <span class="difficulty-box">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <span>쉬움</span>
+            </span>
+                    </label>
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="3" class="difficulty-input" checked>
+                        <span class="difficulty-box">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <span>보통</span>
+            </span>
+                    </label>
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="4" class="difficulty-input">
+                        <span class="difficulty-box">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <span>어려움</span>
+            </span>
+                    </label>
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="5" class="difficulty-input">
+                        <span class="difficulty-box">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <span>매우 어려움</span>
+            </span>
+                    </label>
                 </div>
             </div>
-        </div>
 
-        <!-- 메인 콘텐츠 영역 -->
-        <main class="register-grid">
-            <!-- 단어 등록 폼 컨테이너 -->
-            <div class="form-container">
-                <!-- 페이지 타이틀 -->
-                <h2 class="page-title">
-                    <i class="bi bi-plus-circle me-2"></i>단어 등록
-                </h2>
 
-                <!-- 단어 등록 폼 -->
-                <form class="needs-validation word-form" id="wordForm" novalidate>
-                    <!-- 영단어 입력 -->
-                    <div class="form-group vocabulary-group">
-                        <label class="form-label" for="vocabulary">
-                            <i class="bi bi-book me-2"></i>영단어
-                        </label>
-                        <input class="form-control" id="vocabulary" type="text"
-                               placeholder="등록할 영단어를 입력하세요"
-                               required autofocus
-                               pattern="^[a-zA-Z\s\-]+$"
-                               minlength="2"
-                               maxlength="100">
-                        <div class="invalid-feedback">
-                            <i class="bi bi-exclamation-circle me-2"></i>영어 단어는 최소 2자 이상 입력해야 합니다.
-                        </div>
-                    </div>
-
-                    <!-- 뜻 입력 -->
-                    <div class="form-group meaning-group">
-                        <label class="form-label" for="meaning">
-                            <i class="bi bi-translate me-2"></i>뜻
-                        </label>
-                        <input class="form-control" id="meaning" type="text"
-                               placeholder="단어의 뜻을 입력하세요"
-                               required pattern="^[a-zA-Z가-힣\s\-]+$"
-                               maxlength="200">
-                        <div class="invalid-feedback">
-                            <i class="bi bi-exclamation-circle me-2"></i>뜻을 입력해주세요. (한글 또는 영어만 입력 가능)
-                        </div>
-                    </div>
-
-                    <!-- 힌트 입력 -->
-                    <div class="form-group hint-group">
-                        <label class="form-label" for="hint">
-                            <i class="bi bi-lightbulb me-2"></i>힌트
-                        </label>
-                        <input class="form-control" id="hint" type="text"
-                               placeholder="정답에 도움이 되는 힌트를 입력해주세요">
-                    </div>
-
-                    <!-- 난이도 선택 -->
-                    <div class="form-group difficulty-group">
-                        <label class="form-label" for="difficulty">
-                            <i class="bi bi-bar-chart me-2"></i>난이도
-                        </label>
-                        <select class="form-select" id="difficulty" required>
-                            <option value="1"> 1 (매우 쉬움)</option>
-                            <option value="2"> 2 (쉬움)</option>
-                            <option value="3" selected> 3 (보통)</option>
-                            <option value="4"> 4 (어려움)</option>
-                            <option value="5"> 5 (매우 어려움)</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            <i class="bi bi-exclamation-circle me-2"></i>난이도를 선택해주세요.
-                        </div>
-                    </div>
-
-                    <!-- 단어 등록/취소 버튼 -->
-                    <div class="form-group button-group">
-                        <button class="btn btn-secondary" id="cancelBtn" type="button">
-                            <i class="bi bi-x-lg me-2"></i>취소
-                        </button>
-                        <button class="btn btn-primary btn-submit" type="submit">
-                            <i class="bi bi-plus-lg me-2"></i>단어 등록하기
-                        </button>
-                    </div>
-                </form>
+            <div class="button-group">
+                <button class="btn btn-text" id="cancelBtn" type="button">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>취소</span>
+                </button>
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>단어 등록</span>
+                </button>
             </div>
-        </main>
+        </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script defer th:src="@{/js/word/register.js}" type="text/javascript"></script>
+    <!-- 토스트 메시지 -->
+    <div class="toast-container">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body"></div>
+        </div>
+    </div>
+</main>
+
+<th:block layout:fragment="script">
+    <script th:src="@{/js/word/register.js}"></script>
+</th:block>
 </body>
 </html>

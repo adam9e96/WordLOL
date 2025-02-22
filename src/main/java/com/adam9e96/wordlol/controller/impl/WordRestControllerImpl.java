@@ -26,9 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WordRestControllerImpl implements WordRestController {
 
-//    private static int perfectRun = 0;
     private final WordService wordService;
-
     private final StudyProgressService studyProgressService;
 
     @Override

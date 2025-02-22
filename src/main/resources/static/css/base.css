@@ -5,6 +5,7 @@
     system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
     "Noto Sans KR", "Malgun Gothic", sans-serif;
 
+
     /* Primary Colors */
     --primary: #6750A4;
     --on-primary: #FFFFFF;
@@ -16,9 +17,13 @@
     --on-secondary: #FFFFFF;
     --secondary-container: #E8DEF8;
     --on-secondary-container: #1E192B;
+    --on-surface-variant: #49454F; /* 추가 */
+    --surface-variant: #E7E0EC; /* 추가 */
+
 
     /* Surface Colors */
     --surface: #FEF7FF;
+    --on-surface: #1D1B20; /* 추가: 표면 위 텍스트 색상 */
     --surface-dim: #DED8E1;
     --surface-bright: #FEF7FF;
     --surface-container-lowest: #FFFFFF;
@@ -26,6 +31,24 @@
     --surface-container: #F3EDF7;
     --surface-container-high: #ECE6F0;
     --surface-container-highest: #E6E0E9;
+
+    /* Error Colors */
+    --error: #B3261E;
+    --on-error: #FFFFFF;
+    --error-container: #F9DEDC;
+    --on-error-container: #410E0B;
+
+
+    /* Spacing Variables */
+    --spacing-1: calc(var(--spacing-unit) * 0.25); /* 4px */
+    --spacing-2: calc(var(--spacing-unit) * 0.5); /* 8px */
+    --spacing-3: calc(var(--spacing-unit) * 0.75); /* 12px */
+    --spacing-4: calc(var(--spacing-unit) * 1); /* 16px */
+    --spacing-5: calc(var(--spacing-unit) * 1.25); /* 20px */
+    --spacing-6: calc(var(--spacing-unit) * 1.5); /* 24px */
+    --spacing-7: calc(var(--spacing-unit) * 1.75); /* 28px */
+    --spacing-8: calc(var(--spacing-unit) * 2); /* 32px */
+
 
     /* State Layer Colors */
     --hover-primary: rgba(103, 80, 164, 0.08);
@@ -73,7 +96,7 @@
 }
 
 body {
-    font-family: var(--font-family-base);
+    font-family: var(--font-family-base), system-ui, -apple-system, sans-serif; /* 제네릭 폰트 패밀리 추가 */
     background-color: var(--surface);
     color: var(--on-surface);
     min-height: 100vh;

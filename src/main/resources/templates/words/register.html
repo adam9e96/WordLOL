@@ -1,62 +1,61 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <title>단어장 등록</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/common.css}" type="text/css">
-    <link rel="stylesheet" th:href="@{/css/words-register.css}" type="text/css">
-    <link href="data:;base64,ivborw0kggo=" rel="icon">
+    <title>단어 N개 등록</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/pages/words/register.css}">
+    </th:block>
 </head>
 <body>
-<!-- 페이지 전체 그리드 컨테이너 -->
-<div class="page-grid">
-    <!-- 헤더 영역 -->
-    <header th:replace="~{fragments/header :: header}"></header>
-
-    <!-- 메인 콘텐츠 영역 -->
-    <main class="register-grid">
-        <!-- 토스트 메시지 -->
-        <div class="toast-container position-fixed top-0 end-0 p-3">
-            <div aria-atomic="true" aria-live="assertive" class="toast align-items-center text-white border-0" id="toast"
-                 role="alert">
-                <div class="d-flex">
-                    <div class="toast-body"></div>
-                    <button aria-label="Close" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                            type="button"></button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 제목과 버튼 영역 -->
-        <div class="header-section">
+<main layout:fragment="content" class="registers-grid">
+    <div class="content-container">
+        <!-- 헤더 섹션 -->
+        <div class="page-header">
             <h2 class="page-title">
-                <i class="bi bi-journal-plus me-2"></i>단어장 등록
+                <i class="bi bi-journal-plus"></i>
+                단어 N개 등록
             </h2>
-            <div class="header-actions">
-                <button class="btn btn-success" onclick="addRow()">
-                    <i class="bi bi-plus-lg me-2"></i>행 추가
+            <button class="btn btn-add" onclick="addRow()">
+                <i class="bi bi-plus-lg"></i>
+                행 추가
+            </button>
+        </div>
+
+        <!-- 단어 입력 폼 -->
+        <form id="wordsForm" class="words-form needs-validation" novalidate>
+            <div class="word-table">
+                <div id="wordRows" class="word-rows">
+                    <!-- 단어 행들이 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+
+            <!-- 버튼 그룹 -->
+            <div class="button-group">
+                <button type="button" class="btn btn-text" onclick="history.back()">
+                    <i class="bi bi-arrow-left"></i>
+                    취소
                 </button>
-                <button class="btn btn-primary" onclick="saveWords()">
-                    <i class="bi bi-save me-2"></i>저장하기
+                <button type="button" class="btn btn-primary" onclick="saveWords()">
+                    <i class="bi bi-save"></i>
+                    단어 등록
                 </button>
             </div>
-        </div>
+        </form>
+    </div>
 
-        <!-- 단어 입력 테이블 영역 -->
-        <div class="word-table">
-            <form id="bookWordForm">
-                <div id="wordRows">
-                    <!-- 여기에 동적으로 행이 추가됩니다 -->
-                </div>
-            </form>
+    <!-- 토스트 메시지 -->
+    <div class="toast-container">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body"></div>
         </div>
-    </main>
-</div>
+    </div>
+</main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script defer th:src="@{/js/words/register.js}" type="text/javascript"></script>
+<th:block layout:fragment="script">
+    <script th:src="@{/js/words/register.js}"></script>
+</th:block>
 </body>
 </html>

@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
             vocabulary: document.getElementById('vocabulary').value,
             meaning: document.getElementById('meaning').value,
             hint: document.getElementById('hint').value,
-            difficulty: parseInt(document.getElementById('difficulty').value)
+            difficulty: parseInt(document.querySelector('input[name="difficulty"]:checked').value)  // 수정된 부분
         };
 
         // 추가 유효성 검사
@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
+            console.log('wordData:', wordData);
             // API 요청 전송
             const response = await fetch('/api/v1/words', {
                 method: 'POST',

@@ -1,81 +1,244 @@
-/* 단어 목록 페이지 레이아웃 */
-.word-list-grid {
+/* Word List Page - Material You 3 Design */
+.word-list-container {
     display: grid;
     grid-template-areas:
-        "title"
+        "header"
         "table"
         "pagination";
     gap: var(--spacing-4);
-    max-width: 1200px;
-    width: 100%;
+    width: min(100%, var(--max-width));
     margin: 0 auto;
-    padding: var(--spacing-3);
+    padding: var(--spacing-4);
 }
 
-/* 페이지 제목 */
-.page-title {
-    grid-area: title;
-    text-align: center;
+/* Header Section */
+.word-list-header {
+    width: 80%;
+    grid-area: header;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-3);
 }
 
-.page-title h2 {
-    color: var(--color-primary);
-    font-size: 1.8rem;
-    font-weight: bold;
+.word-list-title {
+    flex-grow: 1;
+}
+
+.word-list-title h2 {
+    color: var(--primary);
+    font-size: 2rem;
+    font-weight: 600;
     margin: 0;
 }
 
-/* 토스트 메시지 */
-.toast-container {
-    z-index: 1056;
+.word-list-title .subtitle {
+    color: var(--on-surface-variant);
+    font-size: 0.875rem;
+    margin-top: var(--spacing-1);
 }
 
-.toast {
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
+.word-list-actions {
+    margin-left: var(--spacing-4);
 }
 
-/* 모달 */
-.modal-content {
-    border-radius: var(--radius-lg);
-    border: none;
-}
-
-.modal-header {
-    border-bottom: 1px solid #eee;
-    padding: var(--spacing-3);
-}
-
-.modal-body {
-    padding: var(--spacing-3);
-}
-
-.modal-footer {
-    border-top: 1px solid #eee;
-    padding: var(--spacing-3);
-}
-
-/* 폼 요소 */
-.form-control, .form-select {
-    border-radius: var(--radius-md);
-    border: 1px solid #eee;
-    padding: var(--spacing-2);
+.word-list-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-weight: 500;
+    box-shadow: var(--shadow-1);
     transition: all var(--transition-normal);
 }
 
-.form-control:focus, .form-select:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(103, 80, 164, 0.1);
+.word-list-actions .btn:hover {
+    box-shadow: var(--shadow-2);
+    transform: translateY(-2px);
 }
 
-/* 반응형 */
+/* Table Container */
+.word-list-table-container {
+    grid-area: table;
+    background: var(--surface-container-lowest);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
+    transition: box-shadow var(--transition-normal);
+}
+
+.word-list-table-container:hover {
+    box-shadow: var(--shadow-2);
+}
+
+/* Table Styles */
+.word-list-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.word-list-table thead {
+    background: var(--surface-container-low);
+}
+
+.word-list-table th {
+    color: var(--on-surface-variant);
+    font-weight: 600;
+    padding: var(--spacing-3);
+    border-bottom: 1px solid var(--outline-variant);
+}
+
+.word-list-table td {
+    padding: var(--spacing-3);
+    border-bottom: 1px solid var(--outline-variant);
+    vertical-align: middle;
+}
+
+.word-list-table tbody tr {
+    transition: background-color var(--transition-normal);
+}
+
+.word-list-table tbody tr:hover {
+    background: var(--surface-container-high);
+}
+
+
+/* Table Styles */
+.word-list-table tbody tr {
+    opacity: 0;
+    animation: fadeInFromTop 0.5s ease forwards;
+}
+
+.word-list-table tbody tr:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.word-list-table tbody tr:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.word-list-table tbody tr:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.word-list-table tbody tr:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.word-list-table tbody tr:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.word-list-table tbody tr:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+.word-list-table tbody tr:nth-child(7) {
+    animation-delay: 0.7s;
+}
+
+.word-list-table tbody tr:nth-child(8) {
+    animation-delay: 0.8s;
+}
+
+.word-list-table tbody tr:nth-child(9) {
+    animation-delay: 0.9s;
+}
+
+.word-list-table tbody tr:nth-child(10) {
+    animation-delay: 1s;
+}
+
+/* Action Buttons */
+.word-list-table .btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    padding: 0;
+    transition: all var(--transition-normal);
+}
+
+.word-list-table .btn-action:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-1);
+}
+
+/* Pagination */
+.word-list-pagination {
+    grid-area: pagination;
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-3);
+}
+
+.pagination {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+.pagination .page-item .page-link {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--surface-container);
+    color: var(--on-surface);
+    border: none;
+    transition: all var(--transition-normal);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--primary);
+    color: var(--on-primary);
+}
+
+.pagination .page-item .page-link:hover:not(.disabled) {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-1);
+}
+
+/* Modal Adjustments */
+.modal-content.rounded-4 {
+    border-radius: var(--border-radius-xl) !important;
+}
+
+.modal-header, .modal-footer {
+    border: none;
+}
+
+/* Word List Page - Material You 3 Design */
+@keyframes fadeInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .word-list-grid {
+    .word-list-container {
         padding: var(--spacing-2);
         gap: var(--spacing-3);
     }
 
-    .page-title h2 {
-        font-size: 1.5rem;
+    .word-list-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-3);
+    }
+
+    .word-list-table td {
+        padding: var(--spacing-2);
     }
 }

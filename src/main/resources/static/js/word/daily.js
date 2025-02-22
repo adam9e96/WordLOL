@@ -49,12 +49,17 @@ function renderWords(words) {
             <div class="card-content">
                 <div class="vocabulary">${word.vocabulary}</div>
                 <div class="meaning">${word.meaning}</div>
-                <div class="difficulty">${'⭐'.repeat(word.difficulty)}</div>
+                <div class="difficulty">${getDifficultyStars(word.difficulty)}</div>
             </div>
         </div>
     `).join('');
 
     container.innerHTML = html;
+}
+
+
+function getDifficultyStars(level) {
+    return '<i class="bi bi-star-fill"></i>'.repeat(level);
 }
 
 // 페이지 로드 시 단어 불러오기
