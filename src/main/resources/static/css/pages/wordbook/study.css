@@ -1,0 +1,383 @@
+/* Main Layout */
+.study-grid {
+    display: grid;
+    place-items: start center;
+    min-height: 100%;
+    padding: var(--spacing-4);
+    background: var(--surface-container-low);
+}
+
+.content-container {
+    width: min(100%, 800px);
+    display: grid;
+    gap: var(--spacing-6);
+}
+
+/* Status Section */
+.status-section {
+    background: var(--surface);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-4);
+    box-shadow: var(--shadow-2);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-4);
+}
+
+.progress-info,
+.streak-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-normal);
+}
+
+.progress-info:hover,
+.streak-info:hover {
+    background: var(--surface-container-high);
+    transform: translateY(-2px);
+}
+
+.progress-info i,
+.streak-info i {
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: var(--on-surface-variant);
+}
+
+.info-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--on-surface);
+}
+
+/* Mode Section */
+.mode-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    align-items: flex-end;
+}
+
+/* Toggle Switch */
+.repeat-toggle {
+    position: relative;
+}
+
+.toggle-label {
+    color: var(--on-surface-variant);
+    font-weight: 500;
+}
+
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    cursor: pointer;
+}
+
+
+.toggle-switch::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background: var(--outline);
+    border-radius: 50%;
+    transition: all var(--transition-normal);
+}
+
+#repeatMode:checked + .toggle-slider {
+    background: var(--primary-container);
+}
+
+#repeatMode:checked + .toggle-slider::before {
+    background: var(--primary);
+    transform: translateX(20px);
+}
+
+
+.toggle-slider {
+    position: relative;
+    width: 52px;
+    height: 32px;
+    background: var(--surface-container-highest);
+    border-radius: 16px;
+    transition: all var(--transition-normal);
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background: var(--outline);
+    border-radius: 50%;
+    transition: all var(--transition-normal);
+}
+
+/* Word Card */
+.word-card-container {
+    perspective: 2000px;
+    width: 100%;
+    padding: var(--spacing-4);
+}
+
+.word-card {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background: var(--surface);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-2);
+    padding: var(--spacing-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-front {
+    background: var(--primary-container);
+}
+
+.card-back {
+    background: var(--secondary-container);
+    transform: rotateY(180deg);
+}
+
+.word-card.flip {
+    transform: rotateY(180deg);
+}
+
+/* Word Content */
+.word-content {
+    width: 100%;
+    text-align: center;
+}
+
+.word-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+}
+
+/* Difficulty Stars */
+.difficulty {
+    display: flex;
+    gap: 2px;
+    color: #ffd700;
+    font-size: 1.25rem;
+}
+
+/* Vocabulary Section */
+.vocabulary-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-6);
+}
+
+
+.difficulty i {
+    color: #ffd700;
+    font-size: 1.25rem;
+}
+
+#vocabulary {
+    font-size: 3rem;
+    font-weight: 600;
+    color: var(--on-primary-container);
+}
+
+.btn-speak {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--on-primary-container);
+    display: grid;
+    place-items: center;
+    transition: all var(--transition-normal);
+}
+
+
+.btn-speak:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.btn-speak i {
+    font-size: 1.5rem;
+}
+
+.vocabulary {
+    font-size: 3rem;
+    font-weight: 600;
+    color: var(--on-primary-container);
+}
+
+.meaning {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--on-secondary-container);
+}
+
+/* Message Section */
+.message-section {
+    min-height: 48px;
+    padding: var(--spacing-3);
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    text-align: center;
+    color: var(--on-surface-variant);
+    font-weight: 500;
+}
+
+
+/* Input Section with Consistent Border Radius */
+.input-section {
+    display: grid;
+    gap: var(--spacing-3);
+}
+
+.input-group {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0; /* 간격 제거 */
+    border-radius: var(--border-radius);
+    overflow: hidden; /* 내부 요소들의 모서리를 부모의 border-radius에 맞춤 */
+    box-shadow: var(--shadow-1);
+}
+
+
+.input-group input {
+    padding: var(--spacing-4);
+    background: var(--surface);
+    border: 2px solid var(--outline-variant);
+    border-right: none; /* 오른쪽 테두리 제거 */
+    border-radius: 0; /* 모서리 제거 */
+    font-size: 1.125rem;
+    color: var(--on-surface);
+    transition: all var(--transition-normal);
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    box-shadow: none; /* 포커스 시 그림자 제거 */
+    outline: none;
+}
+
+
+/* 전체 컨테이너에 그림자 효과 */
+.input-group:hover {
+    box-shadow: var(--shadow-2);
+}
+
+.input-group .btn-primary {
+    border-radius: 0; /* 모서리 제거 */
+    padding: 0 var(--spacing-6); /* 패딩 조정 */
+}
+
+
+/* Control Section */
+.control-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-3);
+}
+
+/* Buttons */
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: all var(--transition-normal);
+}
+
+.btn i {
+    font-size: 1.25rem;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--on-primary);
+}
+
+.btn-surface {
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+.btn-primary:hover {
+    background: var(--primary);
+}
+
+.btn-surface:hover {
+    background: var(--surface-container-high);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content-container {
+        gap: var(--spacing-4);
+    }
+
+    .status-section {
+        grid-template-columns: 1fr;
+    }
+
+    .input-group {
+        grid-template-columns: 1fr;
+    }
+
+    .control-section {
+        grid-template-columns: 1fr;
+    }
+
+    .vocabulary {
+        font-size: 2.5rem;
+    }
+
+    .meaning {
+        font-size: 2rem;
+    }
+}

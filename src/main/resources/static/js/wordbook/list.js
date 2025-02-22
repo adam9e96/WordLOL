@@ -23,52 +23,59 @@ async function loadWordBooks() {
         }
 
         wordBookList.innerHTML = wordBooks.map(book => `
-            <div class="wordbook-card">
-                <span class="category-badge bg-${getCategoryColor(book.category)}">
-                    ${getCategoryDisplayName(book.category)}
-                </span>
-                <h3 class="card-title">${book.name}</h3>
-                <p class="card-text">${book.description}</p>
-                <div class="card-footer">
-                    <div class="word-count">
-                        <i class="bi bi-book"></i> 
-                        <span>단어 수: ${book.wordCount}</span>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn btn-sm btn-outline-primary"
-                                onclick="location.href='/word/wordbook/${book.id}/study'">
-                            <i class="bi bi-play-fill"></i>
-                            <span>학습</span>
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary"
-                                onclick="location.href='/word/wordbook/${book.id}/edit'">
-                            <i class="bi bi-pencil"></i>
-                            <span>수정</span>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger"
-                                onclick="confirmDelete(${book.id})">
-                            <i class="bi bi-trash"></i>
-                            <span>삭제</span>
-                        </button>
-                    </div>
-                </div>
-            </div>`
-        ).join('');
+    <div class="wordbook-card">
+        <div class="category-chip">
+            <i class="bi ${getCategoryIcon(book.category)}"></i>
+            ${getCategoryDisplayName(book.category)}
+        </div>
+        <h3 class="card-title">${book.name}</h3>
+        <p class="card-text">${book.description}</p>
+        <div class="card-footer">
+            <div class="word-count">
+                <i class="bi bi-book"></i>
+                <span>단어 ${book.wordCount}개</span>
+            </div>
+            <div class="card-actions">
+                <button class="card-btn btn-study" 
+                        onclick="location.href='/word/wordbook/${book.id}/study'"
+                        title="학습 시작">
+                    <i class="bi bi-play-fill"></i>
+                    <span>학습</span>
+                </button>
+                <button class="card-btn btn-edit"
+                        onclick="location.href='/word/wordbook/${book.id}/edit'"
+                        title="단어장 수정">
+                    <i class="bi bi-pencil"></i>
+                    <span>수정</span>
+                </button>
+                <button class="card-btn btn-delete"
+                        onclick="confirmDelete(${book.id})"
+                        title="단어장 삭제">
+                    <i class="bi bi-trash"></i>
+                    <span>삭제</span>
+                </button>
+            </div>
+        </div>
+    </div>
+`).join('');
+
     } catch (error) {
         console.error('Error loading wordbooks:', error);
         alert('단어장 목록을 불러오는 중 오류가 발생했습니다.');
     }
 }
 
-function getCategoryColor(category) {
-    const colors = {
-        'TOEIC': 'primary',
-        'TOEFL': 'success',
-        'CSAT': 'warning',
-        'CUSTOM': 'info'
+// 카테고리별 아이콘 매핑 함수 추가
+function getCategoryIcon(category) {
+    const icons = {
+        'TOEIC': 'bi-journal-text',
+        'TOEFL': 'bi-journal-medical',
+        'CSAT': 'bi-journal-check',
+        'CUSTOM': 'bi-journal-plus'
     };
-    return colors[category] || 'secondary';
+    return icons[category] || 'bi-journal';
 }
+
 
 
 function filterByCategory(category) {

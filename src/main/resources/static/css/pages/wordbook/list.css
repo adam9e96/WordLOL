@@ -1,0 +1,313 @@
+/* Main Layout */
+.list-grid {
+    display: grid;
+    place-items: start center;
+    min-height: 100%;
+    padding: var(--spacing-4);
+    background: var(--surface-container-low);
+}
+
+.content-container {
+    width: min(100%, 1400px);
+    display: grid;
+    gap: var(--spacing-6);
+}
+
+/* Top Section */
+.top-section {
+    background: var(--surface);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-2);
+    display: grid;
+    gap: var(--spacing-4);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+}
+
+/* Page Title */
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    color: var(--on-surface);
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-title i {
+    color: var(--primary);
+    font-size: 2rem;
+}
+
+/* Create Button */
+.create-btn {
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-3) var(--spacing-4);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    transition: all var(--transition-normal);
+}
+
+.create-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+/* Category Filter */
+.category-filter {
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--outline-variant);
+}
+
+.filter-chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+}
+
+.filter-chip {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
+    border: 2px solid var(--outline-variant);
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: all var(--transition-normal);
+}
+
+.filter-chip:hover {
+    background: var(--surface-container-high);
+    border-color: var(--outline);
+}
+
+.filter-chip.active {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    border-color: var(--primary);
+}
+
+/* Wordbooks Section */
+.wordbooks-section {
+    background: var(--surface);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-2);
+}
+
+.wordbooks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-4);
+}
+
+/* Wordbook Card */
+.wordbook-card {
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-4);
+    display: grid;
+    gap: var(--spacing-3);
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+.wordbook-card:hover {
+    background: var(--surface-container-high);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+/* Card Elements */
+.category-chip {
+    position: absolute;
+    top: var(--spacing-3);
+    right: var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: 20px; /* 더 둥근 모서리 */
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    box-shadow: var(--shadow-1);
+}
+
+.category-chip i {
+    font-size: 1rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--on-surface);
+    margin-top: var(--spacing-4);
+}
+
+.card-text {
+    color: var(--on-surface-variant);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.card-footer {
+    display: grid;
+    gap: var(--spacing-3);
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--outline-variant);
+    margin-top: auto;
+}
+
+.word-count {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--on-surface-variant);
+    font-size: 0.875rem;
+}
+
+.word-count i {
+    color: var(--primary);
+}
+
+/* Card Actions */
+.card-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-2);
+}
+
+.card-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-2);
+    border-radius: 16px; /* Material You 3 스타일의 둥근 모서리 */
+    font-weight: 500;
+    transition: all var(--transition-normal);
+    border: none;
+}
+
+
+.card-btn:hover {
+    background: var(--surface-container-highest);
+    border-color: var(--outline);
+}
+
+.card-btn i {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.card-btn span {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Modal */
+.modal-content {
+    background: var(--surface);
+    border-radius: var(--border-radius);
+}
+
+.modal-header {
+    background: var(--surface-container);
+    border-bottom: 1px solid var(--outline-variant);
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--error);
+}
+
+.btn-error {
+    background: var(--error);
+    color: var(--on-error);
+}
+
+/* Study Button */
+.btn-study {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+.btn-study:hover {
+    background: var(--primary);
+    color: var(--on-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-6);
+    color: var(--on-surface-variant);
+}
+
+
+/* Edit Button */
+.btn-edit {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+}
+
+.btn-edit:hover {
+    background: var(--secondary);
+    color: var(--on-secondary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+/* Delete Button */
+.btn-delete {
+    background: var(--error-container);
+    color: var(--on-error-container);
+}
+
+.btn-delete:hover {
+    background: var(--error);
+    color: var(--on-error);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .create-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filter-chip-group {
+        justify-content: center;
+    }
+
+    .wordbooks-grid {
+        grid-template-columns: 1fr;
+    }
+}
