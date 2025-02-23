@@ -1,101 +1,171 @@
-/* dashboard.css 수정 */
-:root {
-    --md-surface-1: #FEF7FF;
-    --md-surface-2: #F9F1FE;
-    --md-surface-3: #F3EAFA;
-    --md-container-1: rgba(103, 80, 164, 0.05);
-    --md-container-2: rgba(103, 80, 164, 0.08);
-    --md-container-3: rgba(103, 80, 164, 0.11);
-    --border-radius-xl: 28px; /* 더 큰 둥근 모서리 */
-    --border-radius-lg: 24px; /* 큰 둥근 모서리 */
-    --border-radius-md: 20px; /* 중간 둥근 모서리 */
+/* Material You Dashboard CSS */
+
+/* 카드 공통 스타일 - 각 영역을 둥근 네모 박스로 구분 */
+/* 카드 공통 스타일 - 각 영역을 둥근 네모 박스로 구분 */
+/* 카드 공통 스타일 - 각 영역을 둥근 네모 박스로 구분 */
+.stat-card, .info-card {
+    /* 카드 배경을 흰색(또는 아주 밝은 톤)으로 확실히 지정 */
+    background-color: #FFFFFF !important;
+    /* 두께와 색상을 분명하게 지정하여 눈에 띄는 경계선 */
+    border: 2px solid #79747E !important; /* Material 색상 예: --outline (#79747E) */
+    /* 둥근 모서리 */
+    border-radius: 20px !important;
+    /* 그림자 (Material You 느낌) */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* 높이와 전환 효과 */
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 1rem; /* 섹션 간격 추가 */
 }
 
-/* 카드 공통 스타일 */
-.card {
-    background-color: var(--md-surface-1);
-    border-radius: var(--border-radius-xl);
-    border: none;
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: all var(--transition-normal);
+/* 호버 시 더 뚜렷하게 띄워주는 효과 */
+.stat-card:hover, .info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* 통계 카드 아이콘 컨테이너 */
+/* 나머지 스타일(아이콘, 폰트, 테이블 등)은 그대로 두되 필요하면 대비를 높여줍니다. */
 .stat-icon-container {
     width: 56px;
     height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--border-radius-lg);
-    transition: all var(--transition-normal);
+    border-radius: 20px; /* 동일한 라운딩 적용 */
+    font-size: 1.5rem;
+    /* ... */
 }
 
-/* 통계 섹션 */
-.stats-section .card {
-    padding: var(--spacing-4);
-}
-
-/* 카테고리 통계 */
-.list-group-item {
-    border: none;
-    padding: var(--spacing-3);
-    margin-bottom: var(--spacing-2);
-    border-radius: var(--border-radius-lg);
-    background-color: var(--md-surface-2);
-    transition: all var(--transition-normal);
-}
-
-/* 뱃지 스타일 */
-.badge {
-    padding: 0.75rem 1rem;
-    border-radius: var(--border-radius-md);
-    font-weight: 500;
+/* 필요 시 label, value 색상 대비도 높여줍니다. */
+.stat-label {
+    color: #49454F; /* 예: var(--on-surface-variant)보다 진하게 */
     font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
 }
 
-/* 테이블 컨테이너와 테이블 스타일 수정 */
-.table-container {
-    border-radius: var(--border-radius-xl);
-    overflow: hidden;
-    background-color: var(--md-surface-1);
-    box-shadow: var(--shadow-sm);
-    padding: 0; /* 패딩 제거 */
+.stat-value {
+    color: #1D1B20; /* 예: var(--on-surface) */
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
 }
 
+
+.stat-icon-total {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+.stat-icon-today {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.stat-icon-streak {
+    background-color: #FFF3E0;
+    color: #F57C00;
+}
+
+.stat-icon-rate {
+    background-color: #E1F5FE;
+    color: #0288D1;
+}
+
+
+
+/* 정보 카드 스타일 */
+.info-card .card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--outline-variant);
+    padding: 1.25rem 1.5rem;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--on-surface);
+}
+
+.card-title i {
+    color: var(--primary);
+    font-size: 1.5rem;
+}
+
+/* 카테고리 통계 스타일 */
+.category-stats {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.list-group-item {
+    background-color: var(--surface-container);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: var(--surface-container-high);
+}
+
+/* 테이블 스타일 */
 .table-custom {
     margin: 0;
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
 }
 
-/* 테이블 헤더 */
 .table-custom thead {
-    background-color: var(--md-surface-2);
+    background-color: var(--surface-container);
 }
 
 .table-custom th {
-    padding: var(--spacing-3);
-    color: var(--color-primary);
+    color: var(--on-surface-variant);
     font-weight: 600;
     border: none;
+    padding: 1rem;
 }
 
-/* 테이블 셀 */
 .table-custom td {
-    padding: var(--spacing-3);
-    border-bottom: 1px solid var(--md-container-1);
-    transition: background-color var(--transition-normal);
+    color: var(--on-surface);
+    border-bottom: 1px solid var(--outline-variant);
+    padding: 1rem;
+    vertical-align: middle;
 }
 
-/* 테이블 행 호버 효과 */
-.table-custom tbody tr:hover td {
-    background-color: var(--md-surface-2);
-}
-
-/* 마지막 행의 border 제거 */
 .table-custom tbody tr:last-child td {
     border-bottom: none;
 }
+
+.table-custom tbody tr:hover td {
+    background-color: var(--surface-container-low);
+}
+
+/* 배지 스타일 */
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+    border-radius: var(--border-radius);
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .stat-card .card-body,
+    .info-card .card-body {
+        padding: 1rem;
+    }
+
+    .table-custom th,
+    .table-custom td {
+        padding: 0.75rem;
+    }
+}
+

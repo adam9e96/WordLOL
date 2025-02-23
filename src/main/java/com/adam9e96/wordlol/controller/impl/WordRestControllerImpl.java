@@ -80,7 +80,7 @@ public class WordRestControllerImpl implements WordRestController {
     @Override
     @PostMapping("/check")
     public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request
-   , HttpSession session) {
+            , HttpSession session) {
         boolean isCorrect = wordService.validateAnswer(request.wordId(), request.answer());
 
         AnswerResponse response;
@@ -120,9 +120,10 @@ public class WordRestControllerImpl implements WordRestController {
 
     @Override
     @GetMapping("/daily")
-    public ResponseEntity<List<WordResponse>> getDailyWords() {
+    public ResponseEntity<List<DailyWordResponse>> getDailyWords() {
         List<Word> words = wordService.findRandomWords();
-        return ResponseEntity.ok().body(toResponseList(words));
+        return ResponseEntity.ok().body(
+                toDailyWordListResponse(words));
     }
 
     /**
@@ -206,5 +207,15 @@ public class WordRestControllerImpl implements WordRestController {
                 word.getCreatedAt(),
                 word.getUpdatedAt()
         );
+    }
+
+
+    private List<DailyWordResponse> toDailyWordListResponse(List<Word> words) {
+        return words.stream()
+                .map(word -> new DailyWordResponse(
+                        word.getVocabulary(),
+                        word.getMeaning(),
+                        word.getDifficulty()))
+                .toList();
     }
 }

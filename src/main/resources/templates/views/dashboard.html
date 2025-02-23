@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>대시보드</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/pages/dashboard.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="container py-4">
+        <!-- 상단 통계 카드 -->
+        <div class="row g-4 mb-4">
+            <!-- 전체 단어 -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon-container stat-icon-total">
+                                <i class="bi bi-book"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="stat-label">전체 단어</h6>
+                                <h3 class="stat-value" id="totalWords">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오늘 학습 -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon-container stat-icon-today">
+                                <i class="bi bi-calendar-check"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="stat-label">오늘 학습</h6>
+                                <h3 class="stat-value" id="todayWords">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 연속 정답 -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon-container stat-icon-streak">
+                                <i class="bi bi-lightning-charge"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="stat-label">연속 정답</h6>
+                                <h3 class="stat-value" id="streak">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 정답률 -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon-container stat-icon-rate">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="stat-label">정답률</h6>
+                                <h3 class="stat-value" id="correctRate">0%</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 중간 섹션: 카테고리 통계 & 최근 단어 -->
+        <div class="row g-4">
+            <!-- 카테고리 통계 -->
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="bi bi-bar-chart-line"></i>
+                            카테고리별 단어장
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="categoryStats" class="category-stats">
+                            <!-- 카테고리 통계가 여기에 동적으로 추가됩니다 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최근 단어 -->
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="bi bi-clock-history"></i>
+                            최근 추가된 단어
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                <tr>
+                                    <th>단어</th>
+                                    <th>의미</th>
+                                    <th>추가일</th>
+                                </tr>
+                                </thead>
+                                <tbody id="recentWords">
+                                <!-- 최근 단어 목록이 여기에 동적으로 추가됩니다 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block layout:fragment="script">
+    <script defer th:src="@{/js/dashboard.js}"></script>
+</th:block>
+</body>
+</html>

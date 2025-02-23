@@ -28,7 +28,7 @@ public class WordViewControllerImpl implements WordViewController {
     @Override
     @GetMapping("/words/register")
     public String showWordsRegisterPage() {
-        return "words/register";
+        return "views/words/register";
     }
 
     @Override
@@ -40,7 +40,7 @@ public class WordViewControllerImpl implements WordViewController {
     @Override
     @GetMapping("/dashboard")
     public String showDashboardPage() {
-        return "dashboard";
+        return "views/dashboard";
     }
 
     @Override
@@ -52,32 +52,27 @@ public class WordViewControllerImpl implements WordViewController {
     @Override
     @GetMapping("/wordbook/create")
     public String showWordBookCreatePage() {
-        return "wordbook/create";
+        return "views/wordbook/create";
     }
 
     @Override
     @GetMapping("/wordbook/list")
     public String showWordBookListPage() {
-        return "wordbook/list";
+        return "views/wordbook/list";
     }
 
     @Override
     @GetMapping("/wordbook/{id}/edit")
     public String showWordBookEditPage(@PathVariable("id") Long id, Model model) {
         model.addAttribute("wordBookId", id);
-        return "wordbook/edit";
+        return "views/wordbook/edit";
     }
 
     @Override
     @GetMapping("/wordbook/{id}/study")
     public String showWordBookStudyPage(@PathVariable("id") Long id, Model model) {
         model.addAttribute("wordBookId", id);
-        return "wordbook/study";
-    }
-
-    @GetMapping("/header")
-    public String showHeaderPage() {
-        return "fragments/header";
+        return "views/wordbook/study";
     }
 
     @GetMapping("/test")

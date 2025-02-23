@@ -1,244 +1,257 @@
-/* ====================================================
-   Study Application JavaScript
-   ==================================================== */
-// 전역 변수
-let currentWord = null; // 현재 단어 객체 저장
-let isProcessing = false; // 정답 처리 중 중복 방지를 위한 플래그
-const API_BASE_URL = '/api/v1/words'; // API 기본 URL
-let showingHint = false; // 힌트 표시 여부
+// 상태 관리 객체
+const State = {
+    currentWord: null, // 현재 학습 중인 단어
+    isProcessing: false, // 정답 확인 중복 방지
+    showingHint: false, // 힌트 표시 여부
+    speaking: false, // TTS 재생 중인지 여부
+    voices: [], // 사용 가능한 음성 목록
+    API_BASE_URL: '/api/v1/words' // API 기본 URL
+};
 
-// DOM 요소
-const messageEl = document.getElementById('message');
+// DOM 엘리먼트 캐싱
+const Elements = {
+    message: document.getElementById('message'),
+    card: document.getElementById('card'),
+    vocabulary: document.getElementById('vocabulary'),
+    difficulty: document.getElementById('difficulty'),
+    answer: document.getElementById('answer'),
+    meaning: document.getElementById('meaning'),
+    perfectRun: document.getElementById('perfectRun'),
+    speakButton: document.querySelector('.btn-speak')
+};
 
+// TTS(Text-to-Speech) 관리
+const SpeechManager = {
+    synth: window.speechSynthesis,
 
-// TTS (Text-to-Speech) 관련 변수
-let speaking = false;
-const synth = window.speechSynthesis;
-let voices = [];
+    init() {
+        if (this.synth.onvoiceschanged !== undefined) {
+            this.synth.onvoiceschanged = () => {
+                State.voices = this.synth.getVoices();
+            };
+        }
+    },
 
-// TTS에 사용할 음성 목록을 불러옴
-function loadVoices() {
-    voices = synth.getVoices();
-}
+    getEnglishVoice() {
+        return State.voices.find(voice =>
+            voice.lang.includes('en') &&
+            (voice.lang.includes('US') || voice.lang.includes('GB'))
+        ) || State.voices.find(voice => voice.lang.includes('en'));
+    },
 
-// 음성 목록이 변경될 때 호출되는 이벤트 핸들러 등록
-if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = loadVoices;
-}
+    speak(text) {
+        if (State.speaking || !text) return;
 
-/**
- * 현재 단어를 음성으로 재생하는 함수
- */
-function speakWord() {
-    if (speaking || !currentWord) return; // 이미 재생 중이거나 단어가 없으면 종료
+        const utterance = new SpeechSynthesisUtterance(text);
+        const englishVoice = this.getEnglishVoice();
 
-    const word = currentWord.vocabulary;
-    const speakButton = document.querySelector('.btn-speak');
+        if (englishVoice) utterance.voice = englishVoice;
 
-    //  음성 객체 생성
-    const utterance = new SpeechSynthesisUtterance(word);
+        utterance.rate = 1;
+        utterance.pitch = 1;
 
-    // 영어 음성 선택 (미국 / 영국 우선))
-    const englishVoice = voices.find(voice =>
-        voice.lang.includes('en') &&
-        (voice.lang.includes('US') || voice.lang.includes('GB'))
-    ) || voices.find(voice => voice.lang.includes('en'));
+        utterance.onstart = () => this.handleSpeechStart();
+        utterance.onend = () => this.handleSpeechEnd();
+        utterance.onerror = (event) => this.handleSpeechError(event);
 
-    // 만약 영어 음성이 존재하면 설정
-    if (englishVoice) {
-        utterance.voice = englishVoice;
-    }
+        this.synth.speak(utterance);
+    },
 
-    // 음성 설정
-    // 발음 속도, 음높이 설정
-    utterance.rate = 1; // 발음 속도 (0.1 ~ 10)
-    utterance.pitch = 1;
+    handleSpeechStart() {
+        State.speaking = true;
+        Elements.speakButton.classList.add('speaking-animation');
+    },
 
-    // 발음 시작 시 UI 업데이트
-    utterance.onstart = () => {
-        speaking = true;
-        speakButton.classList.add('speaking-animation');
-    };
+    handleSpeechEnd() {
+        State.speaking = false;
+        Elements.speakButton.classList.remove('speaking-animation');
+    },
 
-    // 발음 종료 호 UI 복구
-    utterance.onend = () => {
-        speaking = false;
-        speakButton.classList.remove('speaking-animation');
-    };
-
-    // 발음 오류 처리
-    utterance.onerror = (event) => {
+    handleSpeechError(event) {
         console.error('TTS 에러 발생:', event);
-        speaking = false;
-        speakButton.classList.remove('speaking-animation');
+        this.handleSpeechEnd();
+        UIManager.showMessage('TTS 재생 중 오류가 발생했습니다.', 2000);
+    }
+};
 
-        // 오류 메시지 표시
-        messageEl.textContent = 'TTS 재생 중 오류가 발생했습니다.';
-        // document.getElementById('message').textContent = 'TTS 재생 중 오류가 발생했습니다.';
+// UI 관리
+const UIManager = {
+    getDifficultyStars(level) {
+        return '<i class="bi bi-star-fill"></i>'.repeat(level);
+    },
+
+    showMessage(text, duration = 0) {
+        Elements.message.textContent = text;
+        if (duration > 0) {
+            setTimeout(() => {
+                Elements.message.textContent = '';
+            }, duration);
+        }
+    },
+
+    resetCard() {
+        Elements.card.classList.remove('flip');
+        Elements.meaning.textContent = '';
+        Elements.answer.value = '';
+        Elements.message.textContent = '';
+    },
+
+    updateWordDisplay(word) {
+        Elements.vocabulary.textContent = word.vocabulary;
+        Elements.difficulty.innerHTML = this.getDifficultyStars(word.difficulty);
+        Elements.speakButton.style.display = 'block';
+        this.resetCard();
+    },
+
+    showCorrectAnswer(meaning) {
+        Elements.meaning.textContent = meaning;
+        Elements.card.classList.add('flip');
+    },
+
+    showIncorrectAnswer() {
+        Elements.card.classList.add('shake');
         setTimeout(() => {
-            messageEl.textContent = '';
-            // document.getElementById('message').textContent = '';
-        }, 2000);
-    };
+            Elements.card.classList.remove('shake');
+            State.isProcessing = false;
+        }, 500);
+    }
+};
 
+// API 통신
+const ApiService = {
+    async fetchRandomWord() {
+        const response = await fetch(`${State.API_BASE_URL}/random`);
+        if (!response.ok) throw new Error('단어를 불러오는데 실패했습니다.');
+        return response.json();
+    },
 
-    // 단어 재생 시작
-    synth.speak(utterance);
-} // speakWord() 함수 끝
+    async checkAnswer(wordId, answer) {
+        const response = await fetch(`${State.API_BASE_URL}/check`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({answer, wordId})
+        });
+        return response.json();
+    },
 
-/**
- * 난이도에 따른 별 아이콘을 반환하는 함수
- * @param {number} level - 난이도 레벨
- */
-function getDifficultyStars(level) {
-    return '<i class="bi bi-star-fill"></i>'.repeat(level);
-}
+    async fetchHint(wordId) {
+        const response = await fetch(`${State.API_BASE_URL}/${wordId}/hint`);
+        return response.json();
+    }
+};
 
-/**
- * 새로운 단어를 API에서 불러와 UI를 업데이트하는 함수
- */
-async function loadNewWord() {
-    const card = document.getElementById('card');
-    card.classList.remove('flip');  // 카드 상태 초기화
-    isProcessing = false;
+// 학습 관리
+const StudyManager = {
+    async loadNewWord() {
+        UIManager.resetCard();
+        State.isProcessing = false;
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/random`);
-        if (!response.ok) {
-            console.error('단어 로드 에러:', response);
-            messageEl.textContent = '단어를 불러오는데 실패했습니다.';
+        try {
+            State.currentWord = await ApiService.fetchRandomWord();
+            UIManager.updateWordDisplay(State.currentWord);
+        } catch (error) {
+            console.error('단어 로드 에러:', error);
+            UIManager.showMessage(error.message);
+        }
+    },
+
+    async checkAnswer() {
+        if (State.isProcessing) return;
+
+        const userAnswer = Elements.answer.value.trim();
+        if (!userAnswer) {
+            UIManager.showMessage('답을 입력해주세요.');
             return;
         }
 
-        currentWord = await response.json();
+        State.isProcessing = true;
 
-        // 단어 표시
-        const vocabularyEl = document.getElementById('vocabulary');
-        const difficultyEl = document.getElementById('difficulty');
-        const cardEl = document.getElementById('card');
-        const answerEl = document.getElementById('answer');
-        const messageEl = document.getElementById('message');
-        const meaningEl = document.getElementById('meaning');
-        const speakButton = document.querySelector('.btn-speak');
-        speakButton.style.display = 'block'; // 기본적으로 보이도록 수정
+        try {
+            const result = await ApiService.checkAnswer(State.currentWord.id, userAnswer);
+            UIManager.showMessage(result.message);
+            Elements.perfectRun.textContent = result.perfectRun;
 
-        // UI 업데이트: 단어, 난이도, 카드 상태, 입력값 초기화
-        vocabularyEl.textContent = currentWord.vocabulary;
-        difficultyEl.innerHTML = getDifficultyStars(currentWord.difficulty);
-        cardEl.classList.remove('flip');
-        answerEl.value = '';
-        messageEl.textContent = '';
-        meaningEl.textContent = '';
-
-    } catch (error) {
-        console.error('단어 로드 에러:', error);
-        messageEl.textContent = '단어를 불러오는데 실패했습니다.';
-    }
-}// loadNewWord() 함수 끝
-
-/**
- * 사용자의 답안을 API에 제출하여 확인하는 함수
- */
-async function checkAnswer() {
-    if (isProcessing) return; // 중복 제출 방지
-
-    const userAnswer = document.getElementById('answer').value.trim();
-    const card = document.getElementById('card');
-    const messageEl = document.getElementById('message');
-    const meaningEl = document.getElementById('meaning');
-    const vocabularyEl = document.getElementById('vocabulary');
-
-    if (!userAnswer) {
-        messageEl.textContent = '답을 입력해주세요.';
-        return;
-    }
-
-    isProcessing = true;
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/check`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                answer: userAnswer,
-                wordId: currentWord.id
-            })
-        });
-
-        const result = await response.json();
-        messageEl.textContent = result.message;
-        document.getElementById('perfectRun').textContent = result.perfectRun;
-
-        if (result.correct) {
-            // 정답인 경우: 단어의 의미 표시 후 카드 플립 애니메이션 실행
-            meaningEl.textContent = currentWord.meaning;
-            card.classList.add('flip');  // 카드 뒤집기 애니메이션 적용
-
-            // 1.5초 후 다음 단어로 전환
-            setTimeout(() => {
-                card.classList.remove('flip');  // 카드 뒤집기 초기화
-                loadNewWord();
-            }, 1500);
-        } else {
-            // 오답인 경우
-            card.classList.add('shake');
-            setTimeout(() => {
-                card.classList.remove('shake');
-                isProcessing = false;
-            }, 500);
+            if (result.correct) {
+                this.handleCorrectAnswer();
+            } else {
+                UIManager.showIncorrectAnswer();
+            }
+        } catch (error) {
+            UIManager.showMessage('정답 확인 중 오류가 발생했습니다.');
+            State.isProcessing = false;
         }
-    } catch (error) {
-        messageEl.textContent = '정답 확인 중 오류가 발생했습니다.';
-        isProcessing = false;
+    },
+
+    handleCorrectAnswer() {
+        UIManager.showCorrectAnswer(State.currentWord.meaning);
+        setTimeout(() => this.loadNewWord(), 1500);
+    },
+
+    async showHint() {
+        if (!State.currentWord) return;
+
+        if (State.showingHint) {
+            UIManager.showMessage('');
+            State.showingHint = false;
+            return;
+        }
+
+        try {
+            const data = await ApiService.fetchHint(State.currentWord.id);
+            UIManager.showMessage(`힌트: ${data.hint}`);
+            State.showingHint = true;
+        } catch (error) {
+            UIManager.showMessage('힌트를 불러오는데 실패했습니다.');
+        }
     }
+};
+
+// 이벤트 핸들러 설정
+function setupEventListeners() {
+    // 기존 이벤트 리스너
+    Elements.answer.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') StudyManager.checkAnswer().then(() => console.log("checkAnswer"));
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key.toLowerCase() === 'p') {
+            SpeechManager.speak(State.currentWord?.vocabulary);
+        }
+    });
+
+    // TTS 버튼 클릭 이벤트 추가
+    Elements.speakButton.addEventListener('click', () => {
+        SpeechManager.speak(State.currentWord?.vocabulary);
+    });
+
+    // 힌트 버튼 클릭 이벤트 추가
+    document.querySelector('.btn-hint').addEventListener('click', () => {
+        StudyManager.showHint().then(() => console.log("showHint"));
+    });
+
+    // 정답 확인 버튼 클릭 이벤트 추가
+    document.querySelector('.btn-primary').addEventListener('click', () => {
+        StudyManager.checkAnswer().then(() => console.log("checkAnswer"));
+    });
+    document.querySelector('#nextRandomWord').addEventListener('click', () => {
+        StudyManager.loadNewWord().then(() => console.log("loadNewWord"));
+    })
+
+    // ESC 키 입력 시 입력 포커스 해제
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            Elements.answer.blur();
+        }
+    });
 }
 
-/**
- * 현재 단어의 힌트를 표시하거나 숨기는 함수
- */
-async function showHint() {
-    if (!currentWord) return;
 
-    if (showingHint) {
-        messageEl.textContent = '';
-        // document.getElementById('message').textContent = '';
-        showingHint = false;
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/${currentWord.id}/hint`);
-        const data = await response.json();
-        messageEl.textContent = `힌트: ${data.hint}`;
-        // document.getElementById('message').textContent = `힌트: ${data.hint}`;
-        showingHint = true;
-    } catch (error) {
-        messageEl.textContent = '힌트를 불러오는데 실패했습니다.';
-        // document.getElementById('message').textContent = '힌트를 불러오는데 실패했습니다.';
-    }
+// 초기화
+function initialize() {
+    SpeechManager.init();
+    setupEventListeners();
+    StudyManager.loadNewWord().then(() => console.log("loadNewWord"));
 }
 
-/**
- * 답안을 제출하는 함수 (enter 키 및 버튼 클릭 시 호출)
- */
-function submitAnswer() {
-    if (!currentWord) return;
-    checkAnswer();
-}
-
-// 엔터 키 입력 시 답안 제출 이벤트 등록
-document.getElementById('answer').addEventListener('keypress', function (event) {
-    if (event.key === 'Enter') {
-        submitAnswer();
-    }
-});
-
-// 'p' 키 입력 시 단어 발음 재생 (TTS) 이벤트 등록
-document.addEventListener('keydown', function (event) {
-    if (event.key === 'p' || event.key === 'P') {
-        speakWord();
-    }
-});
-
-// 초기 로드
-loadNewWord();
+// 앱 시작
+document.addEventListener('DOMContentLoaded', initialize);

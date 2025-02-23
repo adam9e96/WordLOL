@@ -38,7 +38,7 @@ public interface WordRestController {
     Map<String, Integer> getCurrentStreak(HttpSession session);
 
     @GetMapping("/daily")
-    ResponseEntity<List<WordResponse>> getDailyWords();
+    ResponseEntity<List<DailyWordResponse>> getDailyWords();
 
     @GetMapping("/list")
     ResponseEntity<PageResponse<WordResponse>> getWords(

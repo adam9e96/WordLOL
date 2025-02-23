@@ -1,0 +1,291 @@
+/* Main Layout */
+.edit-grid {
+    display: grid;
+    place-items: start center;
+    min-height: 100%;
+    padding: var(--spacing-4);
+    background: var(--surface-container-low);
+}
+
+.content-container {
+    width: min(100%, 1200px);
+    display: grid;
+    gap: var(--spacing-6);
+}
+
+/* Form Section */
+.form-section {
+    background: var(--surface);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-2);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-6);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--outline-variant);
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    color: var(--on-surface);
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.page-title i {
+    color: var(--primary);
+    font-size: 2rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.section-title i {
+    color: var(--primary);
+}
+
+/* Form Layout */
+.wordbook-form {
+    display: grid;
+    gap: var(--spacing-4);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+}
+
+.form-group {
+    display: grid;
+    gap: var(--spacing-2);
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--on-surface-variant);
+    font-weight: 500;
+}
+
+.form-label i {
+    color: var(--primary);
+    font-size: 1.25rem;
+}
+
+/* Form Controls */
+.form-control,
+.form-select {
+    padding: var(--spacing-4);
+    height: 48px;
+    background: var(--surface-container);
+    border: 2px solid var(--outline-variant);
+    border-radius: var(--border-radius);
+    color: var(--on-surface);
+    font-size: 1rem;
+    transition: all var(--transition-normal);
+}
+
+/* 단어 목록 내 입력 필드 특별 스타일 */
+.word-row .form-control,
+.word-row .form-select {
+    width: 100%;
+    height: 44px;
+    padding: var(--spacing-3);
+    background: var(--surface-container-lowest);
+    border-width: 1px;
+}
+
+.word-row .form-control:focus,
+.word-row .form-select:focus {
+    background: white;
+    border-color: var(--primary);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: var(--surface-container-high);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-container);
+    outline: none;
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Word List */
+.words-container {
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.word-list {
+    display: grid;
+    gap: 1px;
+    background: var(--outline-variant);
+    padding: 1px;
+}
+
+.word-list-header {
+    display: grid;
+    grid-template-columns: minmax(200px, 2fr) minmax(200px, 2fr) minmax(150px, 1.5fr) minmax(100px, 1fr) 60px;
+    gap: var(--spacing-4);
+    padding: var(--spacing-5) var(--spacing-4);
+    background: var(--surface-container-highest);
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--on-surface-variant);
+    border-bottom: 2px solid var(--outline-variant);
+}
+
+.word-row {
+    display: grid;
+    grid-template-columns: minmax(200px, 2fr) minmax(200px, 2fr) minmax(150px, 1.5fr) minmax(100px, 1fr) 60px;
+    gap: var(--spacing-4);
+    padding: var(--spacing-5) var(--spacing-4);
+    background: var(--surface);
+    align-items: center;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--outline-variant);
+    transition: all var(--transition-normal);
+}
+
+.word-row:hover {
+    background: var(--surface-container-high);
+}
+
+/* Remove Button */
+.btn-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: var(--error-container);
+    color: var(--on-error-container);
+    border: none;
+    border-radius: 50%;
+    transition: all var(--transition-normal);
+}
+
+.btn-remove:hover {
+    background: var(--error);
+    color: var(--on-error);
+    transform: scale(1.1);
+}
+
+/* Button Group */
+.button-group {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: end;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-6);
+}
+
+/* Buttons */
+.btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all var(--transition-normal);
+}
+
+.btn i {
+    font-size: 1.25rem;
+}
+
+.btn-text {
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
+    border: 2px solid var(--outline-variant);
+}
+
+.btn-text:hover {
+    background: var(--surface-container-high);
+    border-color: var(--outline);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+/* Toast */
+.toast-container {
+    position: fixed;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    z-index: 1056;
+}
+
+.toast {
+    min-width: 300px;
+    background: var(--surface-container-highest);
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content-container {
+        gap: var(--spacing-4);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .word-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-2);
+    }
+
+    .word-list-header {
+        display: none;
+    }
+
+    .button-group {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-3);
+    }
+
+    .btn {
+        justify-content: center;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: var(--spacing-3);
+        text-align: center;
+    }
+}

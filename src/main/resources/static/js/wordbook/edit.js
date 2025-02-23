@@ -25,9 +25,10 @@ async function loadWordBook(wordBookId) {
         // 2. 단어장의 단어 목록 조회
         const wordsResponse = await fetch(`${API_BASE_URL}/${wordBookId}/words`);
         if (!wordsResponse.ok) {
-            throw new Error('단어 목록을 불러올 수 없습니다.');
+            throw new Error(`단어 목록을 불러올 수 없습니다. (${wordsResponse.status})`);
         }
         const words = await wordsResponse.json();
+        console.log('Loaded words:', words); // 디버깅용 로그 추가
 
         // UI 업데이트
         document.getElementById('name').value = wordBook.name;
@@ -36,16 +37,10 @@ async function loadWordBook(wordBookId) {
         document.getElementById('createdAt').value = formatDateTime(wordBook.createdAt);
         document.getElementById('updatedAt').value = formatDateTime(wordBook.updatedAt);
 
-
         // 단어 목록 표시
         const wordList = document.getElementById('wordList');
         wordList.innerHTML = '';
-        words.forEach((word) => {
-            addWordRow(word);
-            console.log(word);
-        })
-
-        // wordBook.words.forEach(word => addWordRow(word));
+        words.forEach(word => addWordRow(word));
     } catch (error) {
         console.error('Error:', error);
         showToast('단어장 로딩 중 오류가 발생했습니다.', 'danger');
@@ -55,41 +50,29 @@ async function loadWordBook(wordBookId) {
 function addWordRow(word = null) {
     const wordList = document.getElementById('wordList');
     const row = document.createElement('div');
-    row.className = 'word-row mb-3';
+    row.className = 'word-row';
 
     row.innerHTML = `
-        <div class="row">
-            <input type="hidden" class="word-id" value="${word ? word.id : ''}">
-            <div class="col-md-3">
-                <input type="text" class="form-control vocabulary"
-                       value="${word ? word.vocabulary : ''}"
-                       placeholder="영단어" required>
-            </div>
-            <div class="col-md-3">
-                <input type="text" class="form-control meaning"
-                       value="${word ? word.meaning : ''}"
-                       placeholder="의미" required>
-            </div>
-            <div class="col-md-3">
-                <input type="text" class="form-control hint"
-                       value="${word ? word.hint || '' : ''}"
-                       placeholder="힌트">
-            </div>
-            <div class="col-md-2">
-                <select class="form-select difficulty">
-                    <option value="1" ${word && word.difficulty === 1 ? 'selected' : ''}>Level 1</option>
-                    <option value="2" ${word && word.difficulty === 2 ? 'selected' : ''}>Level 2</option>
-                    <option value="3" ${word && word.difficulty === 3 ? 'selected' : ''}>Level 3</option>
-                    <option value="4" ${word && word.difficulty === 4 ? 'selected' : ''}>Level 4</option>
-                    <option value="5" ${word && word.difficulty === 5 ? 'selected' : ''}>Level 5</option>
-                </select>
-            </div>
-            <div class="col-md-1">
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.word-row').remove()">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        </div>
+        <input type="hidden" class="word-id" value="${word ? word.id : ''}">
+        <input type="text" class="form-control vocabulary"
+               value="${word ? word.vocabulary : ''}"
+               placeholder="영단어" required>
+        <input type="text" class="form-control meaning"
+               value="${word ? word.meaning : ''}"
+               placeholder="의미" required>
+        <input type="text" class="form-control hint"
+               value="${word ? word.hint || '' : ''}"
+               placeholder="힌트">
+        <select class="form-select difficulty">
+            <option value="1" ${word && word.difficulty === 1 ? 'selected' : ''}>Level 1</option>
+            <option value="2" ${word && word.difficulty === 2 ? 'selected' : ''}>Level 2</option>
+            <option value="3" ${word && word.difficulty === 3 ? 'selected' : ''}>Level 3</option>
+            <option value="4" ${word && word.difficulty === 4 ? 'selected' : ''}>Level 4</option>
+            <option value="5" ${word && word.difficulty === 5 ? 'selected' : ''}>Level 5</option>
+        </select>
+        <button type="button" class="btn-remove" onclick="this.closest('.word-row').remove()">
+            <i class="bi bi-trash"></i>
+        </button>
     `;
 
     wordList.appendChild(row);
@@ -108,13 +91,12 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
 
     const wordRows = document.querySelectorAll('.word-row');
     const words = Array.from(wordRows).map(row => ({
-        id: row.querySelector('.word-id').value || null,  // ID 추가
+        id: row.querySelector('.word-id').value || null,
         vocabulary: row.querySelector('.vocabulary').value.trim(),
         meaning: row.querySelector('.meaning').value.trim(),
         hint: row.querySelector('.hint').value.trim(),
         difficulty: parseInt(row.querySelector('.difficulty').value)
     }));
-
 
     const wordBookData = {
         name: document.getElementById('name').value.trim(),
@@ -135,7 +117,7 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
         if (response.ok) {
             showToast('단어장이 성공적으로 수정되었습니다.');
             setTimeout(() => {
-                window.location.href = '/wordbook/list';
+                window.location.href = '/word/wordbook-list';
             }, 1500);
         } else {
             const error = await response.json();
@@ -147,7 +129,6 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
     }
 });
 
-// 날짜 포맷팅 함수 추가
 function formatDateTime(dateTimeStr) {
     if (!dateTimeStr) return '-';
     const date = new Date(dateTimeStr);
@@ -159,7 +140,6 @@ function formatDateTime(dateTimeStr) {
         minute: '2-digit'
     });
 }
-
 
 // 초기 데이터 로드
 loadWordBook(wordBookId);
