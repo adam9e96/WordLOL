@@ -28,4 +28,5 @@ public interface WordService {
 
     List<Word> findRandomWords();
 
+    boolean checkVocabularyDuplicate(String vocabulary, Long excludeId);
 }

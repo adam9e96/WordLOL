@@ -31,6 +31,12 @@ public interface WordRestController {
     @PostMapping("/check")
     ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request, HttpSession session);
 
+    @GetMapping("/check-duplicate")
+    ResponseEntity<Map<String, Boolean>> checkVocabularyDuplicate(
+            @RequestParam String vocabulary,
+            @RequestParam(required = false) Long excludeId);
+
+
     @GetMapping("/{id}/hint")
     ResponseEntity<Map<String, String>> getWordHint(@PathVariable("id") Long id);
 

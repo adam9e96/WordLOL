@@ -182,6 +182,17 @@ public class WordServiceImpl implements WordService {
         return randomWords;
     }
 
+    @Override
+    public boolean checkVocabularyDuplicate(String vocabulary, Long excludeId) {
+        if (excludeId != null) {
+            // 수정 시: 자기 자신을 제외한 중복 체크
+            return wordRepository.existsByVocabularyIgnoreCaseAndIdNot(vocabulary, excludeId);
+        }
+        // 신규 등록 시: 전체 중복 체크
+        return wordRepository.existsByVocabularyIgnoreCase(vocabulary);
+    }
+
+
     // Private 메서드
     private boolean isDuplicateWord(String vocabulary) {
         // 대소문자 구분 없이 중복 확인

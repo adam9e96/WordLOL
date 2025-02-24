@@ -15,4 +15,6 @@ public interface WordRepository extends JpaRepository<Word, Long> {
 
     boolean existsByVocabularyIgnoreCase(String vocabulary);
 
+    boolean existsByVocabularyIgnoreCaseAndIdNot(String vocabulary, Long excludeId);
+
 }

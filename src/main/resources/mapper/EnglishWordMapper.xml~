@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adam9e96.WordLOL.mapper.EnglishWordMapper">
+
+    <!-- EnglishWord 엔티티의 결과 매핑 -->
+    <resultMap id="EnglishWordResultMap" type="com.adam9e96.WordLOL.entity.EnglishWord">
+        <!-- 기본 키 매핑 -->
+        <id property="id" column="id"/>
+        <!-- 일반 컬럼 매핑 -->
+        <result property="vocabulary" column="vocabulary"/>
+        <result property="meaning" column="meaning"/>
+        <result property="hint" column="hint"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+
+        <!-- 연관된 WordBook 객체 매핑 -->
+        <association property="wordBook" javaType="com.adam9e96.WordLOL.entity.WordBook">
+            <!-- WordBook의 기본키 매핑 (WordBook 클래스에 setId 메소드가 있어야 함) -->
+            <id property="id" column="word_book_id"/>
+        </association>
+    </resultMap>
+
+    <!-- ID로 EnglishWord 조회 쿼리 -->
+    <select id="findById" parameterType="long" resultMap="EnglishWordResultMap">
+        SELECT id,
+               vocabulary,
+               meaning,
+               hint,
+               difficulty,
+               created_at,
+               updated_at,
+               word_book_id
+        FROM english_word
+        WHERE id = #{id}
+    </select>
+    <select id="findEnglishWordByHint" resultMap="EnglishWordResultMap">
+        SELECT hint
+        FROM english_word
+        WHERE id = #{id}
+    </select>
+
+    <!-- 랜덤 5개 단어 조회 -->
+    <select id="findRandom5Words" resultMap="EnglishWordResultMap">
+        SELECT id,
+               vocabulary,
+               meaning,
+               null as hint,
+               difficulty,
+               null as created_at,
+               null as updated_at
+        FROM english_word
+        ORDER BY RAND()
+        LIMIT 5
+    </select>
+    <select id="findAllIds" resultType="java.lang.Long">
+        SELECT id
+        FROM english_word
+    </select>
+    <!-- 최근 5개 단어 조회-->
+    <select id="findRecent5Words" resultMap="EnglishWordResultMap">
+        SELECT id,
+               vocabulary,
+               meaning,
+               hint,
+               difficulty,
+               null as created_at,
+               null as updated_at
+        FROM english_word
+        ORDER BY id DESC
+        LIMIT 5
+    </select>
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM english_word
+    </select>
+    <select id="findByWordBookId" resultType="com.adam9e96.WordLOL.entity.EnglishWord">
+        SELECT *
+        FROM english_word
+        WHERE word_book_id = #{wordBookId}
+    </select>
+
+</mapper>

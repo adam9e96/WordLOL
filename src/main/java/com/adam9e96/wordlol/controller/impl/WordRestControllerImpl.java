@@ -102,6 +102,13 @@ public class WordRestControllerImpl implements WordRestController {
     }
 
     @Override
+    public ResponseEntity<Map<String, Boolean>> checkVocabularyDuplicate(String vocabulary, Long excludeId) {
+        boolean exists = wordService.checkVocabularyDuplicate(vocabulary, excludeId);
+        return ResponseEntity.ok(Map.of("exists", exists));
+    }
+
+
+    @Override
     @GetMapping("/{id}/hint")
     public ResponseEntity<Map<String, String>> getWordHint(@PathVariable("id") Long id) {
         Word word = wordService.findById(id);
