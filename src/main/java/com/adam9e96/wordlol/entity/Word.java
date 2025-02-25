@@ -34,21 +34,21 @@ public class Word {
 
     /**
      * 단어의 의미 또는 정의입니다.
-     * null을 허용하지 않으며 최대 100자의 길이를 가집니다.
+     * null 을 허용하지 않으며 최대 100자의 길이를 가집니다.
      */
     @Column(name = "meaning", nullable = false, length = 100)
     private String meaning; // 뜻
 
     /**
      * 단어에 대한 선택적 힌트 또는 추가 설명입니다.
-     * null이 허용되며 최대 100자의 길이를 가집니다.
+     * null 이 허용되며 최대 100자의 길이를 가집니다.
      */
     @Column(name = "hint", length = 100)
     private String hint; // 힌트
 
     /**
      * 단어의 난이도입니다.
-     * null을 허용하지 않으며, 기본값은 1로 설정되어 있습니다.
+     * null 을 허용하지 않으며, 기본값은 1로 설정되어 있습니다.
      */
     @Column(name = "difficulty", nullable = false)
     private Integer difficulty = 1;

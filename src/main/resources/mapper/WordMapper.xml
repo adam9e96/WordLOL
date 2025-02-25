@@ -4,7 +4,7 @@
 <mapper namespace="com.adam9e96.wordlol.mapper.WordMapper">
 
     <!-- EnglishWord 엔티티의 결과 매핑 -->
-    <resultMap id="EnglishWordResultMap" type="com.adam9e96.wordlol.entity.Word">
+    <resultMap id="WordResultMap" type="com.adam9e96.wordlol.entity.Word">
         <!-- 기본 키 매핑 -->
         <id property="id" column="id"/>
         <!-- 일반 컬럼 매핑 -->
@@ -40,6 +40,16 @@
                 NOW(),
                 NOW())
     </insert>
+    <update id="update"
+            parameterType="com.adam9e96.wordlol.entity.Word">
+        UPDATE word
+        SET vocabulary = #{vocabulary},
+            meaning    = #{meaning},
+            hint       = #{hint},
+            difficulty = #{difficulty},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
 
 
     <!-- id에 해당되는 엔티티 삭제 -->
@@ -50,7 +60,7 @@
     </delete>
 
     <!-- ID로 EnglishWord 조회 쿼리 -->
-    <select id="findById" parameterType="long" resultMap="EnglishWordResultMap">
+    <select id="findById" parameterType="long" resultMap="WordResultMap">
         SELECT id,
                vocabulary,
                meaning,
@@ -62,14 +72,14 @@
         FROM word
         WHERE id = #{id}
     </select>
-    <select id="findEnglishWordByHint" resultMap="EnglishWordResultMap">
+    <select id="findEnglishWordByHint" resultMap="WordResultMap">
         SELECT hint
         FROM word
         WHERE id = #{id}
     </select>
 
     <!-- 랜덤 5개 단어 조회 -->
-    <select id="findRandom5Words" resultMap="EnglishWordResultMap">
+    <select id="findRandom5Words" resultMap="WordResultMap">
         SELECT id,
                vocabulary,
                meaning,
@@ -77,7 +87,7 @@
                difficulty,
                null as created_at,
                null as updated_at
-        FROM  word
+        FROM word
         ORDER BY RAND()
         LIMIT 5
     </select>
@@ -86,7 +96,7 @@
         FROM word
     </select>
     <!-- 최근 5개 단어 조회-->
-    <select id="findRecent5Words" resultMap="EnglishWordResultMap">
+    <select id="findRecent5Words" resultMap="WordResultMap">
         SELECT id,
                vocabulary,
                meaning,
@@ -102,7 +112,7 @@
         SELECT COUNT(*)
         FROM word
     </select>
-    <select id="findByWordBookId" resultMap="EnglishWordResultMap">
+    <select id="findByWordBookId" resultMap="WordResultMap">
         SELECT e.id,
                e.vocabulary,
                e.meaning,
@@ -110,11 +120,11 @@
                e.difficulty,
                e.created_at,
                e.updated_at
-        FROM  word e
+        FROM word e
         WHERE e.word_book_id = #{wordBookId}
         ORDER BY e.id DESC /* 최신 단어부터 조회 */
     </select>
-    <select id="findAllByWordBookId" resultMap="EnglishWordResultMap">
+    <select id="findAllByWordBookId" resultMap="WordResultMap">
         SELECT e.id,
                e.vocabulary,
                e.meaning,
@@ -130,7 +140,7 @@
         FROM word
         WHERE id = #{id}
     </select>
-    <select id="findAllWithPaging" resultMap="EnglishWordResultMap">
+    <select id="findAllWithPaging" resultMap="WordResultMap">
         SELECT id,
                vocabulary,
                meaning,

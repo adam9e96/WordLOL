@@ -100,6 +100,7 @@ const UIManager = {
     },
 
     showEditModal(word) {
+        console.log("수정 모달 ID:", word.id);
         const existingModal = bootstrap.Modal.getInstance(Elements.editModal);
         if (existingModal) {
             existingModal.dispose();

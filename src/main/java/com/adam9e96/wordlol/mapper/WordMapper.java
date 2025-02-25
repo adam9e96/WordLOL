@@ -17,6 +17,8 @@ public interface WordMapper {
      */
     Optional<Word> findById(Long id);
 
+    void update(Word word);
+
 
     Optional<Word> findEnglishWordByHint(Long id);
 
@@ -47,6 +49,7 @@ public interface WordMapper {
     boolean existsById(Long id);
 
     List<Word> findAllWithPaging(Pageable pageable);
+
     long countTotal();  // 전체 개수를 위한 메서드 추가
 
 

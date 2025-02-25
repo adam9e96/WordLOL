@@ -100,7 +100,7 @@ public class WordServiceImpl implements WordService {
         try {
             // 3. 단어 업데이트
             word.update(request.vocabulary(), request.meaning(), request.hint(), request.difficulty());
-            wordMapper.save(word);
+            wordMapper.update(word);
         } catch (Exception e) {
             log.error("단어 업데이트 중 오류가 발생했습니다. ID: {}", id, e);
             throw new WordUpdateException(id);

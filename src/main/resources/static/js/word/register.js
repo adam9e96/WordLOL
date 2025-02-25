@@ -50,7 +50,7 @@ const ValidationManager = {
     // 정규식 패턴
     PATTERNS: {
         vocabulary: /^[a-zA-Z\s\-]+$/,
-        meaning: /^[가-힣a-zA-Z\s,]+$/
+        meaning: /^[가-힣a-zA-Z\s,\-\~]+$/  // ~ 문자 추가
     },
 
     // 중복 검사
@@ -69,36 +69,36 @@ const ValidationManager = {
     validateVocabulary(value) {
         value = value.trim();
         if (!value) {
-            return { isValid: false, message: this.ERROR_MESSAGES.vocabulary.required };
+            return {isValid: false, message: this.ERROR_MESSAGES.vocabulary.required};
         }
         if (!this.PATTERNS.vocabulary.test(value)) {
-            return { isValid: false, message: this.ERROR_MESSAGES.vocabulary.pattern };
+            return {isValid: false, message: this.ERROR_MESSAGES.vocabulary.pattern};
         }
         if (value.length < 2 || value.length > 100) {
-            return { isValid: false, message: this.ERROR_MESSAGES.vocabulary.length };
+            return {isValid: false, message: this.ERROR_MESSAGES.vocabulary.length};
         }
-        return { isValid: true };
+        return {isValid: true};
     },
 
     validateMeaning(value) {
         value = value.trim();
         if (!value) {
-            return { isValid: false, message: this.ERROR_MESSAGES.meaning.required };
+            return {isValid: false, message: this.ERROR_MESSAGES.meaning.required};
         }
         if (!this.PATTERNS.meaning.test(value)) {
-            return { isValid: false, message: this.ERROR_MESSAGES.meaning.pattern };
+            return {isValid: false, message: this.ERROR_MESSAGES.meaning.pattern};
         }
         if (value.length < 1 || value.length > 100) {
-            return { isValid: false, message: this.ERROR_MESSAGES.meaning.length };
+            return {isValid: false, message: this.ERROR_MESSAGES.meaning.length};
         }
-        return { isValid: true };
+        return {isValid: true};
     },
 
     validateHint(value) {
         if (value && value.length > 100) {
-            return { isValid: false, message: this.ERROR_MESSAGES.hint.length };
+            return {isValid: false, message: this.ERROR_MESSAGES.hint.length};
         }
-        return { isValid: true };
+        return {isValid: true};
     }
 };
 
@@ -147,7 +147,7 @@ const ApiService = {
     async registerWord(wordData) {
         const response = await fetch(State.API_BASE_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(wordData)
         });
 
@@ -195,7 +195,7 @@ const FormManager = {
 
         // 중복 검사
         try {
-            const { exists } = await ValidationManager.checkDuplicate(data.vocabulary);
+            const {exists} = await ValidationManager.checkDuplicate(data.vocabulary);
             if (exists) {
                 UIManager.showToast(ValidationManager.ERROR_MESSAGES.vocabulary.duplicate, 'danger');
                 Elements.inputs.vocabulary.focus();

@@ -89,14 +89,10 @@ public class WordRestControllerImpl implements WordRestController {
         if (isCorrect) {
 
             int newPerfectRun = studyProgressService.incrementPerfectRun(sessionId);
-//            perfectRun++;
-//            response = new AnswerResponse(true, "정답입니다!", perfectRun);
             response = new AnswerResponse(true, "정답입니다!", newPerfectRun);
         } else {
             studyProgressService.resetPerfectRun(sessionId);
             response = new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", 0);
-//            perfectRun = 0;
-//            response = new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", perfectRun);
         }
         return ResponseEntity.ok().body(response);
     }
@@ -121,7 +117,6 @@ public class WordRestControllerImpl implements WordRestController {
         String sessionId = session.getId();
         int currentPerfectRun = studyProgressService.getCurrentPerfectRun(sessionId);
         return Map.of("perfectRun", currentPerfectRun);
-//        return Map.of("perfectRun", perfectRun);
     }
 
 
@@ -195,12 +190,6 @@ public class WordRestControllerImpl implements WordRestController {
                 null, // 등록일 숨김
                 null // 업데이트 숨김
         );
-    }
-
-    private List<WordResponse> toResponseList(List<Word> words) {
-        return words.stream()
-                .map(this::toResponse)
-                .toList();
     }
 
 
