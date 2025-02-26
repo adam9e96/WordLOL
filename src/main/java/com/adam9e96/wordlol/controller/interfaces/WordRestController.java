@@ -3,9 +3,11 @@ package com.adam9e96.wordlol.controller.interfaces;
 import com.adam9e96.wordlol.dto.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -50,4 +52,14 @@ public interface WordRestController {
     ResponseEntity<PageResponse<WordResponse>> getWords(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size);
+
+    @GetMapping("/search")
+    ResponseEntity<PageResponse<WordResponse>> searchWords(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "difficulty", required = false) Integer difficulty,
+            @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size);
+
 }

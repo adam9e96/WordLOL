@@ -12,11 +12,14 @@
 
             <!-- 검색바 -->
             <div class="header-search-section">
-                <i class="bi bi-search search-icon"></i>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="검색어를 입력하세요">
-                </div>
+                <form id="searchForm" action="/word/search" method="get">
+                    <i class="bi bi-search search-icon"></i>
+                    <div class="search-container">
+                        <input type="text" id="searchInput" name="keyword" class="search-input" placeholder="검색어를 입력하세요">
+                    </div>
+                </form>
             </div>
+
 
             <!-- 로그인 -->
             <div class="header-auth-section">

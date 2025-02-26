@@ -158,5 +158,43 @@
         FROM word
     </select>
 
+    <select id="searchWords" resultMap="WordResultMap">
+        SELECT id, vocabulary, meaning, hint, difficulty, created_at, updated_at
+        FROM word
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (vocabulary LIKE CONCAT('%', #{keyword}, '%')
+            OR meaning LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="difficulty != null">
+            AND difficulty = #{difficulty}
+        </if>
+        <if test="startDate != null">
+            AND created_at >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND created_at &lt;= #{endDate}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
 
+    <select id="countSearchResults" resultType="long">
+        SELECT COUNT(*)
+        FROM word
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (vocabulary LIKE CONCAT('%', #{keyword}, '%')
+            OR meaning LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="difficulty != null">
+            AND difficulty = #{difficulty}
+        </if>
+        <if test="startDate != null">
+            AND created_at >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND created_at &lt;= #{endDate}
+        </if>
+    </select>
 </mapper>

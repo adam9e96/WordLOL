@@ -28,6 +28,8 @@ function addWordRow() {
         <div class="col" data-label="힌트">
             <input type="text" class="form-control hint" 
                    placeholder="힌트">
+            <div class="invalid-feedback" style="visibility: hidden;">힌트 오류</div>
+                   
         </div>
         <div class="col" data-label="난이도">
             <select class="form-select difficulty" required>
@@ -37,7 +39,7 @@ function addWordRow() {
                 <option value="4">⭐⭐⭐⭐ 어려움</option>
                 <option value="5">⭐⭐⭐⭐⭐ 매우 어려움</option>
             </select>
-            <div class="invalid-feedback">난이도를 선택해주세요.</div>
+            <div class="invalid-feedback" style="visibility: hidden;">난이도 오류</div>
         </div>
         <div class="col-action">
             <button type="button" class="btn-remove" onclick="removeRow(this)" title="행 삭제">

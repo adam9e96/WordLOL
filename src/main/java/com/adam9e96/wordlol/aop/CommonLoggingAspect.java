@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 @Aspect
 @RequiredArgsConstructor
 @Component
-public class UnifiedLoggingAspect {
+public class CommonLoggingAspect {
 
     private final ObjectMapper objectMapper;
 

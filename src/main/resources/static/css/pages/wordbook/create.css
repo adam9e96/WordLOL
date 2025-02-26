@@ -74,6 +74,16 @@
 .form-group {
     display: grid;
     gap: var(--spacing-2);
+    position: relative;
+    margin-bottom: 1.5rem; /* 여백 조정 */
+}
+
+
+/* 모든 form-group에 일관된 높이 적용 */
+.form-group::after {
+    content: none;
+    display: block;
+    height: 1.5rem; /* 일관된 높이 */
 }
 
 .form-label {
@@ -277,16 +287,26 @@ textarea.form-control {
 
 /* Invalid Feedback */
 .invalid-feedback {
-    display: none;
     color: var(--error);
     font-size: 0.875rem;
-    margin-top: var(--spacing-1);
+    margin-top: 0.25rem;
+    display: none;
+    position: static; /* absolute 대신 static으로 변경 */
+    height: auto; /* 고정 높이 제거 */
+    background-color: rgba(220, 53, 69, 0.1); /* 배경색 추가 */
+    padding: 0.375rem 0.75rem; /* 패딩 추가 */
+    border-radius: var(--border-radius); /* 테두리 둥글게 */
 }
 
+
+/* 유효성 검사 실패 시 피드백 표시 */
 .was-validated .form-control:invalid ~ .invalid-feedback,
-.form-control.is-invalid ~ .invalid-feedback {
+.was-validated .form-select:invalid ~ .invalid-feedback,
+.form-control.is-invalid ~ .invalid-feedback,
+.form-select.is-invalid ~ .invalid-feedback {
     display: block;
 }
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

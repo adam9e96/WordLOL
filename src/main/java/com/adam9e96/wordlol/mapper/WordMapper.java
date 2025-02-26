@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.mapper;
 
+import com.adam9e96.wordlol.dto.WordSearchRequest;
 import com.adam9e96.wordlol.entity.Word;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.domain.Pageable;
@@ -52,5 +53,8 @@ public interface WordMapper {
 
     long countTotal();  // 전체 개수를 위한 메서드 추가
 
+    List<Word> searchWords(WordSearchRequest request, int offset, int limit);
+
+    long countSearchResults(WordSearchRequest request);
 
 }

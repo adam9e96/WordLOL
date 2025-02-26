@@ -31,6 +31,7 @@
     background: var(--surface-container);
     border-radius: var(--border-radius);
     transition: background-color var(--transition-fast);
+    white-space: nowrap;
 }
 
 .header-brand-section:hover {
@@ -58,6 +59,7 @@
     background: var(--surface-container);
     border-radius: var(--border-radius);
     transition: background-color var(--transition-fast);
+    white-space: nowrap;
 }
 
 .header-auth-section:hover {
@@ -104,18 +106,25 @@
 }
 
 /* Mobile Responsive */
-@media (max-width: 991px) {
+@media (max-width: 768px) {
     .header-top-row {
-        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .header-search-section {
+        display: none;
     }
 
     .header-brand-section,
-    .header-search-section,
     .header-auth-section {
-        width: 100%;
+        width: auto;
     }
 
     .header-nav-section {
         overflow-x: auto;
+    }
+
+    .navbar-nav {
+        padding-bottom: 0.25rem; /* 스크롤바 공간 확보 */
     }
 }

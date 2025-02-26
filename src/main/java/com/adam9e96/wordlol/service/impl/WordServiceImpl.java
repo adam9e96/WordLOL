@@ -1,6 +1,7 @@
 package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.dto.WordRequest;
+import com.adam9e96.wordlol.dto.WordSearchRequest;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
@@ -190,6 +191,16 @@ public class WordServiceImpl implements WordService {
         }
         // 신규 등록 시: 전체 중복 체크
         return wordRepository.existsByVocabularyIgnoreCase(vocabulary);
+    }
+
+    @Transactional
+    @Override
+    public Page<Word> searchWords(WordSearchRequest request, Pageable pageable) {
+        int offset = (int) pageable.getOffset();
+        int limit = pageable.getPageSize();
+        List<Word> words = wordMapper.searchWords(request, offset, limit);
+        long total = wordMapper.countSearchResults(request);
+        return new PageImpl<>(words, pageable, total);
     }
 
 

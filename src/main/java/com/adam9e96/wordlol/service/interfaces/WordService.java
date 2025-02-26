@@ -1,6 +1,7 @@
 package com.adam9e96.wordlol.service.interfaces;
 
 import com.adam9e96.wordlol.dto.WordRequest;
+import com.adam9e96.wordlol.dto.WordSearchRequest;
 import com.adam9e96.wordlol.entity.Word;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,4 +30,6 @@ public interface WordService {
     List<Word> findRandomWords();
 
     boolean checkVocabularyDuplicate(String vocabulary, Long excludeId);
+
+    Page<Word> searchWords(WordSearchRequest request, Pageable pageable);
 }
