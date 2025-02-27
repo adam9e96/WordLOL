@@ -90,6 +90,14 @@ public class WordViewControllerImpl implements WordViewController {
         return "views/wordbook/study";
     }
 
+    @Override
+    @GetMapping("/wordbook/{id}/view")
+    public String showWordBookViewPage(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("wordBookId", id);
+        return "views/wordbook/view";
+    }
+
+
     @GetMapping("/test")
     public String showTestPage() {
         return "fragments/test";

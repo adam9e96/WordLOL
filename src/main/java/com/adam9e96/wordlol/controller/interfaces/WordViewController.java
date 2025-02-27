@@ -41,4 +41,7 @@ public interface WordViewController {
 
     @GetMapping("/wordbook/{id}/study")
     String showWordBookStudyPage(@PathVariable("id") Long id, Model model);
+
+    @GetMapping("/wordbook/{id}/view")
+    String showWordBookViewPage(@PathVariable("id") Long id, Model model);
 }

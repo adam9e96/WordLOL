@@ -124,6 +124,7 @@
     gap: var(--spacing-3);
     position: relative;
     transition: all var(--transition-normal);
+    min-height: 320px;
 }
 
 .wordbook-card:hover {
@@ -186,10 +187,10 @@
     color: var(--primary);
 }
 
-/* Card Actions */
+/* 조회 버튼 추가 관련 수정 */
 .card-actions {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--spacing-2);
 }
 
@@ -205,6 +206,18 @@
     border: none;
 }
 
+/* 조회 버튼 스타일 */
+.btn-view {
+    background: var(--surface-container-high);
+    color: var(--on-surface-variant);
+}
+
+.btn-view:hover {
+    background: var(--surface-container-highest);
+    color: var(--on-surface);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
 
 .card-btn:hover {
     background: var(--surface-container-highest);
@@ -309,5 +322,16 @@
 
     .wordbooks-grid {
         grid-template-columns: 1fr;
+    }
+
+    .card-actions {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-3);
+    }
+
+    @media (max-width: 576px) {
+        .card-actions {
+            grid-template-columns: 1fr;
+        }
     }
 }

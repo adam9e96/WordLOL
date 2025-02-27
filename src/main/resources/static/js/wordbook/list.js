@@ -3,11 +3,9 @@ const API_BASE_URL = '/api/v1/wordbooks';
 
 async function loadWordBooks() {
     try {
-// 현재
         const url = currentCategory === 'ALL'
             ? `${API_BASE_URL}`                                  // /api/v1/wordbooks
             : `${API_BASE_URL}/category?category=${currentCategory}` // /api/v1/wordbooks/category?category=TOEIC
-
 
         const response = await fetch(url);
         if (!response.ok) {
@@ -36,6 +34,12 @@ async function loadWordBooks() {
                 <span>단어 ${book.wordCount}개</span>
             </div>
             <div class="card-actions">
+                <button class="card-btn btn-view" 
+                        onclick="location.href='/word/wordbook/${book.id}/view'"
+                        title="상세 조회">
+                    <i class="bi bi-eye"></i>
+                    <span>조회</span>
+                </button>
                 <button class="card-btn btn-study" 
                         onclick="location.href='/word/wordbook/${book.id}/study'"
                         title="학습 시작">
@@ -75,8 +79,6 @@ function getCategoryIcon(category) {
     };
     return icons[category] || 'bi-journal';
 }
-
-
 
 function filterByCategory(category) {
     currentCategory = category;

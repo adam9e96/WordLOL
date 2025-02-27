@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class WordBook {
     @OneToMany(mappedBy = "wordBook", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Word> words = new ArrayList<>(); // 초기화 추가
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
