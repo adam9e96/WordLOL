@@ -3,6 +3,7 @@ package com.adam9e96.wordlol.controller.interfaces;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface WordViewController {
     @GetMapping("/study")
@@ -22,6 +23,12 @@ public interface WordViewController {
 
     @GetMapping("/daily")
     String showDailyPage();
+
+    @GetMapping("/search")
+    String showSearchResultsPage(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            Model model);
 
     @GetMapping("/wordbook/create")
     String showWordBookCreatePage();

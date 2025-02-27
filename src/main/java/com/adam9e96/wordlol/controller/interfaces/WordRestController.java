@@ -56,9 +56,6 @@ public interface WordRestController {
     @GetMapping("/search")
     ResponseEntity<PageResponse<WordResponse>> searchWords(
             @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "difficulty", required = false) Integer difficulty,
-            @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size);
 

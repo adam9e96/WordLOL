@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>검색 결과</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/pages/word/list.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content" class="word-list-container">
+    <!-- 페이지 타이틀 -->
+    <div class="word-list-header">
+        <div class="word-list-title">
+            <i class="bi bi-search"></i>
+            <h2>검색 결과</h2>
+        </div>
+        <div class="search-summary">
+            <span th:if="${keyword}" th:text="'키워드: ' + ${keyword}"></span>
+        </div>
+    </div>
+
+    <!-- 테이블 컨테이너 -->
+    <div class="word-list-table-container">
+        <div class="table-responsive">
+            <table class="word-list-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>영단어</th>
+                    <th>의미</th>
+                    <th>힌트</th>
+                    <th>난이도</th>
+                    <th>등록일</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody id="wordList"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <nav aria-label="Page navigation" class="word-list-pagination">
+        <ul class="pagination" id="pagination"></ul>
+    </nav>
+
+    <!-- 토스트 메시지 -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body"></div>
+        </div>
+    </div>
+</main>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        // 컨트롤러에서 전달받은 검색 파라미터들
+        const initialKeyword = [[${keyword}]];
+        const initialPage = [[${page}]];
+    </script>
+    <script th:src="@{/js/word/search.js}"></script>
+</th:block>
+</body>
+</html>

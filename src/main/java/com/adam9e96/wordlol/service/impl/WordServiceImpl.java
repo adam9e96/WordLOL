@@ -198,8 +198,11 @@ public class WordServiceImpl implements WordService {
     public Page<Word> searchWords(WordSearchRequest request, Pageable pageable) {
         int offset = (int) pageable.getOffset();
         int limit = pageable.getPageSize();
-        List<Word> words = wordMapper.searchWords(request, offset, limit);
-        long total = wordMapper.countSearchResults(request);
+        String keyword = request.keyword();
+
+        List<Word> words = wordMapper.searchWords(keyword, offset, limit);
+        long total = wordMapper.countSearchResults(keyword);
+
         return new PageImpl<>(words, pageable, total);
     }
 

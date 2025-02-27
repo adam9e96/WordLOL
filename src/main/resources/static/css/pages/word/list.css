@@ -169,6 +169,12 @@
     box-shadow: var(--shadow-2);
 }
 
+.search-summary {
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+}
+
 /* Responsive Design */
 @media (max-width: 991px) {
     .word-list-header {
