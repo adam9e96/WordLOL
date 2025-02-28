@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', async function () {
-    // 로딩 상태 표시
-    showLoading();
-
     try {
         // 대시보드 데이터와 단어장 데이터 병렬로 가져오기
         const [dashboardResponse, wordBooksResponse] = await Promise.all([
             fetch('/api/v1/dashboard'),
             fetch('/api/v1/wordbooks')
         ]);
+
+        if (!dashboardResponse.ok || !wordBooksResponse.ok) {
+            throw new Error('API 응답 오류');
+        }
 
         const dashboardData = await dashboardResponse.json();
         const wordBooksData = await wordBooksResponse.json();
@@ -24,23 +25,31 @@ document.addEventListener('DOMContentLoaded', async function () {
     } catch (error) {
         console.error('데이터 로딩 중 오류 발생:', error);
         showError('데이터를 불러오는 중 오류가 발생했습니다.');
-    } finally {
-        hideLoading();
     }
 });
 
 function updateStatistics(data) {
-    document.getElementById('totalWords').textContent = data.totalWords;
-    document.getElementById('todayWords').textContent = data.todayStudiedWords;
-    document.getElementById('streak').textContent = data.currentStreak;
+    document.getElementById('totalWords').textContent = data.totalWords.toLocaleString();
+    document.getElementById('todayWords').textContent = data.todayStudiedWords.toLocaleString();
+    document.getElementById('streak').textContent = data.currentStreak.toLocaleString();
     document.getElementById('correctRate').textContent = `${(data.correctRate * 100).toFixed(1)}%`;
 }
 
 function updateRecentWords(words) {
     const recentWordsBody = document.getElementById('recentWords');
+
+    if (words.length === 0) {
+        recentWordsBody.innerHTML = `
+            <tr>
+                <td colspan="3" class="text-center">최근 추가된 단어가 없습니다.</td>
+            </tr>
+        `;
+        return;
+    }
+
     recentWordsBody.innerHTML = words.map(word => `
         <tr>
-            <td>${word.vocabulary}</td>
+            <td class="fw-medium">${word.vocabulary}</td>
             <td>${word.meaning}</td>
             <td>${formatDateTime(word.createdAt)}</td>
         </tr>
@@ -54,12 +63,22 @@ function updateCategoryStats(wordBooks) {
     }, {});
 
     const categoryStatsElement = document.getElementById('categoryStats');
-    categoryStatsElement.innerHTML = Object.entries(categoryStats).map(([category, count]) => `
-        <div class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <span class="badge bg-${getCategoryColor(category)} me-2">${getCategoryDisplayName(category)}</span>
+
+    if (Object.keys(categoryStats).length === 0) {
+        categoryStatsElement.innerHTML = `
+            <div class="category-item">
+                <span>등록된 단어장이 없습니다.</span>
             </div>
-            <span class="badge bg-primary rounded-pill">${count}</span>
+        `;
+        return;
+    }
+
+    categoryStatsElement.innerHTML = Object.entries(categoryStats).map(([category, count]) => `
+        <div class="category-item">
+            <div class="category-label">
+                <span class="category-badge bg-${getCategoryColor(category)}">${getCategoryDisplayName(category)}</span>
+            </div>
+            <span class="category-count">${count}</span>
         </div>
     `).join('');
 }
@@ -96,14 +115,20 @@ function formatDateTime(dateTimeStr) {
     });
 }
 
-function showLoading() {
-    // 로딩 표시 로직
-}
-
-function hideLoading() {
-    // 로딩 숨김 로직
-}
-
 function showError(message) {
-    // 에러 메시지 표시 로직
+    // 간단한 오류 알림 구현
+    console.error(message);
+    const dashboardContainer = document.querySelector('.dashboard-container');
+
+    const errorAlert = document.createElement('div');
+    errorAlert.className = 'alert alert-danger';
+    errorAlert.role = 'alert';
+    errorAlert.textContent = message;
+
+    dashboardContainer.prepend(errorAlert);
+
+    // 5초 후 알림 제거
+    setTimeout(() => {
+        errorAlert.remove();
+    }, 5000);
 }

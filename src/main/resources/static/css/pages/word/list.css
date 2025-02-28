@@ -24,6 +24,7 @@
     box-shadow: var(--shadow-1);
 }
 
+
 .word-list-title {
     display: flex;
     align-items: center;
@@ -175,19 +176,20 @@
     font-size: 1.1rem;
 }
 
-/* Responsive Design */
+/* Change the responsive media query for the header */
 @media (max-width: 991px) {
     .word-list-header {
-        flex-direction: column;
+        /* Remove flex-direction: column; to keep items in a row */
+        /* Remove text-align: center; to keep left alignment for title */
         gap: var(--spacing-4);
-        align-items: stretch;
-        text-align: center;
     }
 
     .word-list-actions {
-        justify-content: center;
+        /* Remove justify-content: center; to keep right alignment */
+        flex-shrink: 0; /* Prevent actions from shrinking */
     }
 
+    /* Other responsive styles remain unchanged */
     .word-list-table-container {
         padding: var(--spacing-2);
     }
