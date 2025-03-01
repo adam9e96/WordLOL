@@ -66,8 +66,8 @@
                 <span>힌트</span>
             </button>
             <button class="btn-secondary" id="nextRandomWord">  <!-- onclick 속성 제거 -->
-            <i class="bi bi-skip-forward"></i>
-            <span>다음 단어</span>
+                <i class="bi bi-skip-forward"></i>
+                <span>다음 단어</span>
             </button>
         </div>
     </div>
@@ -75,6 +75,9 @@
 
 <!-- 페이지별 스크립트 -->
 <th:block layout:fragment="script">
+
+    <!-- anime.js 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
     <script th:src="@{/js/word/study.js}"></script>  <!-- 경로 수정 -->
 </th:block>
 </body>

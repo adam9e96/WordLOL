@@ -1,173 +1,204 @@
-/* Study Grid Layout */
+/* Main Layout */
 .study-grid {
     display: grid;
-    place-items: center;
-    padding: var(--spacing-unit);
+    place-items: start center;
     min-height: 100%;
-    background: var(--surface-container-lowest);
+    padding: var(--spacing-4);
+    background: var(--surface-container-low);
 }
 
-/* Study Container */
 .study-container {
+    width: min(100%, 800px);
     display: grid;
-    gap: 1.5rem;
-    max-width: 800px;
-    width: 100%;
-    padding: 2rem;
-    background: var(--surface-container-low);
-    border-radius: var(--border-radius-xl);
-    box-shadow: var(--shadow-1);
+    gap: var(--spacing-6);
 }
 
 /* Status Section */
 .status-section {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2.5rem;
-    padding: 1.5rem 7rem;
-    /*background: var(--surface-container);*/
-    /*border-radius: var(--border-radius);*/
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+    background: var(--surface);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-4);
+    box-shadow: var(--shadow-2);
 }
 
 .perfectRun-info,
 .difficulty-info {
     display: flex;
     align-items: center;
-
-    gap: 0.75rem;
-    padding: 0.75rem 1.25rem;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
     background: var(--surface-container);
     border-radius: var(--border-radius);
-    color: var(--primary);
-    font-size: 1.35rem;
+    transition: all var(--transition-normal);
+    color: var(--on-surface);
 }
 
+.perfectRun-info:hover,
+.difficulty-info:hover {
+    background: var(--surface-container-high);
+    transform: translateY(-2px);
+}
 
-/* Word Card Section */
-/* Word Card */
+.perfectRun-info i,
+.difficulty-info i {
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+/* Word Section */
+.word-section {
+    perspective: 1000px; /* 3D 효과를 위한 원근감 설정 */
+}
+
 .word-card {
     position: relative;
     width: 100%;
-    height: 250px;
-    transform-style: preserve-3d; /* 3D 변환 스타일 적용 */
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* 부드러운 전환 */
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-2);
+    height: 300px;
+    transform-style: preserve-3d;
 }
 
-
-/* Card Sides */
 .card-side {
     position: absolute;
     width: 100%;
     height: 100%;
-    backface-visibility: hidden; /* 뒷면 숨기기 */
+    backface-visibility: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-2);
 }
-
 
 .card-front {
     background: var(--primary-container);
-    color: var(--on-primary-container);
 }
 
 .card-back {
     background: var(--secondary-container);
-    color: var(--on-secondary-container);
-    transform: rotateY(180deg); /* 초기에는 뒤집혀 있음 */
+    transform: rotateY(180deg);
 }
 
-/* Word Card Section */
+/* 이 클래스는 JS 없이도 작동하도록 유지 */
+.word-card.flip {
+    transform: rotateY(180deg);
+}
+
+/* Vocabulary Container */
 .vocabulary-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
-    width: 100%;
+    gap: var(--spacing-4);
 }
 
 #vocabulary {
-    font-size: 3rem; /* 단어 크기 증가 */
+    font-size: 3rem;
     font-weight: 600;
+    color: var(--on-primary-container);
 }
 
 #meaning {
-    font-size: 2.5rem; /* 의미 크기도 증가 */
-    font-weight: 500;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--on-secondary-container);
+}
+
+.btn-speak {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--on-primary-container);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-speak:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.btn-speak i {
+    font-size: 1.5rem;
 }
 
 /* Message Section */
 .message-section {
-    padding: 1rem;
-    font-size: 1.2rem; /* 메시지 글자 크기도 약간 증가 */
+    min-height: 48px;
+    padding: var(--spacing-3);
     background: var(--surface-container);
     border-radius: var(--border-radius);
-    color: var(--on-surface);
-    min-height: 50px;
     text-align: center;
+    color: var(--on-surface-variant);
+    font-weight: 500;
 }
-
 
 /* Input Section */
 .input-section {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 1rem;
+    display: flex;
+    gap: var(--spacing-2);
 }
 
-
-/* Input Section */
 .input-section input {
-    padding: 1.25rem 1.5rem;
-    font-size: 1.5rem; /* 입력 글자 크기 증가 */
-    background: var(--surface-container);
-    border: none;
-    border-radius: var(--border-radius);
+    flex: 1;
+    padding: var(--spacing-4);
+    background: var(--surface);
+    border: 2px solid var(--outline-variant);
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+    font-size: 1.125rem;
     color: var(--on-surface);
-    box-shadow: var(--shadow-1);
+    transition: all var(--transition-normal);
 }
-
-.input-section input::placeholder {
-    color: var(--outline);
-    font-size: 1.25rem;
-}
-
 
 .input-section input:focus {
-    background: var(--surface-container-high);
-    box-shadow: var(--shadow-2);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary-container);
     outline: none;
+}
+
+.input-section .btn-primary {
+    padding: 0 var(--spacing-6);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
 }
 
 /* Control Section */
 .control-section {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
 }
 
 /* Buttons */
-.btn-primary,
-.btn-secondary,
-.btn-hint {
-    display: inline-flex;
+.btn-hint,
+.btn-secondary {
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 1rem 1.5rem;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
     border: none;
     border-radius: var(--border-radius);
     font-weight: 500;
-    transition: all 0.2s ease;
     cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.btn-primary {
-    background: var(--primary);
-    color: var(--on-primary);
+.btn-hint {
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
 }
 
 .btn-secondary {
@@ -175,72 +206,63 @@
     color: var(--on-secondary-container);
 }
 
-.btn-hint {
-    background: var(--surface-container);
-    color: var(--on-surface);
-}
-
-.btn-primary:hover,
-.btn-secondary:hover,
-.btn-hint:hover {
+.btn-hint:hover,
+.btn-secondary:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-2);
-}
-
-/* Speak Button */
-.btn-speak {
-    width: 3.5rem; /* 버튼 크기 증가 */
-    height: 3.5rem;
-    background: var(--surface-container-highest);
-    border: none;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
     box-shadow: var(--shadow-1);
 }
 
-
-.btn-speak:hover {
-    background: var(--surface-container-high);
-    transform: scale(1.1);
-    box-shadow: var(--shadow-2);
+.btn i {
+    font-size: 1.25rem;
 }
 
-.btn-speak i {
-    font-size: 1.75rem; /* 아이콘 크기 증가 */
-    color: var(--on-surface);
+/* 흔들림 애니메이션 (JS 없을 때 사용) */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
-/* Card Perspective Container */
-.word-section {
-    perspective: 1000px; /* 3D 효과를 위한 원근감 설정 */
+.shake {
+    animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-
-/* Flip Animation */
-.word-card.flip {
-    transform: rotateY(180deg); /* 카드 뒤집기 */
+/* 말하기 애니메이션 (JS 없을 때 사용) */
+@keyframes pulse {
+    0% { transform: scale(1); background-color: rgba(255, 255, 255, 0.2); }
+    50% { transform: scale(1.1); background-color: rgba(255, 255, 255, 0.3); }
+    100% { transform: scale(1); background-color: rgba(255, 255, 255, 0.2); }
 }
 
-/* Responsive Styles */
+.speaking-animation {
+    animation: pulse 1s infinite;
+}
+
+/* 응답형 디자인 */
 @media (max-width: 768px) {
     .study-container {
-        padding: 1rem;
+        gap: var(--spacing-4);
+        width: 100%;
+        padding: 0 var(--spacing-2);
     }
 
     .status-section {
         grid-template-columns: 1fr;
     }
 
-    .input-section {
-        grid-template-columns: 1fr;
-    }
-
     .control-section {
         grid-template-columns: 1fr;
     }
-}
 
+    #vocabulary {
+        font-size: 2.5rem;
+    }
+
+    #meaning {
+        font-size: 2rem;
+    }
+
+    .card-side {
+        padding: var(--spacing-3);
+    }
+}
