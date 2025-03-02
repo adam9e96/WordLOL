@@ -14,7 +14,7 @@
     <div class="today-words-container">
         <div class="word-cards-wrapper">
             <div class="word-cards" id="word-cards">
-                <!-- 단어 카드들이 여기에 동적으로 추가됩니다 -->
+                <!-- 단어 카드들이 여기에 동적으로 추가 -->
             </div>
 
             <div class="loading-container" id="loading">
@@ -26,6 +26,7 @@
     </div>
 </main>
 <th:block layout:fragment="script">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
     <script th:src="@{/js/word/daily.js}"></script>
 </th:block>
 </body>

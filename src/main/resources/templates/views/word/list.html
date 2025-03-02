@@ -5,7 +5,7 @@
       layout:decorate="~{layouts/default}">
 <head>
     <title>단어 목록</title>
-    <th:block layout:fragment="additionalStyles">
+    <th:block layout:fragment="css">
         <link rel="stylesheet" th:href="@{/css/pages/word/list.css}">
     </th:block>
 </head>
@@ -101,6 +101,9 @@
     </div>
 </main>
 <th:block layout:fragment="script">
+    <!-- anime.js 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+    <!-- 클래스 기반 JS 파일 적용 -->
     <script th:src="@{/js/word/list.js}"></script>
 </th:block>
 </body>

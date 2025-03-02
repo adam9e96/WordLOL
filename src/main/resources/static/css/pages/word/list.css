@@ -10,6 +10,7 @@
     flex-direction: column;
     align-items: stretch;
     align-self: flex-start;
+    perspective: 1000px; /* 3D 효과를 위한 원근감 설정 */
 }
 
 /* Header Section */
@@ -22,8 +23,15 @@
     padding: var(--spacing-4);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-1);
+    transform-origin: top center;
+    transition: all 0.3s ease;
+    will-change: transform, opacity;
 }
 
+.word-list-header:hover {
+    box-shadow: var(--shadow-2);
+    transform: translateY(-3px);
+}
 
 .word-list-title {
     display: flex;
@@ -38,9 +46,42 @@
     font-weight: 600;
 }
 
+.word-list-title i {
+    color: var(--primary);
+    will-change: transform;
+}
+
 .word-list-actions {
     display: flex;
     gap: var(--spacing-2);
+}
+
+/* 단어 추가 버튼 스타일 강화 */
+#AddWordButton {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    will-change: transform, box-shadow;
+}
+
+#AddWordButton:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-2);
+}
+
+#AddWordButton::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: -100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.6s ease;
+}
+
+#AddWordButton:hover::after {
+    left: 100%;
 }
 
 /* Table Container */
@@ -51,6 +92,19 @@
     box-shadow: var(--shadow-1);
     margin-bottom: var(--spacing-4);
     overflow-x: auto;
+    transform-style: preserve-3d; /* 3D 효과 유지 */
+    transition: all 0.3s ease;
+    will-change: transform, box-shadow;
+}
+
+/* 테이블 컨테이너 가로 스크롤 */
+.word-list-table-container .table-responsive {
+    overflow-x: auto;
+    min-width: 100%;
+}
+
+.word-list-table-container:hover {
+    box-shadow: var(--shadow-2);
 }
 
 /* Table Styles */
@@ -59,36 +113,64 @@
     margin: 0;
     border-collapse: separate;
     border-spacing: 0;
+    transform-style: preserve-3d; /* 3D 효과 유지 */
 }
 
 .word-list-table th {
+    white-space: nowrap; /* 헤더가 줄바꿈 되지 않도록 */
+    overflow: hidden;
+    text-overflow: ellipsis;
     background: var(--surface-container-high);
     color: var(--on-surface);
     font-weight: 600;
     padding: var(--spacing-3) var(--spacing-4);
     text-align: left;
     border-bottom: 1px solid var(--outline-variant);
+    transition: all 0.3s ease;
+    position: relative; /* 가상 요소 위치 기준 */
+}
+
+.word-list-table th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.word-list-table th:hover::after {
+    width: 100%;
 }
 
 .word-list-table td {
     padding: var(--spacing-3) var(--spacing-4);
     border-bottom: 1px solid var(--outline-variant);
     vertical-align: middle;
+    transition: all 0.2s ease;
 }
 
+/* 단어 행(Row) 스타일 및 애니메이션 */
 .word-list-table tbody tr {
-    transition: background-color var(--transition-fast);
+    transition: all var(--transition-fast);
+    position: relative;
+    will-change: transform, background-color;
 }
 
 .word-list-table tbody tr:hover {
     background-color: var(--surface-container-high);
+    transform: translateY(-2px) scale(1.01);
+    z-index: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Row Animation */
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -98,6 +180,41 @@
 
 .word-list-table tbody tr {
     animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* 단어 행 내부 셀 효과 */
+.word-list-table tbody tr td.fw-medium {
+    font-weight: 600;
+    color: var(--primary);
+    transition: all 0.3s ease;
+}
+
+.word-list-table tbody tr:hover td.fw-medium {
+    transform: scale(1.05);
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* 관리 버튼 영역 수정 */
+.btn-action {
+    padding: 0.3rem 0.5rem; /* 버튼 패딩 약간 줄임 */
+    transition: all 0.2s ease;
+    border-radius: var(--border-radius);
+    will-change: transform, background-color;
+    margin-right: 2px; /* 버튼 사이 간격 추가 */
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+}
+
+.btn-action.btn-outline-primary:hover {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+.btn-action.btn-outline-danger:hover {
+    background-color: var(--error);
+    color: var(--on-error);
 }
 
 /* Pagination */
@@ -113,6 +230,13 @@
 
 .page-item {
     list-style: none;
+    transform-origin: center;
+    transition: all 0.3s ease;
+    will-change: transform, opacity;
+}
+
+.page-item:hover {
+    transform: scale(1.1);
 }
 
 .page-link {
@@ -127,28 +251,45 @@
     color: var(--on-surface);
     border: none;
     transition: all var(--transition-fast);
+    will-change: transform, background-color;
 }
 
 .page-link:hover {
     background: var(--surface-container-high);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-1);
 }
 
 .page-item.active .page-link {
     background: var(--primary);
     color: var(--on-primary);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-1);
 }
 
 .page-item.disabled .page-link {
     background: var(--surface-container-low);
     color: var(--outline);
     cursor: not-allowed;
+    opacity: 0.7;
 }
 
-/* Modal Styles */
+/* Modal Animation Styles */
 .modal-content {
+    min-width: 450px; /* 최소 너비 설정 */
     background: var(--surface-container);
     border: none;
     border-radius: var(--border-radius-xl);
+    transition: all 0.3s ease;
+    transform-origin: center;
+    will-change: transform, opacity, background-color;
+}
+
+.modal-body .form-control,
+.modal-body .form-select {
+    transition: all 0.3s ease;
+    will-change: transform, opacity;
+    z-index: 1; /* 입력 필드가 스택 맥락에서 상위에 오도록 */
 }
 
 .modal-header {
@@ -156,36 +297,132 @@
     border-top-left-radius: var(--border-radius-xl);
     border-top-right-radius: var(--border-radius-xl);
     border-bottom: 1px solid var(--outline-variant);
+    transition: all 0.3s ease;
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.modal-title::before {
+    content: '\f4dd'; /* 부트스트랩 아이콘 코드(연필) */
+    font-family: "bootstrap-icons";
+    color: var(--primary);
 }
 
 .modal-footer {
     border-top: 1px solid var(--outline-variant);
 }
 
-/* Toast Styles */
+.modal-body .form-control,
+.modal-body .form-select {
+    transition: all 0.3s ease;
+    will-change: transform, opacity;
+}
+
+.modal-body .form-group {
+    transition: transform 0.3s ease;
+}
+
+.modal-body .form-group:hover {
+    transform: translateX(3px);
+}
+
+/* 모달 버튼 스타일 */
+.modal-footer .btn {
+    transition: all 0.3s ease;
+}
+
+.modal-footer .btn-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-footer .btn-primary::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: -100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: all 0.6s ease;
+}
+
+.modal-footer .btn-primary:hover::after {
+    left: 100%;
+}
+
+/* Toast Animation Styles */
 .toast {
     background: var(--surface-container-high);
     border: none;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-2);
+    transition: all 0.3s ease;
+    transform-origin: top right;
+    will-change: transform, opacity;
+}
+
+.toast.showing {
+    animation: toastIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+@keyframes toastIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.8);
+    }
+    80% {
+        transform: translateY(5px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .search-summary {
     background: var(--surface-container);
     border-radius: var(--border-radius);
     font-size: 1.1rem;
+    padding: var(--spacing-2) var(--spacing-4);
+    transition: all 0.3s ease;
+}
+
+.search-summary:hover {
+    background: var(--surface-container-high);
+    transform: translateY(-2px);
+}
+
+/* 삭제 애니메이션 효과 */
+.word-row-remove {
+    animation: rowRemove 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+@keyframes rowRemove {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(100px);
+        height: 0;
+        padding: 0;
+        margin: 0;
+    }
 }
 
 /* Change the responsive media query for the header */
 @media (max-width: 991px) {
     .word-list-header {
-        /* Remove flex-direction: column; to keep items in a row */
-        /* Remove text-align: center; to keep left alignment for title */
         gap: var(--spacing-4);
     }
 
     .word-list-actions {
-        /* Remove justify-content: center; to keep right alignment */
         flex-shrink: 0; /* Prevent actions from shrinking */
     }
 
@@ -196,11 +433,22 @@
 
     .word-list-table {
         font-size: 0.9rem;
+        min-width: 800px; /* 작은 화면에서 최소 너비 보장 */
+        overflow: hidden;
     }
 
     .page-link {
         min-width: 2rem;
         height: 2rem;
         padding: 0 var(--spacing-1);
+    }
+
+    .word-list-table-container .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* 모바일에서 행 호버 효과 변형 */
+    .word-list-table tbody tr:hover {
+        transform: translateY(-1px) scale(1.005);
     }
 }

@@ -6,7 +6,8 @@ const State = {
     speaking: false, // TTS 재생 중인지 여부
     voices: [], // 사용 가능한 음성 목록
     API_BASE_URL: '/api/v1/words', // API 기본 URL
-    animations: {} // 애니메이션 객체 저장
+    animations: {}, // 애니메이션 객체 저장
+    typingAnimation: null // 타이핑 애니메이션 객체
 };
 
 // DOM 엘리먼트 캐싱
@@ -37,6 +38,9 @@ const AnimationManager = {
 
         // 버튼 효과 설정
         this.setupButtonEffects();
+
+        // 텍스트 입력 이벤트 리스너 설정
+        this.setupTypingEffects();
     },
 
     // 페이지 로드 애니메이션
@@ -214,6 +218,98 @@ const AnimationManager = {
         }
     },
 
+    // 텍스트 타이핑 효과 설정
+    setupTypingEffects() {
+        if (!Elements.answer) return;
+
+        // 커서 깜박임 효과를 위한 스타일 추가
+        const style = document.createElement('style');
+        style.textContent = `
+            .typing-cursor {
+                display: inline-block;
+                width: 2px;
+                height: 1.2em;
+                background-color: currentColor;
+                margin-left: 2px;
+                animation: blink 1s step-end infinite;
+            }
+            
+            @keyframes blink {
+                from, to { opacity: 1; }
+                50% { opacity: 0; }
+            }
+            
+            .answer-typing {
+                border-color: var(--primary) !important;
+                box-shadow: 0 0 0 2px var(--primary-container) !important;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 텍스트 입력 이벤트 핸들러
+        Elements.answer.addEventListener('focus', () => {
+            // 입력 필드에 타이핑 스타일 추가
+            Elements.answer.classList.add('answer-typing');
+
+            // 타이핑 효과 시작
+            if (Elements.answer.parentElement) {
+                const typingAnimation = anime({
+                    targets: Elements.answer,
+                    boxShadow: [
+                        {value: '0 0 0 2px var(--primary-container)', duration: 500},
+                        {value: '0 0 0 3px var(--primary-container)', duration: 500}
+                    ],
+                    borderColor: [
+                        {value: 'var(--primary)', duration: 500},
+                        {value: 'var(--primary-darker, var(--primary))', duration: 500}
+                    ],
+                    easing: 'easeInOutSine',
+                    duration: 1000,
+                    loop: true,
+                    direction: 'alternate'
+                });
+
+                State.typingAnimation = typingAnimation;
+            }
+        });
+
+        // 포커스 아웃시 애니메이션 중지
+        Elements.answer.addEventListener('blur', () => {
+            Elements.answer.classList.remove('answer-typing');
+            if (State.typingAnimation) {
+                State.typingAnimation.pause();
+
+                // 원래 스타일로 복원
+                anime({
+                    targets: Elements.answer,
+                    boxShadow: '0 0 0 0 transparent',
+                    borderColor: 'var(--outline-variant)',
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+            }
+        });
+
+        // 타이핑 중 효과
+        Elements.answer.addEventListener('input', () => {
+            // 입력 중 효과 - 간단한 스케일 효과
+            anime({
+                targets: Elements.answer,
+                scale: [1, 1.01, 1],
+                duration: 100,
+                easing: 'easeInOutQuad'
+            });
+
+            // 입력된 텍스트 길이에 따라 글자색 변경 (선택 사항)
+            if (Elements.answer.value.length > 0) {
+                const intensity = Math.min(Elements.answer.value.length * 20, 100);
+                Elements.answer.style.color = `hsl(220, ${intensity}%, 40%)`;
+            } else {
+                Elements.answer.style.color = '';
+            }
+        });
+    },
+
     // 메시지 표시 애니메이션
     showMessage(text) {
         // 이전 애니메이션 중단
@@ -248,6 +344,63 @@ const AnimationManager = {
             begin: function () {
                 Elements.perfectRun.textContent = count;
             }
+        });
+    },
+
+    // 정답 입력 애니메이션
+    playAnswerAnimation() {
+        if (!Elements.answer) return;
+
+        // 정답 확인 시 입력창 효과
+        anime({
+            targets: Elements.answer,
+            scale: [1, 1.05, 1],
+            backgroundColor: [
+                {value: 'rgba(var(--primary-rgb, 103, 80, 164), 0.1)', duration: 300},
+                {value: 'rgba(var(--primary-rgb, 103, 80, 164), 0)', duration: 300}
+            ],
+            duration: 600,
+            easing: 'easeInOutQuad'
+        });
+    },
+
+    // 정답 효과
+    playCorrectAnimation() {
+        if (!Elements.answer) return;
+
+        // 정답일 때 입력창 효과
+        anime({
+            targets: Elements.answer,
+            backgroundColor: [
+                {value: 'rgba(var(--success-rgb, 20, 151, 103), 0.2)', duration: 300},
+                {value: 'rgba(var(--success-rgb, 20, 151, 103), 0)', duration: 300}
+            ],
+            borderColor: [
+                {value: 'var(--success, #149767)', duration: 300},
+                {value: 'var(--outline-variant)', duration: 300}
+            ],
+            duration: 600,
+            easing: 'easeInOutQuad'
+        });
+    },
+
+    // 오답 효과
+    playIncorrectAnimation() {
+        if (!Elements.answer) return;
+
+        // 오답일 때 입력창 효과
+        anime({
+            targets: Elements.answer,
+            backgroundColor: [
+                {value: 'rgba(var(--error-rgb, 179, 38, 30), 0.2)', duration: 300},
+                {value: 'rgba(var(--error-rgb, 179, 38, 30), 0)', duration: 300}
+            ],
+            borderColor: [
+                {value: 'var(--error, #B3261E)', duration: 300},
+                {value: 'var(--outline-variant)', duration: 300}
+            ],
+            duration: 600,
+            easing: 'easeInOutQuad'
         });
     }
 };
@@ -387,6 +540,7 @@ const UIManager = {
 
         if (AnimationManager) {
             AnimationManager.flipCard();
+            AnimationManager.playCorrectAnimation();
         } else {
             Elements.card.classList.add('flip');
         }
@@ -395,6 +549,7 @@ const UIManager = {
     showIncorrectAnswer() {
         if (AnimationManager) {
             AnimationManager.shakeCard();
+            AnimationManager.playIncorrectAnimation();
         } else {
             Elements.card.classList.add('shake');
             setTimeout(() => {
@@ -437,6 +592,13 @@ const StudyManager = {
         try {
             State.currentWord = await ApiService.fetchRandomWord();
             UIManager.updateWordDisplay(State.currentWord);
+
+            // 새 단어가 로드되면 자동으로 입력 필드에 포커스
+            if (Elements.answer) {
+                setTimeout(() => {
+                    Elements.answer.focus();
+                }, 500);
+            }
         } catch (error) {
             console.error('단어 로드 에러:', error);
             UIManager.showMessage(error.message);
@@ -453,6 +615,11 @@ const StudyManager = {
         }
 
         State.isProcessing = true;
+
+        // 정답 확인 애니메이션
+        if (AnimationManager) {
+            AnimationManager.playAnswerAnimation();
+        }
 
         try {
             const result = await ApiService.checkAnswer(State.currentWord.id, userAnswer);
