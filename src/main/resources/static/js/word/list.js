@@ -1,10 +1,6 @@
-/**
- * 단어 목록 페이지 애플리케이션
- */
+// 단어 목록 페이지 애플리케이션
 class WordListApp {
-    /**
-     * 생성자
-     */
+    // 생성자
     constructor() {
         // 상태 설정
         this.state = {
@@ -27,7 +23,8 @@ class WordListApp {
                 difficulty: document.getElementById('editDifficulty')
             },
             toast: document.getElementById('toast'),
-            addWordButton: document.getElementById('AddWordButton')
+            addWordButton: document.getElementById('AddWordButton'),
+            saveEditButton: document.getElementById('saveEdit')
         };
 
         // URL에서 페이지 파라미터 추출
@@ -46,12 +43,9 @@ class WordListApp {
             this.uiManager,
             this.paginationManager
         );
-        this.animationManager = new AnimationManager();
     }
 
-    /**
-     * 이벤트 리스너 설정
-     */
+    // 이벤트 리스너 설정
     setupEventListeners() {
         // 페이지네이션 클릭 이벤트
         this.elements.pagination.addEventListener('click', (e) => {
@@ -87,10 +81,12 @@ class WordListApp {
             }
         });
 
-        // 모달 저장 버튼 클릭 이벤트
-        document.getElementById('saveEdit')?.addEventListener('click', () => {
-            this.wordManager.handleEditSave();
-        });
+        // 모달 저장 버튼 클릭 이벤트 - 한 번만 등록되도록 수정
+        if (this.elements.saveEditButton) {
+            this.elements.saveEditButton.addEventListener('click', () => {
+                this.wordManager.handleEditSave();
+            });
+        }
 
         // 브라우저 히스토리 변경 이벤트
         window.addEventListener('popstate', () => {
@@ -101,52 +97,56 @@ class WordListApp {
         });
 
         // 단어 추가 버튼 클릭 이벤트
-        this.elements.addWordButton?.addEventListener('click', () => {
-            location.href = '/word/register';
-        });
-    }
-
-    /**
-     * 애플리케이션 초기화
-     */
-    async initialize() {
-        // anime.js 로드 확인
-        if (typeof anime !== 'undefined') {
-            console.log('anime.js가 로드되었습니다. 애니메이션 모드로 실행합니다.');
-        } else {
-            console.log('anime.js가 로드되지 않았습니다. 기본 모드로 실행합니다.');
+        if (this.elements.addWordButton) {
+            this.elements.addWordButton.addEventListener('click', () => {
+                location.href = '/word/register';
+            });
         }
 
+        // 모달이 완전히 닫히면 백드롭 제거 및 상태 초기화
+        if (this.elements.editModal) {
+            this.elements.editModal.addEventListener('hidden.bs.modal', () => {
+                this.uiManager.cleanupModal();
+                this.state.isProcessing = false;
+            });
+        }
+    }
+
+    // 앱 초기화
+    async initialize() {
         // 이벤트 리스너 설정
         this.setupEventListeners();
 
         // 초기 데이터 로드
         try {
             await this.wordManager.loadWords(this.state.currentPage);
-            console.log('단어 목록 로드 완료');
         } catch (error) {
             console.error('단어 목록 로드 실패:', error);
         }
     }
 }
 
-/**
- * UI 관리 클래스
- */
+// UI 관리 클래스
 class UIManager {
-    /**
-     * 생성자
-     * @param {Object} elements - DOM 요소
-     */
     constructor(elements) {
         this.elements = elements;
+        this.modalInstance = null;
     }
 
-    /**
-     * 난이도 배지 HTML 생성
-     * @param {number} level - 난이도 레벨
-     * @returns {string} - 배지 HTML
-     */
+    // 모달 정리
+    cleanupModal() {
+        // 백드롭 요소들 제거
+        document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+            backdrop.remove();
+        });
+
+        // body 스타일 초기화
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+
+    // 난이도 배지 HTML 생성
     getDifficultyBadge(level) {
         const badges = {
             1: ['success', '매우 쉬움'],
@@ -159,11 +159,7 @@ class UIManager {
         return `<span class="badge bg-${colorClass}">${label}</span>`;
     }
 
-    /**
-     * 날짜 포맷팅
-     * @param {string} dateTimeStr - 날짜 문자열
-     * @returns {string} - 포맷된 날짜
-     */
+    // 날짜 포맷팅
     formatDateTime(dateTimeStr) {
         if (!dateTimeStr) return '-';
         const date = new Date(dateTimeStr);
@@ -176,11 +172,7 @@ class UIManager {
         });
     }
 
-    /**
-     * 토스트 메시지 표시
-     * @param {string} message - 메시지
-     * @param {boolean} isSuccess - 성공 여부
-     */
+    // 토스트 메시지 표시
     showToast(message, isSuccess = true) {
         const toastBody = this.elements.toast.querySelector('.toast-body');
         const existingToast = bootstrap.Toast.getInstance(this.elements.toast);
@@ -198,147 +190,90 @@ class UIManager {
         }).show();
     }
 
-    /**
-     * 단어 행 HTML 생성
-     * @param {Object} word - 단어 객체
-     * @param {number} index - 인덱스
-     * @returns {HTMLElement} - 행 요소
-     */
+    // 단어 행 HTML 생성
     createWordRow(word, index) {
         const row = document.createElement('tr');
         row.style.animationDelay = `${index * 0.05}s`;
-        row.classList.add('word-row');
-        row.dataset.id = word.id;
-
         row.innerHTML = `
-      <td>${word.id}</td>
-      <td class="fw-medium">${word.vocabulary}</td>
-      <td>${word.meaning}</td>
-      <td>${word.hint || '-'}</td>
-      <td>${this.getDifficultyBadge(word.difficulty)}</td>
-      <td>${word.author || '관리자'}</td>
-      <td>${this.formatDateTime(word.createdAt)}</td>
-      <td>
-        <button class="btn btn-action btn-outline-primary btn-sm me-1 edit-btn" data-id="${word.id}">
-          <i class="bi bi-pencil-square"></i>
-        </button>
-        <button class="btn btn-action btn-outline-danger btn-sm delete-btn" data-id="${word.id}">
-          <i class="bi bi-trash"></i>
-        </button>
-      </td>
-    `;
+            <td>${word.id}</td>
+            <td class="fw-medium">${word.vocabulary}</td>
+            <td>${word.meaning}</td>
+            <td>${word.hint || '-'}</td>
+            <td>${this.getDifficultyBadge(word.difficulty)}</td>
+            <td>${word.author || '관리자'}</td>
+            <td>${this.formatDateTime(word.createdAt)}</td>
+            <td>
+                <button class="btn btn-action btn-outline-primary btn-sm me-1 edit-btn" data-id="${word.id}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-action btn-outline-danger btn-sm delete-btn" data-id="${word.id}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
         return row;
     }
 
-    /**
-     * 단어 목록 업데이트
-     * @param {Array} words - 단어 배열
-     */
+    // 단어 목록 업데이트
     updateWordList(words) {
         this.elements.wordList.innerHTML = '';
-        const fragment = document.createDocumentFragment();
-
         words.forEach((word, index) => {
-            fragment.appendChild(this.createWordRow(word, index));
+            this.elements.wordList.appendChild(this.createWordRow(word, index));
         });
-
-        this.elements.wordList.appendChild(fragment);
     }
 
-    /**
-     * 페이지네이션 업데이트
-     * @param {string} paginationHTML - 페이지네이션 HTML
-     */
+    // 페이지네이션 업데이트
     updatePagination(paginationHTML) {
         this.elements.pagination.innerHTML = paginationHTML;
     }
 
-    /**
-     * 수정 모달 표시
-     * @param {Object} word - 단어 객체
-     */
+    // 모달 백드롭이나 중복 백드롭으로 인한 문제 해결
     showEditModal(word) {
-        console.log("수정 모달 ID:", word.id);
-
-        // 모달 폼 요소 참조
-        const editId = document.getElementById('editId');
-        const editVocabulary = document.getElementById('editVocabulary');
-        const editMeaning = document.getElementById('editMeaning');
-        const editHint = document.getElementById('editHint');
-        const editDifficulty = document.getElementById('editDifficulty');
-
         // 기존 모달 인스턴스 제거
-        const existingModal = bootstrap.Modal.getInstance(this.elements.editModal);
-        if (existingModal) {
-            existingModal.dispose();
+        if (this.modalInstance) {
+            this.modalInstance.dispose();
+            this.cleanupModal();
         }
 
-        // 폼 데이터 설정
-        editId.value = word.id || '';
-        editVocabulary.value = word.vocabulary || '';
-        editMeaning.value = word.meaning || '';
-        editHint.value = word.hint || '';
-        editDifficulty.value = word.difficulty || 3;
+        // 폼 값 설정
+        this.elements.editForm.id.value = word.id || '';
+        this.elements.editForm.vocabulary.value = word.vocabulary || '';
+        this.elements.editForm.meaning.value = word.meaning || '';
+        this.elements.editForm.hint.value = word.hint || '';
+        this.elements.editForm.difficulty.value = word.difficulty || '3';
 
         // 새 모달 인스턴스 생성 및 표시
-        const modal = new bootstrap.Modal(this.elements.editModal);
-        modal.show();
+        this.modalInstance = new bootstrap.Modal(this.elements.editModal);
+        this.modalInstance.show();
 
-        // 모달이 완전히 표시된 후 입력 필드에 포커스
+        // 모달이 보여진 후 입력 필드에 포커스
         this.elements.editModal.addEventListener('shown.bs.modal', () => {
-            editVocabulary.focus();
-
-            // 애니메이션이 로드되어 있으면 적용
-            if (typeof anime !== 'undefined') {
-                const animationManager = new AnimationManager();
-                animationManager.animateModal();
-            }
+            this.elements.editForm.vocabulary.focus();
         }, {once: true});
     }
 }
 
-
-/**
- * API 서비스 클래스
- */
+// API 서비스 클래스
 class ApiService {
-    /**
-     * 생성자
-     * @param {string} baseUrl - API 기본 URL
-     */
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
     }
 
-    /**
-     * 단어 목록 조회
-     * @param {number} page - 페이지 번호
-     * @param {number} size - 페이지 크기
-     * @returns {Promise<Object>} - 응답 데이터
-     */
+    // 단어 목록 조회
     async fetchWords(page, size = 20) {
         const response = await fetch(`${this.baseUrl}/list?page=${page}&size=${size}`);
         if (!response.ok) throw new Error('단어 목록을 불러오는데 실패했습니다.');
         return response.json();
     }
 
-    /**
-     * 단어 상세 조회
-     * @param {string} id - 단어 ID
-     * @returns {Promise<Object>} - 단어 데이터
-     */
+    // 단어 상세 조회
     async fetchWord(id) {
         const response = await fetch(`${this.baseUrl}/${id}`);
         if (!response.ok) throw new Error('단어 정보를 불러오는데 실패했습니다.');
         return response.json();
     }
 
-    /**
-     * 단어 수정
-     * @param {string} id - 단어 ID
-     * @param {Object} data - 수정 데이터
-     * @returns {Promise<Object|null>} - 응답 데이터
-     */
+    // 단어 수정
     async updateWord(id, data) {
         const response = await fetch(`${this.baseUrl}/${id}`, {
             method: 'PUT',
@@ -351,20 +286,10 @@ class ApiService {
             throw new Error(errorData?.message || '단어 수정에 실패했습니다.');
         }
 
-        // 204 No Content 응답인 경우 처리
-        if (response.status === 204) {
-            return null;
-        }
-
-        // JSON 응답이 있는 경우 처리
-        return response.json().catch(() => null);
+        return response;
     }
 
-    /**
-     * 단어 삭제
-     * @param {string} id - 단어 ID
-     * @returns {Promise<Response>} - 응답 객체
-     */
+    // 단어 삭제
     async deleteWord(id) {
         const response = await fetch(`${this.baseUrl}/${id}`, {
             method: 'DELETE'
@@ -373,12 +298,7 @@ class ApiService {
         return response;
     }
 
-    /**
-     * 단어 중복 확인
-     * @param {string} vocabulary - 단어
-     * @param {string|null} currentId - 현재 단어 ID
-     * @returns {Promise<Object>} - 응답 데이터
-     */
+    // 단어 중복 확인
     async checkVocabularyDuplicate(vocabulary, currentId = null) {
         const response = await fetch(`${this.baseUrl}/check-duplicate?vocabulary=${encodeURIComponent(vocabulary)}${currentId ? `&excludeId=${currentId}` : ''}`);
         if (!response.ok) {
@@ -388,33 +308,20 @@ class ApiService {
     }
 }
 
-/**
- * 페이지네이션 관리 클래스
- */
+// 페이지네이션 관리 클래스
 class PaginationManager {
-    /**
-     * 생성자
-     * @param {Object} state - 앱 상태
-     */
     constructor(state) {
         this.state = state;
     }
 
-    /**
-     * URL 업데이트
-     * @param {number} page - 페이지 번호
-     */
+    // URL 업데이트
     updateUrl(page) {
         const url = new URL(window.location);
         url.searchParams.set('page', (page + 1).toString());
         window.history.pushState({}, '', url);
     }
 
-    /**
-     * 페이지네이션 버튼 HTML 생성
-     * @param {number} totalPages - 전체 페이지 수
-     * @returns {string} - 페이지네이션 HTML
-     */
+    // 페이지네이션 버튼 HTML 생성
     generatePaginationButtons(totalPages) {
         const startPage = Math.max(0, this.state.currentPage - 2);
         const endPage = Math.min(totalPages - 1, this.state.currentPage + 2);
@@ -430,75 +337,49 @@ class PaginationManager {
         return buttons.join('');
     }
 
-    /**
-     * 네비게이션 버튼 HTML 생성
-     * @param {number} page - 페이지 번호
-     * @param {string} icon - 아이콘 클래스
-     * @param {string} title - 버튼 타이틀
-     * @param {boolean} disabled - 비활성화 여부
-     * @returns {string} - 버튼 HTML
-     */
+    // 네비게이션 버튼 HTML 생성
     createNavigationButton(page, icon, title, disabled) {
         return `
-      <li class="page-item ${disabled ? 'disabled' : ''}">
-        <button class="page-link" 
-                data-page="${page}" 
-                title="${title}"
-                ${disabled ? 'disabled' : ''}>
-          <i class="bi ${icon}"></i>
-        </button>
-      </li>`;
+            <li class="page-item ${disabled ? 'disabled' : ''}">
+                <button class="page-link" 
+                        data-page="${page}" 
+                        title="${title}"
+                        ${disabled ? 'disabled' : ''}>
+                    <i class="bi ${icon}"></i>
+                </button>
+            </li>`;
     }
 
-    /**
-     * 페이지 번호 버튼 HTML 생성
-     * @param {number} startPage - 시작 페이지
-     * @param {number} endPage - 끝 페이지
-     * @returns {Array<string>} - 버튼 HTML 배열
-     */
+    // 페이지 번호 버튼 HTML 생성
     createNumberButtons(startPage, endPage) {
         return Array.from(
             {length: endPage - startPage + 1},
             (_, i) => {
                 const page = startPage + i;
                 return `
-          <li class="page-item ${page === this.state.currentPage ? 'active' : ''}">
-            <button class="page-link" 
-                    data-page="${page}"
-                    title="${page + 1} 페이지">
-              ${page + 1}
-            </button>
-          </li>`;
+                    <li class="page-item ${page === this.state.currentPage ? 'active' : ''}">
+                        <button class="page-link" 
+                                data-page="${page}"
+                                title="${page + 1} 페이지">
+                            ${page + 1}
+                        </button>
+                    </li>`;
             }
         );
     }
 }
 
-/**
- * 단어 관리 클래스
- */
+// 단어 관리 클래스
 class WordManager {
-    /**
-     * 생성자
-     * @param {Object} state - 앱 상태
-     * @param {Object} elements - DOM 요소
-     * @param {ApiService} apiService - API 서비스
-     * @param {UIManager} uiManager - UI 관리자
-     * @param {PaginationManager} paginationManager - 페이지네이션 관리자
-     */
     constructor(state, elements, apiService, uiManager, paginationManager) {
         this.state = state;
         this.elements = elements;
         this.apiService = apiService;
         this.uiManager = uiManager;
         this.paginationManager = paginationManager;
-        this.animationManager = new AnimationManager();
     }
 
-    /**
-     * 단어 목록 로드
-     * @param {number} page - 페이지 번호
-     */
+    // 단어 목록 로드
     async loadWords(page) {
         try {
             this.paginationManager.updateUrl(page);
@@ -507,50 +388,28 @@ class WordManager {
 
             this.uiManager.updateWordList(data.content);
             this.uiManager.updatePagination(this.paginationManager.generatePaginationButtons(data.totalPages));
-
-            // 애니메이션 적용
-            if (typeof anime !== 'undefined') {
-                this.animationManager.animateWordList();
-            }
         } catch (error) {
             console.error('Error:', error);
             this.uiManager.showToast(error.message, false);
         }
     }
 
-    /**
-     * 단어 편집
-     * @param {string} id - 단어 ID
-     */
+    // 단어 편집
     async editWord(id) {
         try {
             const word = await this.apiService.fetchWord(id);
             this.uiManager.showEditModal(word);
-
-            // 모달 애니메이션
-            if (typeof anime !== 'undefined') {
-                this.animationManager.animateModal();
-            }
         } catch (error) {
             console.error('Error:', error);
             this.uiManager.showToast(error.message, false);
         }
     }
 
-    /**
-     * 단어 삭제
-     * @param {string} id - 단어 ID
-     */
+    // 단어 삭제
     async deleteWord(id) {
         if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) return;
 
         try {
-            // 삭제 전 애니메이션
-            if (typeof anime !== 'undefined') {
-                await this.animationManager.animateDeleteRow(id);
-            }
-
-            // API 호출로 삭제
             await this.apiService.deleteWord(id);
             this.uiManager.showToast('단어가 삭제되었습니다.', true);
             await this.loadWords(this.state.currentPage);
@@ -560,14 +419,10 @@ class WordManager {
         }
     }
 
-    /**
-     * 단어 수정 저장
-     */
+    // 단어 수정 저장
     async handleEditSave() {
         if (this.state.isProcessing) return;
         this.state.isProcessing = true;
-
-        const modal = bootstrap.Modal.getInstance(this.elements.editModal);
 
         try {
             const id = this.elements.editForm.id.value;
@@ -595,16 +450,14 @@ class WordManager {
 
             await this.apiService.updateWord(id, data);
 
-            // 저장 성공 애니메이션
-            if (typeof anime !== 'undefined') {
-                this.animationManager.animateFormSuccess();
+            // 모달 닫기
+            if (this.uiManager.modalInstance) {
+                this.uiManager.modalInstance.hide();
             }
 
-            // 모달 닫기 (성공한 경우에만)
-            modal?.hide();
             this.uiManager.showToast('단어가 수정되었습니다.', true);
 
-            // 약간의 지연 후 목록 새로고침
+            // 목록 새로고침
             setTimeout(() => {
                 this.loadWords(this.state.currentPage);
             }, 300);
@@ -612,156 +465,9 @@ class WordManager {
         } catch (error) {
             console.error('Error:', error);
             this.uiManager.showToast(error.message, false);
-
-            // 저장 실패 애니메이션
-            if (typeof anime !== 'undefined') {
-                this.animationManager.animateFormError();
-            }
         } finally {
             this.state.isProcessing = false;
         }
-    }
-}
-
-/**
- * 애니메이션 관리 클래스
- */
-class AnimationManager {
-    /**
-     * 생성자
-     */
-    constructor() {
-        // 애니메이션 참조 상태
-        this.animations = {};
-    }
-
-    /**
-     * 단어 목록 애니메이션
-     */
-    animateWordList() {
-        const rows = document.querySelectorAll('.word-row');
-        if (rows.length === 0) return;
-
-        // 초기 상태 설정
-        anime.set(rows, {
-            opacity: 0,
-            translateY: 20
-        });
-
-        // 등장 애니메이션
-        this.animations.rows = anime({
-            targets: rows,
-            opacity: [0, 1],
-            translateY: [20, 0],
-            delay: anime.stagger(50),
-            duration: 600,
-            easing: 'easeOutCubic'
-        });
-    }
-
-    /**
-     * 단어 삭제 애니메이션
-     * @param {string} id - 삭제할 단어 ID
-     * @returns {Promise} - 애니메이션 완료 Promise
-     */
-    animateDeleteRow(id) {
-        return new Promise((resolve) => {
-            const row = document.querySelector(`.word-row[data-id="${id}"]`);
-            if (!row) {
-                resolve();
-                return;
-            }
-
-            anime({
-                targets: row,
-                opacity: [1, 0],
-                translateX: [0, 100],
-                backgroundColor: ['rgba(255,255,255,0)', 'rgba(255,120,120,0.2)'],
-                duration: 500,
-                easing: 'easeOutQuad',
-                complete: () => {
-                    resolve();
-                }
-            });
-        });
-    }
-
-    /**
-     * 모달 애니메이션
-     */
-    animateModal() {
-        const modal = document.querySelector('.modal-content');
-        if (!modal) return;
-
-        anime({
-            targets: modal,
-            opacity: [0, 1],
-            scale: [0.9, 1],
-            duration: 300,
-            easing: 'easeOutCubic'
-        });
-
-        // 입력 필드 애니메이션
-        const inputs = modal.querySelectorAll('input, select');
-        anime({
-            targets: inputs,
-            opacity: [0, 1],
-            translateY: [10, 0],
-            delay: anime.stagger(50),
-            duration: 400,
-            easing: 'easeOutQuad'
-        });
-    }
-
-    /**
-     * 폼 저장 성공 애니메이션
-     */
-    animateFormSuccess() {
-        const modal = document.querySelector('.modal-content');
-        if (!modal) return;
-
-        anime({
-            targets: modal,
-            backgroundColor: [
-                'rgba(255,255,255,1)',
-                'rgba(200,255,200,0.5)',
-                'rgba(255,255,255,1)'
-            ],
-            duration: 1000,
-            easing: 'easeOutExpo'
-        });
-    }
-
-    /**
-     * 폼 저장 실패 애니메이션
-     */
-    animateFormError() {
-        const modal = document.querySelector('.modal-content');
-        if (!modal) return;
-
-        anime({
-            targets: modal,
-            translateX: [0, -10, 10, -10, 10, 0],
-            duration: 500,
-            easing: 'easeInOutQuad'
-        });
-    }
-
-    /**
-     * 페이지네이션 애니메이션
-     */
-    animatePagination() {
-        const items = document.querySelectorAll('.page-item');
-        if (items.length === 0) return;
-
-        anime({
-            targets: items,
-            scale: [0.9, 1],
-            opacity: [0, 1],
-            delay: anime.stagger(50),
-            duration: 400,
-            easing: 'easeOutQuad'
-        });
     }
 }
 
