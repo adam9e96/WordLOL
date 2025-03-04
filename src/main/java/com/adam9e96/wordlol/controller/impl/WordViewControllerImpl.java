@@ -1,27 +1,27 @@
 package com.adam9e96.wordlol.controller.impl;
 
+import com.adam9e96.wordlol.common.Constants;
 import com.adam9e96.wordlol.controller.interfaces.WordViewController;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/word")
+@RequestMapping(Constants.ViewPath.WORD_BASE)
 @AllArgsConstructor
 public class WordViewControllerImpl implements WordViewController {
 
     @Override
-    @GetMapping("/study")
+    @GetMapping(Constants.ViewPath.STUDY)
     public String showStudyPage() {
         return "views/word/study";
     }
 
     @Override
-    @GetMapping("/register")
+    @GetMapping(Constants.ViewPath.WORD_REGISTER)
     public String showRegisterPage() {
         return "views/word/register";
     }
@@ -33,25 +33,25 @@ public class WordViewControllerImpl implements WordViewController {
     }
 
     @Override
-    @GetMapping("/list")
+    @GetMapping(Constants.ViewPath.WORD_LIST)
     public String showListPage() {
         return "views/word/list";
     }
 
     @Override
-    @GetMapping("/dashboard")
+    @GetMapping(Constants.ViewPath.DASHBOARD)
     public String showDashboardPage() {
         return "views/dashboard";
     }
 
     @Override
-    @GetMapping("/daily")
+    @GetMapping(Constants.ViewPath.DAILY)
     public String showDailyPage() {
         return "views/word/daily";
     }
 
     @Override
-    @GetMapping("/search")
+    @GetMapping(Constants.ViewPath.SEARCH)
     public String showSearchResultsPage(
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -61,45 +61,5 @@ public class WordViewControllerImpl implements WordViewController {
         model.addAttribute("page", page);
 
         return "views/word/search";
-    }
-
-
-    @Override
-    @GetMapping("/wordbook/create")
-    public String showWordBookCreatePage() {
-        return "views/wordbook/create";
-    }
-
-    @Override
-    @GetMapping("/wordbook/list")
-    public String showWordBookListPage() {
-        return "views/wordbook/list";
-    }
-
-    @Override
-    @GetMapping("/wordbook/{id}/edit")
-    public String showWordBookEditPage(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("wordBookId", id);
-        return "views/wordbook/edit";
-    }
-
-    @Override
-    @GetMapping("/wordbook/{id}/study")
-    public String showWordBookStudyPage(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("wordBookId", id);
-        return "views/wordbook/study";
-    }
-
-    @Override
-    @GetMapping("/wordbook/{id}/view")
-    public String showWordBookViewPage(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("wordBookId", id);
-        return "views/wordbook/view";
-    }
-
-
-    @GetMapping("/test")
-    public String showTestPage() {
-        return "fragments/test";
     }
 }

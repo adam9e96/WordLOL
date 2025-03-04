@@ -35,19 +35,19 @@ async function loadWordBooks() {
             </div>
             <div class="card-actions">
                 <button class="card-btn btn-view" 
-                        onclick="location.href='/word/wordbook/${book.id}/view'"
+                        onclick="location.href='/wordbook/${book.id}/view'"
                         title="상세 조회">
                     <i class="bi bi-eye"></i>
                     <span>조회</span>
                 </button>
                 <button class="card-btn btn-study" 
-                        onclick="location.href='/word/wordbook/${book.id}/study'"
+                        onclick="location.href='/wordbook/${book.id}/study'"
                         title="학습 시작">
                     <i class="bi bi-play-fill"></i>
                     <span>학습</span>
                 </button>
                 <button class="card-btn btn-edit"
-                        onclick="location.href='/word/wordbook/${book.id}/edit'"
+                        onclick="location.href='/wordbook/${book.id}/edit'"
                         title="단어장 수정">
                     <i class="bi bi-pencil"></i>
                     <span>수정</span>

@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.controller.impl;
 
+import com.adam9e96.wordlol.common.Constants;
 import com.adam9e96.wordlol.controller.interfaces.WordRestController;
 import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.Word;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/words")
+@RequestMapping(Constants.ApiPath.WORDS)
 @Slf4j
 @RequiredArgsConstructor
 public class WordRestControllerImpl implements WordRestController {

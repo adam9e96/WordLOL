@@ -105,7 +105,7 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
         if (response.ok) {
             showToast('단어장이 성공적으로 생성되었습니다.');
             setTimeout(() => {
-                window.location.href = '/word/wordbook/list';  // 컨트롤러의 매핑과 일치하는 URL로 수정
+                window.location.href = '/wordbook/list';  // 컨트롤러의 매핑과 일치하는 URL로 수정
             }, 1500);
         } else {
             const error = await response.json();

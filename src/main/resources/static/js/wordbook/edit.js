@@ -117,7 +117,7 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
         if (response.ok) {
             showToast('단어장이 성공적으로 수정되었습니다.');
             setTimeout(() => {
-                window.location.href = '/word/wordbook-list';
+                window.location.href = '/wordbook/list';
             }, 1500);
         } else {
             const error = await response.json();

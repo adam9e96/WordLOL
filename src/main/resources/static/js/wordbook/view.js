@@ -38,7 +38,7 @@ function setupEventListeners() {
 
     // 학습 버튼 클릭 이벤트
     Elements.studyBtn.addEventListener('click', () => {
-        location.href = `/word/wordbook/${wordBookId}/study`;
+        location.href = `/wordbook/${wordBookId}/study`;
     });
 }
 
