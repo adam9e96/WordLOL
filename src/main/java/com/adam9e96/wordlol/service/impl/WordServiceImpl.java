@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.service.impl;
 
+import com.adam9e96.wordlol.common.Constants;
 import com.adam9e96.wordlol.dto.WordRequest;
 import com.adam9e96.wordlol.dto.WordSearchRequest;
 import com.adam9e96.wordlol.entity.Word;
@@ -20,9 +21,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 @Service
 @Slf4j
@@ -31,17 +32,19 @@ public class WordServiceImpl implements WordService {
     private final WordRepository wordRepository;
     private final WordMapper wordMapper;
     private final WordValidator wordValidator;
-    private final Random random = new Random();
 
-    // Public 인터페이스 구현
+    /**
+     * @todo 유효성 검사로직에서 다중처리가 안됨 가장 먼저 실패한것만 리턴됨 그거 빼면 OK
+     * [OPTIMIZED] - 2025.03.05 완료
+     */
     @Override
     public void createWord(WordRequest request) {
         try {
-            // 1. 입력값 검증
+            // 1. 입력값 검증 (단어, 뜻, 힌트, 난이도)
             wordValidator.validate(request);
             // 2. 중복 단어 검사
             if (isDuplicateWord(request.vocabulary())) {
-                throw new ValidationException("이미 존재하는 단어입니다: " + request.vocabulary());
+                throw new ValidationException(Constants.Validation.EXISTS_VOCABULARY_MESSAGE + request.vocabulary());
             }
             // 3. 엔티티 생성
             Word word = Word.builder()
@@ -52,8 +55,6 @@ public class WordServiceImpl implements WordService {
                     .build();
             // 4. DB에 저장
             wordMapper.save(word);
-        } catch (ValidationException e) {
-            throw e;
         } catch (Exception e) {
             // DB 저장 실패 등의 문제 발생 시
             log.error("단어 생성 중 오류가 발생: {}", e.getMessage(), e);
@@ -68,22 +69,54 @@ public class WordServiceImpl implements WordService {
         if (requests == null || requests.isEmpty()) {
             return 0;
         }
-        // 2. 성공한 단어 개수
         int successCount = 0;
-        // 3. 요청 단어들을 순회하며 단어 생성 시도
+        List<Word> wordsToSave = new ArrayList<>(requests.size());
+        List<String> errors = new ArrayList<>();
+
+        // 1. 모든 요청에 대해 검증 실행
         for (WordRequest request : requests) {
             try {
-                createWord(request);
-                // 단어 생성 성공 시 성공 카운트 증가
+                // 입력값 검증
+                wordValidator.validate(request);
+
+                // 중복 단어 검사
+                if (isDuplicateWord(request.vocabulary())) {
+                    errors.add(Constants.Validation.EXISTS_VOCABULARY_MESSAGE + request.vocabulary());
+                    continue;
+                }
+                // 엔티티 생성 및 목록에 추가
+                Word word = Word.builder()
+                        .vocabulary(request.vocabulary())
+                        .meaning(request.meaning())
+                        .hint(request.hint())
+                        .difficulty(request.difficulty())
+                        .build();
+
+                wordsToSave.add(word);
                 successCount++;
-            } catch (Exception e) {
-                log.error("단어 생성 실패: {}", request.vocabulary(), e);
-                // 예외를 잡아서 계속 진행할지, 아니면 전체 트랜잭션을 실패시킬지는
-                // 비즈니스 요구사항에 따라 결정
+            } catch (ValidationException e) {
+                errors.add(String.format("단어: %s, 오류: %s", request.vocabulary(), e.getMessage()));
             }
         }
+
+        // 2. 유효한 단어가 있으면 한 번의 트랜잭션으로 일괄 저장
+        if (!wordsToSave.isEmpty()) {
+            try {
+                batchSaveWords(wordsToSave);
+            } catch (Exception e) {
+                log.error("단어 일괄 저장 중 오류 발생: {}", e.getMessage(), e);
+                throw new WordCreationException(0L);
+            }
+        }
+
+        // 3. 오류가 있으면 로그에 기록
+        if (!errors.isEmpty()) {
+            log.warn("일부 단어 저장 실패: {}", String.join(", ", errors));
+        }
+
         return successCount;
     }
+
 
     @Override
     public Word findById(Long id) {
@@ -94,16 +127,29 @@ public class WordServiceImpl implements WordService {
     @Transactional
     @Override
     public void updateWord(Long id, WordRequest request) {
-        // 1. 기존 단어 존재 여부 확인
-        Word word = wordMapper.findById(id).orElseThrow(() -> new WordNotFoundException(id));
-        // 2. 비즈니스 로직 유효성 검증
-        validateUpdateWordInput(request.vocabulary(), request.meaning(), request.hint(), request.difficulty());
+        // 1. 입력값 검증 - 한번에 처리
+        validateUpdateRequest(id, request);
+
         try {
-            // 3. 단어 업데이트
+            // 2. 단어 엔티티 조회 (없으면 예외 발생
+            Word word = wordMapper.findById(id)
+                    .orElseThrow(() -> new WordNotFoundException(id));
+
+            // 3. 중복 검사 (자신을 제외한 다른 단어와 중복 체크)
+            if (isVocabularyChangedAndDuplicate(word.getVocabulary(), request.vocabulary(), id)) {
+                throw new ValidationException(Constants.Validation.EXISTS_VOCABULARY_MESSAGE + request.vocabulary());
+            }
+
+            // 4. 단어 업데이트
             word.update(request.vocabulary(), request.meaning(), request.hint(), request.difficulty());
+
+            // 5. DB 저장
             wordMapper.update(word);
+        } catch (WordNotFoundException | ValidationException e) {
+            // 이미 적절한 예외이므로 그대로 전파
+            throw e;
         } catch (Exception e) {
-            log.error("단어 업데이트 중 오류가 발생했습니다. ID: {}", id, e);
+            log.error("단어 업데이트 중 오류 발생 [ID={}]: {}", id, e.getMessage(), e);
             throw new WordUpdateException(id);
         }
     }
@@ -150,17 +196,30 @@ public class WordServiceImpl implements WordService {
         return new PageImpl<>(words, pageable, total);
     }
 
+    /**
+     * 랜덤 단어를 조회합니다.
+     * [OPTIMIZED] - 2025.03.05 완료
+     */
     @Override
     public Word findRandomWord() {
-        // 1. 전체 단어 ID 목록 조회
-        List<Long> ids = wordMapper.findAllIds();
-        if (ids.isEmpty()) {
-            throw new WordNotFoundException(0L); // 또는 NoWordsAvailableException 생성 고려
+        try {
+            // 1. 단어 개수 확인 (선택적)
+            long count = wordMapper.countAll();
+            if (count == 0) {
+                throw new WordNotFoundException(0L);
+            }
+            // 2. 데이터베이스에서 무작위 단어 조회
+            Word randomWord = wordMapper.findRandomWord();
+
+            // 3. 결과가 null 인 경우
+            if (randomWord == null) {
+                throw new WordNotFoundException(0L);
+            }
+            return randomWord;
+        } catch (Exception e) {
+            log.error("랜덤 단어 조회 중 오류 발생: {}", e.getMessage(), e);
+            throw new WordNotFoundException(0L);
         }
-        // 2. 랜덤 ID 선택
-        Long randomId = ids.get(random.nextInt(ids.size()));
-        // 3. 선택된 ID로 단어 조회
-        return findById(randomId);
     }
 
     // 답이 2개인경우 가능
@@ -169,7 +228,6 @@ public class WordServiceImpl implements WordService {
     public Boolean validateAnswer(Long id, String userAnswer) {
         // 1. 단어 조회
         Word word = findById(id);
-        log.info("정답: {}, 사용자 입력: {}", word.getMeaning(), userAnswer);
         // 2. 정답 확인
         return validateAnswer(word.getMeaning(), userAnswer);
     }
@@ -184,13 +242,13 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public boolean checkVocabularyDuplicate(String vocabulary, Long excludeId) {
+    public boolean checkVocabularyDuplicate(String newVocabulary, Long excludeId) {
         if (excludeId != null) {
             // 수정 시: 자기 자신을 제외한 중복 체크
-            return wordRepository.existsByVocabularyIgnoreCaseAndIdNot(vocabulary, excludeId);
+            return wordRepository.existsByVocabularyIgnoreCaseAndIdNot(newVocabulary, excludeId);
         }
         // 신규 등록 시: 전체 중복 체크
-        return wordRepository.existsByVocabularyIgnoreCase(vocabulary);
+        return wordRepository.existsByVocabularyIgnoreCase(newVocabulary);
     }
 
     @Transactional
@@ -207,21 +265,48 @@ public class WordServiceImpl implements WordService {
     }
 
 
+    // 일괄 저장을 위한 새로운 private 메서드
+    private void batchSaveWords(List<Word> words) {
+        // MyBatis를 사용하는 경우 배치 삽입 구현
+        // 옵션 1: 단일 SQL로 여러 레코드 삽입 (권장)
+        wordMapper.batchSave(words);
+
+        // 옵션 2: 기존 단일 저장 메서드 재사용
+        // for (Word word : words) {
+        //     wordMapper.save(word);
+        // }
+    }
+
     // Private 메서드
     private boolean isDuplicateWord(String vocabulary) {
         // 대소문자 구분 없이 중복 확인
         return wordRepository.existsByVocabularyIgnoreCase(vocabulary);
     }
 
-    private void validateUpdateWordInput(String vocabulary, String meaning, String hint, Integer difficulty) {
-        wordValidator.validateVocabulary(vocabulary);
-        // 단어와 의미의 실제 길이 검증 (공백 제거 후)
-        // 2. 단어와 의미의 길이 검증
-        wordValidator.validateMeaning(meaning);
-        // 3. 힌트 길이 추가 검증 (선택사항)
-        wordValidator.validateHint(hint);
-        // 4. 난이도 검증
-        wordValidator.validateDifficulty(difficulty);
+    /**
+     * 단어(vocabulary)가 변경되었고 중복되는지 확인
+     */
+    private boolean isVocabularyChangedAndDuplicate(String originalVocabulary, String newVocabulary, Long wordId) {
+        // 단어 변경이 없으면 중복 검사 불필요
+        if (originalVocabulary.equals(newVocabulary)) {
+            return false;
+        }
+
+        return checkVocabularyDuplicate(newVocabulary, wordId);
+    }
+
+    /**
+     * 업데이트 요청 데이터 검증
+     */
+    private void validateUpdateRequest(Long id, WordRequest request) {
+        if (id == null) {
+            throw new ValidationException(Constants.Validation.EMPTY_ID_MESSAGE);
+        }
+        if (request == null) {
+            throw new ValidationException(Constants.Validation.EMPTY_UPDATE_WORD_MESSAGE);
+        }
+        // WordValidator 를 통한 기본 유효성 검사
+        wordValidator.validate(request);
     }
 
     private boolean validateAnswer(String correctMeaning, String userAnswer) {

@@ -50,33 +50,34 @@ public class WordRestControllerImpl implements WordRestController {
     }
 
     @Override
-    @GetMapping("/{id}")
+    @GetMapping(Constants.ApiPath.WORD_ID)
     public ResponseEntity<WordResponse> getWord(@PathVariable("id") Long id) {
         WordResponse response = toResponse(wordService.findById(id));
         return ResponseEntity.ok(response);
     }
 
     @Override
-    @PutMapping("/{id}")
+    @PutMapping(Constants.ApiPath.WORD_ID)
     public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @RequestBody WordRequest request) {
         wordService.updateWord(id, request);
         return ResponseEntity.ok().build();
     }
 
     @Override
-    @DeleteMapping("/{id}")
+    @DeleteMapping(Constants.ApiPath.WORD_ID)
     public ResponseEntity<Void> deleteWord(@PathVariable("id") Long id) {
         wordService.deleteWord(id);
         return ResponseEntity.ok().build();
     }
 
     @Override
-    @GetMapping("/random")
-    public ResponseEntity<WordResponse> getRandomWord() {
+    @GetMapping(Constants.ApiPath.WORD_RANDOM)
+    public ResponseEntity<WordStudyResponse> getRandomWord() {
         Word randomWord = wordService.findRandomWord();
-        WordResponse response = toResponseWithoutAnswer(randomWord);
+        WordStudyResponse response = toWordStudyResponse(randomWord);
         return ResponseEntity.ok(response);
     }
+
 
     @Override
     @PostMapping("/check")
@@ -106,7 +107,7 @@ public class WordRestControllerImpl implements WordRestController {
 
 
     @Override
-    @GetMapping("/{id}/hint")
+    @GetMapping(Constants.ApiPath.WORD_HINT)
     public ResponseEntity<Map<String, String>> getWordHint(@PathVariable("id") Long id) {
         Word word = wordService.findById(id);
         return ResponseEntity.ok().body(Map.of("hint", word.getHint()));
@@ -122,7 +123,7 @@ public class WordRestControllerImpl implements WordRestController {
 
 
     @Override
-    @GetMapping("/daily")
+    @GetMapping(Constants.ApiPath.WORD_DAILY)
     public ResponseEntity<List<DailyWordResponse>> getDailyWords() {
         List<Word> words = wordService.findRandomWords();
         return ResponseEntity.ok().body(
@@ -184,6 +185,17 @@ public class WordRestControllerImpl implements WordRestController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+
+    private WordStudyResponse toWordStudyResponse(Word word) {
+        return new WordStudyResponse(
+                word.getId(),
+                word.getVocabulary(),
+                word.getMeaning(),
+                word.getHint(),
+                word.getDifficulty()
+        );
     }
 
 

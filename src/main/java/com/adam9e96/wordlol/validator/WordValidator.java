@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.validator;
 
+import com.adam9e96.wordlol.common.Constants;
 import com.adam9e96.wordlol.dto.WordRequest;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import org.springframework.stereotype.Component;
@@ -15,37 +16,50 @@ public class WordValidator {
         validateDifficulty(request.difficulty());
     }
 
-    // 메서드들을 public 으로 변경하여 재사용 가능하게 함
+    // 단어 유효성 검사
     public void validateVocabulary(String vocabulary) {
+        // NotBlank 유효성 검증: 단어가 비어있거나 공백만 있는 경우 예외 발생
         if (!StringUtils.hasText(vocabulary)) {
-            throw new ValidationException("단어를 입력해주세요.");
+            throw new ValidationException(Constants.Validation.EMPTY_VOCABULARY_MESSAGE);
         }
-        if (!vocabulary.matches("^[a-zA-Z\\s-]+$")) {
-            throw new ValidationException("영단어는 영문자, 공백, 하이픈만 포함할 수 있습니다.");
+        // 영단어 유효성 검증: 영문자, 공백, 하이픈만 포함할 수 있음
+        if (!vocabulary.matches(Constants.Validation.VOCABULARY_PATTERN)) {
+            throw new ValidationException(Constants.Validation.INVALID_VOCABULARY_MESSAGE);
         }
-        if (vocabulary.length() > 100) {
-            throw new ValidationException("단어는 100자를 초과할 수 없습니다.");
+        // 길이 유효성 검증: 단어는 100자를 초과할 수 없음
+        if (vocabulary.length() > Constants.Validation.MAX_LENGTH) {
+            throw new ValidationException("단어는 " + Constants.Validation.MAX_LENGTH_MESSAGE);
         }
     }
 
+    // 뜻 유효성 검사
     public void validateMeaning(String meaning) {
+        // 뜻이 비어있거나 공백만 있는 경우 예외 발생
         if (!StringUtils.hasText(meaning)) {
-            throw new ValidationException("뜻을 입력해주세요.");
+            throw new ValidationException(Constants.Validation.EMPTY_MEANING_MESSAGE);
         }
-        if (meaning.length() > 100) {
-            throw new ValidationException("뜻은 100자를 초과할 수 없습니다.");
+        // 뜻의 길이가 100자를 초과하는 경우 예외 발생
+        if (meaning.length() > Constants.Validation.MAX_LENGTH) {
+            throw new ValidationException("뜻은 " + Constants.Validation.MAX_LENGTH_MESSAGE);
         }
     }
 
+    // 힌트 유효성 검사
+    // hint는 null이 허용되기때문에 null인 경우는 검사하지 않음
+    // null 이 아닌 경우 100자만 넘기지 않도록 검사
     public void validateHint(String hint) {
-        if (hint != null && hint.length() > 100) {
-            throw new ValidationException("힌트는 100자를 초과할 수 없습니다.");
+        if (hint != null && hint.length() > Constants.Validation.MAX_LENGTH) {
+            throw new ValidationException(Constants.Validation.MAX_LENGTH_MESSAGE);
         }
     }
 
+    // 난이도 유효성 검사
     public void validateDifficulty(Integer difficulty) {
-        if (difficulty == null || difficulty < 1 || difficulty > 5) {
-            throw new ValidationException("난이도는 1에서 5 사이의 값이어야 합니다.");
+        if (difficulty == 0) {
+            throw new ValidationException(Constants.Validation.EMPTY_DIFFICULTY_MESSAGE);
+        }
+        if (difficulty < Constants.Validation.DIFFICULTY_MIN || difficulty > Constants.Validation.DIFFICULTY_MAX) {
+            throw new ValidationException(Constants.Validation.DIFFICULTY_MESSAGE);
         }
     }
 }

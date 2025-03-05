@@ -120,7 +120,7 @@ public interface WordRestController {
         @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
     })
     @GetMapping("/random")
-    ResponseEntity<WordResponse> getRandomWord();
+    ResponseEntity<WordStudyResponse> getRandomWord();
 
     /**
      * 단어 학습 시 정답을 확인합니다.

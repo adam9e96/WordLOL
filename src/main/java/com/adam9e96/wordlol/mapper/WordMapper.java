@@ -58,5 +58,7 @@ public interface WordMapper {
 
     long countSearchResults(@Param("keyword") String keyword);
 
+    Word findRandomWord();
 
+    void batchSave(List<Word> words);
 }
