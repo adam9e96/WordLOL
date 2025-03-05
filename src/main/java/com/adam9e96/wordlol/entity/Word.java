@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +27,7 @@ public class Word {
 
     /**
      * 영어 단어(어휘)입니다.
-     * null을 허용하지 않으며 최대 100자의 길이를 가집니다.
+     * null 을 허용하지 않으며 최대 100자의 길이를 가집니다.
      */
     @Column(name = "vocabulary", nullable = false, length = 100)
     private String vocabulary; // 단어
@@ -51,7 +52,7 @@ public class Word {
      * null 을 허용하지 않으며, 기본값은 1로 설정되어 있습니다.
      */
     @Column(name = "difficulty", nullable = false)
-    private Integer difficulty = 1;
+    private Integer difficulty;
 
     /**
      * 엔티티가 생성된 시점을 나타내는 타임스탬프입니다.
@@ -66,7 +67,7 @@ public class Word {
      * 엔티티 업데이트 시 자동으로 갱신됩니다.
      */
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, updatable = true)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     /**
@@ -76,6 +77,7 @@ public class Word {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_book_id")
+    @JsonIgnore
     private WordBook wordBook;
 
     /**
@@ -101,7 +103,7 @@ public class Word {
 
     /**
      * 영어 단어의 세부 정보를 업데이트합니다.
-     * 만약 전달된 난이도 값이 null 이면, 기존의 난이도 값을 유지합니다.
+     * 검증 로직은 서비스 계층에서 update() 메서드가 실행 되기 전에 처리합니다.
      *
      * @param vocabulary 새로운 영어 단어(어휘)
      * @param meaning    새로운 단어의 의미 또는 정의
@@ -112,7 +114,7 @@ public class Word {
         this.vocabulary = vocabulary;
         this.meaning = meaning;
         this.hint = hint;
-        this.difficulty = difficulty != null ? difficulty : this.difficulty;
+        this.difficulty = difficulty;
     }
 
 }

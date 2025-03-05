@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.aop;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +9,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * 통합 로깅을 위한 AOP(Aspect-Oriented Programming) 컴포넌트입니다.
@@ -67,67 +65,83 @@ public class CommonLoggingAspect {
 
     @Around("controllerMethods() || serviceMethods()")
     public Object logMethodExecution(ProceedingJoinPoint joinPoint) throws Throwable {
-        // 메서드 이름 가져오기
+        // 클래스 및 메서드 정보 가져오기
         String methodName = joinPoint.getSignature().getName();
-        // 클래스 이름 가져오기
-        String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
-        // 클래스 이름에 따라 타입 설정 (Controller 또는 Service)
+        String className = getSimpleClassName(joinPoint);
         String type = className.contains("Controller") ? "Controller" : "Service";
 
-        // 입력 파라미터 로깅
-        String params = Arrays.stream(joinPoint.getArgs())
-                .map(arg -> {
-                    try {
-                        return objectMapper.writeValueAsString(arg);
-                    } catch (Exception e) {
-                        return arg.toString();
-                    }
-                })
-                .collect(Collectors.joining(", "));
+        // 스레드 정보 추가 (멀티스레드 환경에서 디버깅 용이)
+        String threadInfo = Thread.currentThread().getName();
 
-        // 시작 로그
+        // 요청 파라미터 로깅
+        String params = convertToJson(joinPoint.getArgs());
+        params = truncateLog(params, 500); // 너무 긴 경우 잘라서 표시
+
         log.info("""
-                [{} Layer] ▶️ 메서드 시작 ====================
+                [{}] [{} Layer] ▶️ 메서드 시작 ====================
                 >> 위치: {}.{}
                 >> 파라미터: {}
-                """, type, className, methodName, params);
+                """, threadInfo, type, className, methodName, params);
 
+        long startTime = System.currentTimeMillis();
         try {
-            // 메서드 실행 및 처리 시간 측정
-            long startTime = System.currentTimeMillis();
             Object result = joinPoint.proceed();
             long executionTime = System.currentTimeMillis() - startTime;
 
             // 결과 데이터 로깅
             String resultStr = convertToJson(result);
+            resultStr = truncateLog(resultStr, 500); // 너무 긴 경우 잘라서 표시
 
-            // 종료 로그
             log.info("""
-                    [{} Layer] ⬅️ 메서드 종료 ====================
+                    [{}] [{} Layer] ⬅️ 메서드 종료 ====================
                     >> 위치: {}.{}
                     >> 실행시간: {}ms
                     >> 반환값: {}
-                    """, type, className, methodName, executionTime, resultStr);
+                    """, threadInfo, type, className, methodName, executionTime, resultStr);
             return result;
 
         } catch (Throwable e) {
-            // 예외 발생 시 로깅
             log.error("""
-                    [{} Layer] ❌ 예외 발생 ====================
+                    [{}] [{} Layer] ❌ 예외 발생 ====================
                     >> 위치: {}.{}
                     >> 예외 타입: {}
                     >> 예외 메시지: {}
-                    """, type, className, methodName, e.getClass().getSimpleName(), e.getMessage(), e);
+                    """, threadInfo, type, className, methodName, e.getClass().getSimpleName(), e.getMessage(), e);
             throw e;
         }
     }
 
+    /**
+     * JSON 변환 함수 - 변환 실패 시 기본 toString() 사용
+     */
     private String convertToJson(Object object) {
         try {
             return objectMapper.writeValueAsString(object);
-        } catch (Exception e) {
-            log.error("JSON 변환 중 오류 발생", e);
-            return object.toString();
+        } catch (JsonProcessingException e) {
+            log.warn("JSON 변환 실패: {}", e.getMessage());
+            return object != null ? object.toString() : "null";
         }
+    }
+
+    /**
+     * 클래스 이름을 안전하게 가져오는 메서드 (익명 클래스 고려)
+     */
+    private String getSimpleClassName(ProceedingJoinPoint joinPoint) {
+        Class<?> clazz = joinPoint.getSignature().getDeclaringType();
+        String className = clazz.getSimpleName();
+        if (className.isEmpty()) {
+            return clazz.getName(); // 익명 클래스의 경우 전체 이름 사용
+        }
+        return className;
+    }
+
+    /**
+     * 너무 긴 로그를 일정 길이로 제한하여 출력
+     */
+    private String truncateLog(String log, int maxLength) {
+        if (log.length() > maxLength) {
+            return log.substring(0, maxLength) + "...(생략됨)";
+        }
+        return log;
     }
 }

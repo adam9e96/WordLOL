@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,46 +19,49 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WordBook {
-    @OneToMany(mappedBy = "wordBook", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<Word> words = new ArrayList<>(); // 초기화 추가
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String name;
+
     @Column(nullable = false)
     private String description;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public static WordBook createNewWordBook(String name, String description, Category category) {
-        WordBook wordBook = new WordBook();
-        wordBook.name = name;
-        wordBook.description = description;
-        wordBook.category = category;
-        wordBook.createdAt = LocalDateTime.now();
-        wordBook.updatedAt = LocalDateTime.now();
-        wordBook.words = new ArrayList<>();
-        return wordBook;
+    @OneToMany(mappedBy = "wordBook", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Word> words = new ArrayList<>(); // 초기화 추가
+
+    public static WordBook createWordBook(String name, String description, Category category) {
+        return WordBook.builder()
+                .name(name)
+                .description(description)
+                .category(category)
+                .build();
     }
 
     public void addWord(Word word) {
-        if (this.words == null) {
-            this.words = new ArrayList<>();
-        }
         this.words.add(word);
         word.setWordBook(this);
     }
 
-    public void updateInfo(String name, String description, Category category) {
+    public void update(String name, String description, Category category) {
         this.name = name;
         this.description = description;
         this.category = category;
-        this.updatedAt = LocalDateTime.now();
     }
 
 }

@@ -15,11 +15,11 @@ public class WordBookValidator {
     private final WordValidator wordValidator;
 
     public void validate(WordBookRequest request) {
-        validateBasicInfo(request);
+        validateWordBook(request);
         validateWords(request.words());
     }
 
-    private void validateBasicInfo(WordBookRequest request) {
+    private void validateWordBook(WordBookRequest request) {
         if (request == null) {
             throw new ValidationException("단어장 정보가 null입니다");
         }

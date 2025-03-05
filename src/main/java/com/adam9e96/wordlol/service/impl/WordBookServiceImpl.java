@@ -41,11 +41,12 @@ public class WordBookServiceImpl implements WordBookService {
             // 입력값 유효성 검사
             wordBookValidator.validate(request);
             // 단어장 생성
-            WordBook wordBook = WordBook.createNewWordBook(
+            WordBook wordBook = WordBook.createWordBook(
                     request.name(),
                     request.description(),
                     request.category()
             );
+
             // 단어 추가
             if (request.words() != null && !request.words().isEmpty()) {
                 for (WordRequest wordRequest : request.words()) {
@@ -188,7 +189,7 @@ public class WordBookServiceImpl implements WordBookService {
                 });
         try {
             // 기본 정보 업데이트
-            wordBook.updateInfo(
+            wordBook.update(
                     request.name(),
                     request.description(),
                     request.category()
