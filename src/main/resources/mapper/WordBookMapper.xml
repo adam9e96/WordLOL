@@ -36,6 +36,7 @@
         </collection>
     </resultMap>
 
+
     <!--
     카테고리별 단어장 조회 쿼리
     - resultMap: 위에서 정의한 WordBookResultMap을 사용하여 결과 매핑
@@ -68,5 +69,10 @@
         FROM word_book
         WHERE id = #{id}
         LIMIT 1  <!-- 명시적으로 1개만 가져오도록 -->
+    </select>
+    <select id="existById" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM word_book
+        WHERE id = #{id}
     </select>
 </mapper>

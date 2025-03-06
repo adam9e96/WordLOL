@@ -73,4 +73,17 @@ public class WordBookExceptionHandler {
         );
         return ResponseEntity.status(e.getStatus()).body(response);
     }
+
+
+    @ExceptionHandler(WordBookEmptyWordsException.class)
+    public ResponseEntity<ErrorResponse> handleWordBookWordsEmpty(WordBookEmptyWordsException e) {
+        log.error("단어장에 단어가 비어있음: {}", e.getMessage(), e);
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                e.getStatus().value(),
+                e.getMessage(),
+                List.of(e.getCode())
+        );
+        return ResponseEntity.status(e.getStatus()).body(response);
+    }
 }

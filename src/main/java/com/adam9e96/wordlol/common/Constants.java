@@ -15,9 +15,9 @@ public final class Constants {
      * API 경로 관련 상수
      */
     public static final class ApiPath {
+
         public static final String BASE_API_PATH = "/api/v1";
         public static final String WORDS = BASE_API_PATH + "/words";
-        public static final String WORDBOOKS = BASE_API_PATH + "/wordbooks";
         public static final String WORD_ID = "/{id}";
         public static final String WORD_HINT = WORD_ID + "/hint";
         public static final String WORD_DAILY = "/daily";
@@ -52,17 +52,17 @@ public final class Constants {
         public static final String CSAT = "CSAT";
         public static final String CUSTOM = "CUSTOM";
         public static final String ALL = "ALL";
+    }
 
-        /**
-         * 카테고리 표시 이름
-         */
-        public static final class DisplayName {
-            public static final String TOEIC = "토익";
-            public static final String TOEFL = "토플";
-            public static final String CSAT = "수능";
-            public static final String CUSTOM = "사용자 정의";
-            public static final String ALL = "전체";
-        }
+    /**
+     * 카테고리 표시 이름
+     */
+    public static final class DisplayName {
+        public static final String TOEIC = "토익";
+        public static final String TOEFL = "토플";
+        public static final String CSAT = "수능";
+        public static final String CUSTOM = "사용자 정의";
+        public static final String ALL = "전체";
     }
 
     public static final class Validation {
