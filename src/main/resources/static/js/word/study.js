@@ -338,7 +338,11 @@ const AnimationManager = {
             targets: Elements.perfectRun,
             scale: [1, 1.3, 1],
             translateY: [0, -10, 0],
-            color: ['#FFF', '#FFD700', '#FFF'],
+            color: [
+                'var(--on-surface, #1D1B20)',  // 기본 텍스트 색상으로 시작
+                '#FFD700',                     // 애니메이션 중 골드 색상
+                'var(--on-surface, #1D1B20)'   // 다시 기본 텍스트 색상으로 돌아옴
+            ],
             duration: 1000,
             easing: 'easeInOutQuad',
             begin: function () {

@@ -1,0 +1,224 @@
+/* theme.css - 다크모드 관련 스타일 */
+
+/* 다크 모드 변수 */
+:root {
+    /* 라이트 모드 변수 (기본값) */
+    --primary: #6750A4;
+    --on-primary: #FFFFFF;
+    --primary-container: #EADDFF;
+    --on-primary-container: #21005E;
+
+    --secondary: #625B71;
+    --on-secondary: #FFFFFF;
+    --secondary-container: #E8DEF8;
+    --on-secondary-container: #1E192B;
+
+    --surface: #FEF7FF;
+    --on-surface: #1D1B20;
+    --surface-variant: #E7E0EC;
+    --on-surface-variant: #49454F;
+
+    --background: #F7F2FA;
+    --on-background: #1D1B20;
+
+    --error: #B3261E;
+    --on-error: #FFFFFF;
+    --error-container: #F9DEDC;
+    --on-error-container: #410E0B;
+
+    --outline: #79747E;
+    --outline-variant: #CAC4D0;
+
+    --surface-container-lowest: #FFFFFF;
+    --surface-container-low: #F7F2FA;
+    --surface-container: #F3EDF7;
+    --surface-container-high: #ECE6F0;
+    --surface-container-highest: #E6E0E9;
+}
+
+/* 다크 테마 변수 */
+[data-theme="dark"] {
+    --primary: #D0BCFF;
+    --on-primary: #381E72;
+    --primary-container: #4F378B;
+    --on-primary-container: #EADDFF;
+
+    --secondary: #CCC2DC;
+    --on-secondary: #332D41;
+    --secondary-container: #4A4458;
+    --on-secondary-container: #E8DEF8;
+
+    --surface: #141218;
+    --on-surface: #E6E0E9;
+    --surface-variant: #49454F;
+    --on-surface-variant: #CAC4D0;
+
+    --background: #141218;
+    --on-background: #E6E0E9;
+
+    --error: #F2B8B5;
+    --on-error: #601410;
+    --error-container: #8C1D18;
+    --on-error-container: #F9DEDC;
+
+    --outline: #938F99;
+    --outline-variant: #49454F;
+
+    --surface-container-lowest: #0F0D13;
+    --surface-container-low: #1D1B20;
+    --surface-container: #211F26;
+    --surface-container-high: #2B2930;
+    --surface-container-highest: #36343B;
+}
+
+/* 다크 모드일 때 body 배경색 변경 */
+[data-theme="dark"] body {
+    background-color: var(--background);
+    color: var(--on-background);
+}
+
+/* 테마 전환 시 부드러운 전환 효과 */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 다크 모드 토글 버튼 스타일 */
+.theme-toggle-container {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+.theme-toggle {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(103, 80, 164, 0.08);
+}
+
+.theme-toggle i {
+    font-size: 1.2rem;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+}
+
+.theme-toggle .light-icon {
+    color: #FFB74D;
+    position: absolute;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.theme-toggle .dark-icon {
+    color: #5C6BC0;
+    position: absolute;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* 다크 모드일 때 아이콘 변경 */
+[data-theme="dark"] .theme-toggle .light-icon {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+[data-theme="dark"] .theme-toggle .dark-icon {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 다크 모드에서 카드, 버튼 등 요소별 스타일 조정 */
+[data-theme="dark"] .card,
+[data-theme="dark"] .form-section,
+[data-theme="dark"] .wordbook-info-section,
+[data-theme="dark"] .words-section,
+[data-theme="dark"] .top-section,
+[data-theme="dark"] .wordbooks-section {
+    background-color: var(--surface);
+    color: var(--on-surface);
+    border-color: var(--outline-variant);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background-color: var(--surface-container);
+    color: var(--on-surface);
+    border-color: var(--outline-variant);
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+    background-color: var(--surface-container-high);
+    border-color: var(--primary);
+}
+
+[data-theme="dark"] .btn-primary {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+[data-theme="dark"] .btn-surface,
+[data-theme="dark"] .btn-text {
+    background-color: var(--surface-container);
+    color: var(--on-surface-variant);
+    border-color: var(--outline-variant);
+}
+
+[data-theme="dark"] .btn-surface:hover,
+[data-theme="dark"] .btn-text:hover {
+    background-color: var(--surface-container-high);
+    border-color: var(--outline);
+}
+
+[data-theme="dark"] .wordbook-card {
+    background-color: var(--surface-container);
+}
+
+[data-theme="dark"] .wordbook-card:hover {
+    background-color: var(--surface-container-high);
+}
+
+[data-theme="dark"] .header {
+    background-color: var(--surface-container-low);
+    border-color: var(--outline-variant);
+}
+
+[data-theme="dark"] .nav-link {
+    background-color: var(--surface-container);
+    color: var(--on-surface);
+}
+
+[data-theme="dark"] .nav-link:hover {
+    background-color: var(--surface-container-high);
+}
+
+[data-theme="dark"] .nav-link.active {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+/* 다크 모드에서 테이블 스타일 */
+[data-theme="dark"] .word-list-table th {
+    background-color: var(--surface-container-high);
+    color: var(--on-surface);
+    border-color: var(--outline-variant);
+}
+
+[data-theme="dark"] .word-list-table td {
+    border-color: var(--outline-variant);
+}
+
+[data-theme="dark"] .word-list-table tbody tr:hover {
+    background-color: var(--surface-container-high);
+}

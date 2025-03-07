@@ -16,6 +16,10 @@ public final class Constants {
      */
     public static final class ApiPath {
 
+        private ApiPath() {
+            throw new AssertionError("ApiPath 클래스는 인스턴스화할 수 없습니다.");
+        }
+
         public static final String BASE_API_PATH = "/api/v1";
         public static final String WORDS = BASE_API_PATH + "/words";
         public static final String WORD_ID = "/{id}";
@@ -28,6 +32,10 @@ public final class Constants {
      * 뷰 경로 관련 상수
      */
     public static final class ViewPath {
+        private ViewPath() {
+            throw new AssertionError("ViewPath 클래스는 인스턴스화할 수 없습니다.");
+        }
+
         public static final String WORD_BASE = "/word";
         public static final String WORD_REGISTER = "/register";
         public static final String STUDY = "/study";
@@ -43,27 +51,6 @@ public final class Constants {
         public static final String WORD_BOOK_VIEW = "/{id}/view";
     }
 
-    /**
-     * 카테고리 관련 상수
-     */
-    public static final class Category {
-        public static final String TOEIC = "TOEIC";
-        public static final String TOEFL = "TOEFL";
-        public static final String CSAT = "CSAT";
-        public static final String CUSTOM = "CUSTOM";
-        public static final String ALL = "ALL";
-    }
-
-    /**
-     * 카테고리 표시 이름
-     */
-    public static final class DisplayName {
-        public static final String TOEIC = "토익";
-        public static final String TOEFL = "토플";
-        public static final String CSAT = "수능";
-        public static final String CUSTOM = "사용자 정의";
-        public static final String ALL = "전체";
-    }
 
     public static final class Validation {
         public static final String VOCABULARY_PATTERN = "^[a-zA-Z\\s-]*$";

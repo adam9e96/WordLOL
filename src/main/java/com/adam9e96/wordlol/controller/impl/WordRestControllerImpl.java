@@ -211,18 +211,6 @@ public class WordRestControllerImpl implements WordRestController {
         );
     }
 
-    private WordResponse toResponseWithoutAnswer(Word word) {
-        return new WordResponse(
-                word.getId(),
-                word.getVocabulary(),
-                null, // 정답 숨김
-                null, // 힌트 숨김
-                word.getDifficulty(),
-                null, // 등록일 숨김
-                null // 업데이트 숨김
-        );
-    }
-
 
     private WordResponse toWordResponse(Word word) {
         return new WordResponse(
