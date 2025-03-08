@@ -5,7 +5,6 @@
       layout:decorate="~{layouts/default}">
 <head>
     <title>단어 학습</title>
-    <!-- 페이지별 CSS -->
     <th:block layout:fragment="css">
         <link rel="stylesheet" th:href="@{/css/pages/word/study.css}">
     </th:block>
@@ -13,6 +12,7 @@
 <body>
 <!-- 메인 콘텐츠 영역 -->
 <main layout:fragment="content" class="study-grid">
+
     <div class="study-container">
         <!-- 상태 섹션: 연속 정답 및 난이도 표시 -->
         <div class="status-section">
@@ -35,7 +35,7 @@
                         <span id="vocabulary">
                             <i class="bi bi-hourglass-split"></i>로딩중...
                         </span>
-                        <button class="btn-speak" title="발음 듣기">  <!-- onclick 속성 제거 -->
+                        <button class="btn-speak" title="발음 듣기">
                             <i class="bi bi-volume-up"></i>
                         </button>
                     </div>
@@ -52,20 +52,22 @@
 
         <!-- 입력 섹션: 답안 입력 필드와 제출 버튼 -->
         <div class="input-section">
-            <input type="text" id="answer" placeholder="정답을 입력하세요" autocomplete="off">
-            <button class="btn-primary">  <!-- onclick 속성 제거 -->
-                <i class="bi bi-check-lg"></i>
-                <span>정답 확인</span>
-            </button>
+            <div class="input-group">
+                <input type="text" id="answer" placeholder="정답을 입력하세요" autocomplete="off">
+                <button class="btn-check-answer" id="checkAnswerBtn">
+                    <i class="bi bi-check-lg"></i>
+                    <span>확인</span>
+                </button>
+            </div>
         </div>
 
         <!-- 컨트롤 섹션: 힌트와 다음 단어 버튼 -->
         <div class="control-section">
-            <button class="btn-hint">  <!-- onclick 속성 제거 -->
+            <button class="btn-hint">
                 <i class="bi bi-lightbulb"></i>
                 <span>힌트</span>
             </button>
-            <button class="btn-secondary" id="nextRandomWord">  <!-- onclick 속성 제거 -->
+            <button class="btn-secondary next-word-button" id="nextRandomWord">
                 <i class="bi bi-skip-forward"></i>
                 <span>다음 단어</span>
             </button>

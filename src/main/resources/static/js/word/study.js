@@ -1,121 +1,218 @@
-// 상태 관리 객체
-const State = {
-    currentWord: null, // 현재 학습 중인 단어
-    isProcessing: false, // 정답 확인 중복 방지
-    showingHint: false, // 힌트 표시 여부
-    speaking: false, // TTS 재생 중인지 여부
-    voices: [], // 사용 가능한 음성 목록
-    API_BASE_URL: '/api/v1/words', // API 기본 URL
-    animations: {}, // 애니메이션 객체 저장
-    typingAnimation: null // 타이핑 애니메이션 객체
-};
+/**
+ * 애플리케이션 상태 관리 클래스
+ * 전역 상태를 관리하는 싱글톤 클래스
+ */
+class StudyManager {
+    constructor() {
+        this.currentWord = null;       // 현재 학습 중인 단어
+        this.isProcessing = false;     // 정답 확인 중복 방지
+        this.showingHint = false;      // 힌트 표시 여부
+        this.speaking = false;         // TTS 재생 중인지 여부
+        this.voices = [];              // 사용 가능한 음성 목록
+        this.API_BASE_URL = '/api/v1/words'; // API 기본 URL
+        this.animations = {};          // 애니메이션 객체 저장
+        this.typingAnimation = null;   // 타이핑 애니메이션 객체
+    }
 
-// DOM 엘리먼트 캐싱
-const Elements = {
-    message: document.getElementById('message'),
-    card: document.getElementById('card'),
-    vocabulary: document.getElementById('vocabulary'),
-    difficulty: document.getElementById('difficulty'),
-    answer: document.getElementById('answer'),
-    meaning: document.getElementById('meaning'),
-    perfectRun: document.getElementById('perfectRun'),
-    speakButton: document.querySelector('.btn-speak'),
-    messageSection: document.querySelector('.message-section'),
-    primaryButton: document.querySelector('.btn-primary'),
-    hintButton: document.querySelector('.btn-hint'),
-    nextButton: document.querySelector('#nextRandomWord'),
-    studyContainer: document.querySelector('.study-container')
-};
+    /**
+     * 싱글톤 인스턴스 생성
+     * @returns {StudyManager}
+     */
+    static getInstance() {
+        if (!StudyManager.instance) {
+            StudyManager.instance = new StudyManager();
+        }
+        return StudyManager.instance;
+    }
 
-// 애니메이션 관리
-const AnimationManager = {
+    /**
+     * 상태 초기화
+     */
+    reset() {
+        this.isProcessing = false;
+        this.showingHint = false;
+    }
+}
+
+/**
+ * DOM 요소 관리 클래스
+ * 자주 사용되는 DOM 요소에 대한 참조를 캐싱하고 관리
+ */
+class DOMElements {
+    constructor() {
+        this.message = document.getElementById('message'); // 메시지 표시 영역
+        this.card = document.getElementById('card'); // 카드 요소
+        this.vocabulary = document.getElementById('vocabulary'); // 단어 표시 영역
+        this.difficulty = document.getElementById('difficulty'); // 난이도 표시 영역
+        this.answer = document.getElementById('answer'); // 정답 입력 필드
+        this.meaning = document.getElementById('meaning'); // 뜻 표시 영역
+        this.perfectRun = document.getElementById('perfectRun'); // 연속 정답 수 표시 영역
+        this.speakButton = document.querySelector('.btn-speak'); // 발음 듣기 버튼
+        this.messageSection = document.querySelector('.message-section'); // 메시지 섹션
+        this.checkAnswerBtn = document.getElementById('checkAnswerBtn'); // 정답 확인 버튼
+        this.hintButton = document.querySelector('.btn-hint'); // 힌트 버튼
+        this.nextButton = document.getElementById('nextRandomWord'); // 다음 단어 버튼
+        this.studyContainer = document.querySelector('.study-container'); // 학습 컨테이너
+    }
+
+    // 싱글톤 인스턴스 획득
+    static getInstance() {
+        if (!DOMElements.instance) {
+            DOMElements.instance = new DOMElements();
+        }
+        return DOMElements.instance;
+    }
+}
+
+/**
+ * 애니메이션 관리 클래스
+ * UI 애니메이션 효과를 관리
+ */
+class AnimationController {
+    /** @type {DOMElements} */
+    elements;
+    /** @type {StudyManager} */
+    state;
+    /** @type {boolean} */
+    isAnimeAvailable;
+
+    constructor() {
+        this.state = StudyManager.getInstance();
+        this.elements = DOMElements.getInstance();
+        this.isAnimeAvailable = typeof anime !== 'undefined';
+    }
+
+
+    /**
+     * 애니메이션 시스템 초기화
+     */
     init() {
-        // 페이지 로드 애니메이션
         this.playLoadAnimation();
-
-        // 카드 애니메이션 설정
         this.setupCardAnimations();
-
-        // 버튼 효과 설정
         this.setupButtonEffects();
-
-        // 텍스트 입력 이벤트 리스너 설정
         this.setupTypingEffects();
-    },
+    }
 
-    // 페이지 로드 애니메이션
+    /**
+     * 페이지 로드 애니메이션
+     * 학습 컨테이너의 초기 위치와 투명도를 설정
+     */
     playLoadAnimation() {
-        // 컨테이너 초기 설정
-        anime.set(Elements.studyContainer, {
+        if (!this.isAnimeAvailable) {
+            return;
+        }
+
+        anime.set(this.elements.studyContainer, {
             opacity: 0,
             translateY: 20
         });
 
-        // 페이드 인 애니메이션
-        State.animations.pageLoad = anime({
-            targets: Elements.studyContainer,
+        this.state.animations.pageLoad = anime({
+            targets: this.elements.studyContainer,
             opacity: 1,
             translateY: 0,
             duration: 800,
             easing: 'easeOutCubic'
         });
-    },
+    }
 
-    // 카드 관련 애니메이션 설정
+    /**
+     * 카드 관련 애니메이션 설정
+     */
     setupCardAnimations() {
-        // 카드 초기 설정
-        anime.set(Elements.card, {
+        // 카드 초기 위치와 회전 설정
+        if (!this.isAnimeAvailable) {
+            return;
+        }
+
+        /**
+         *
+         */
+        anime.set(this.elements.card, {
             scale: 1,
             rotateY: 0
         });
-    },
+    }
 
-    // 카드 플립 애니메이션 (정답 확인시)
+    /**
+     * 카드 뒤집기 애니메이션
+     */
     flipCard() {
-        if (State.animations.flip) {
-            State.animations.flip.pause();
+        // 애니메이션이 지원되지 않는 경우 CSS 클래스를 사용하여 카드 뒤집기
+        if (!this.isAnimeAvailable) {
+            this.elements.card.classList.add('flip');
+            return;
         }
 
-        // 카드 뒤집기 애니메이션
-        State.animations.flip = anime({
-            targets: Elements.card,
+        // 애니메이션이 지원되는 경우 anime.js를 사용하여 카드 뒤집기
+        if (this.state.animations.flip) {
+            this.state.animations.flip.pause(); // 이전 애니메이션 정지
+        }
+
+        // 카드 뒤집기 애니메이션 설정
+        this.state.animations.flip = anime({
+            targets: this.elements.card,
             rotateY: '180deg',
             duration: 800,
             easing: 'easeInOutQuad'
         });
-    },
+    }
 
-    // 카드 리셋 애니메이션
+    /**
+     * 카드 초기화 애니메이션
+     */
     resetCard() {
-        if (State.animations.flip) {
-            State.animations.flip.pause();
+        // isAnimeAvailable 가 false 인 경우 카드 초기화
+        if (!this.isAnimeAvailable) {
+            this.elements.card.classList.remove('flip');
+            this.elements.meaning.textContent = '';
+            this.elements.answer.value = '';
+            this.elements.message.textContent = '';
+            return;
         }
 
-        // 카드 되돌리기
-        State.animations.flip = anime({
-            targets: Elements.card,
+        // isAnimeAvailable 가 true 인 경우 anime.js를 사용하여 카드 초기화
+        if (this.state.animations.flip) {
+            this.state.animations.flip.pause(); // flip 애니메이션이 존재하면 중지
+        }
+
+        // 카드 초기화 애니메이션 설정
+        this.state.animations.flip = anime({
+            targets: this.elements.card,
             rotateY: 0,
             duration: 700,
             easing: 'easeInOutQuad'
         });
 
-        // 내용 지우기는 애니메이션 중간에
+        // 카드 초기화 후 350ms 후에 카드 내용 초기화
         setTimeout(() => {
-            Elements.meaning.textContent = '';
-            Elements.answer.value = '';
-            Elements.message.textContent = '';
+            this.elements.meaning.textContent = '';
+            this.elements.answer.value = '';
+            this.elements.message.textContent = '';
         }, 350);
-    },
+    }
 
-    // 오답 애니메이션 (흔들림 효과)
+    /**
+     * 오답 시 카드 흔들림 애니메이션
+     */
     shakeCard() {
-        if (State.animations.shake) {
-            State.animations.shake.pause();
+        // 애니메이션이 지원되지 않는 경우 CSS 클래스를 사용하여 카드 흔들림
+        if (!this.isAnimeAvailable) {
+            this.elements.card.classList.add('shake');
+            setTimeout(() => {
+                this.elements.card.classList.remove('shake');
+                this.state.isProcessing = false;
+            }, 500);
+            return;
         }
 
-        // 흔들림 효과
-        State.animations.shake = anime({
-            targets: Elements.card,
+        // 애니메이션이 지원되는 경우 anime.js를 사용하여 카드 흔들림
+        if (this.state.animations.shake) {
+            this.state.animations.shake.pause();
+        }
+
+        this.state.animations.shake = anime({
+            targets: this.elements.card,
             translateX: [
                 {value: -10, duration: 100, easing: 'easeInOutQuad'},
                 {value: 10, duration: 100, easing: 'easeInOutQuad'},
@@ -124,41 +221,60 @@ const AnimationManager = {
                 {value: 0, duration: 100, easing: 'easeInOutQuad'}
             ],
             duration: 500,
-            complete: function () {
-                State.isProcessing = false;
+            complete: () => {
+                this.state.isProcessing = false;
             }
         });
-    },
+    }
 
-    // 새 단어 로드 애니메이션
+    /**
+     * 새 단어 로드 애니메이션
+     * @param {Object} word - 단어 객체
+     */
     newWordAnimation(word) {
-        // 새 단어 도착 애니메이션
+        // 애니메이션이 지원되지 않는 경우 단어와 난이도 업데이트
+        if (!this.isAnimeAvailable) {
+            this.elements.vocabulary.textContent = word.vocabulary;
+            this.elements.difficulty.innerHTML = this.getDifficultyStars(word.difficulty);
+            return;
+        }
+
+        // 애니메이션이 지원되는 경우 anime.js를 사용하여 단어와 난이도 업데이트
         anime({
-            targets: Elements.vocabulary,
+            targets: this.elements.vocabulary,
             opacity: [0, 1],
             translateY: [10, 0],
             duration: 600,
             easing: 'easeOutCubic',
-            begin: function () {
-                Elements.vocabulary.textContent = word.vocabulary;
-                Elements.difficulty.innerHTML = UIManager.getDifficultyStars(word.difficulty);
+            begin: () => {
+                this.elements.vocabulary.textContent = word.vocabulary;
+                this.elements.difficulty.innerHTML = this.getDifficultyStars(word.difficulty);
             }
         });
-    },
+    }
 
-    // 버튼 효과 설정
+    /**
+     * 버튼 효과 설정
+     */
     setupButtonEffects() {
-        // 버튼 요소들 배열
+        // anime.js 가 로드되지 않으면 함수 종료
+        if (!this.isAnimeAvailable) {
+            return;
+        }
+
+        // 대상 버튼 설정: 애니메이션 효과를 적용할 버튼 요소들을 배열로 정의
         const buttons = [
-            Elements.primaryButton,
-            Elements.hintButton,
-            Elements.nextButton
+            this.elements.checkAnswerBtn,
+            this.elements.hintButton,
+            this.elements.nextButton
         ];
 
-        // 버튼 호버 효과
         buttons.forEach(button => {
-            if (!button) return; // 버튼이 없으면 스킵
+            if (!button) {
+                return;
+            }
 
+            // 마우스 진입 이벤트
             button.addEventListener('mouseenter', function () {
                 anime({
                     targets: this,
@@ -168,6 +284,7 @@ const AnimationManager = {
                 });
             });
 
+            // 마우스 이탈 이벤트
             button.addEventListener('mouseleave', function () {
                 anime({
                     targets: this,
@@ -177,6 +294,7 @@ const AnimationManager = {
                 });
             });
 
+            // 마우스 누름 이벤트
             button.addEventListener('mousedown', function () {
                 anime({
                     targets: this,
@@ -186,6 +304,7 @@ const AnimationManager = {
                 });
             });
 
+            // 마우스 뗌 이벤트
             button.addEventListener('mouseup', function () {
                 anime({
                     targets: this,
@@ -196,9 +315,10 @@ const AnimationManager = {
             });
         });
 
-        // 발음 버튼 효과
-        if (Elements.speakButton) {
-            Elements.speakButton.addEventListener('mouseenter', function () {
+        // 발음 듣기 버튼에 대한 애니메이션 효과 설정
+        if (this.elements.speakButton) {
+            // 마우스 진입 이벤트
+            this.elements.speakButton.addEventListener('mouseenter', function () {
                 anime({
                     targets: this,
                     scale: 1.1,
@@ -207,7 +327,8 @@ const AnimationManager = {
                 });
             });
 
-            Elements.speakButton.addEventListener('mouseleave', function () {
+            // 마우스 이탈 이벤트
+            this.elements.speakButton.addEventListener('mouseleave', function () {
                 anime({
                     targets: this,
                     scale: 1,
@@ -216,13 +337,22 @@ const AnimationManager = {
                 });
             });
         }
-    },
+    }
 
-    // 텍스트 타이핑 효과 설정
+    /**
+     * 텍스트 타이핑 효과 설정
+     * 사용자가 답변을 입력할때, 시각적 효과를 설정
+     */
     setupTypingEffects() {
-        if (!Elements.answer) return;
+        // 답변 입력 필드가 존재하지 않으면 함수 종료
+        if (!this.elements.answer) {
+            return;
+        }
 
-        // 커서 깜박임 효과를 위한 스타일 추가
+        // 타이핑 관련 애니메이션을 위한 CSS 스타일을 동적으로 생성하여 문서의 <head> 태그에 추가\
+        // .typing-cursor: 깜빡이는 커서 스타일 정의
+        // @keyframes blink: 커서 깜빡임 애니메이션 정의
+        // .answer-typing: 입력 필드가 포커스를 받았을 때 적용되는 강조 스타일
         const style = document.createElement('style');
         style.textContent = `
             .typing-cursor {
@@ -246,15 +376,14 @@ const AnimationManager = {
         `;
         document.head.appendChild(style);
 
-        // 텍스트 입력 이벤트 핸들러
-        Elements.answer.addEventListener('focus', () => {
-            // 입력 필드에 타이핑 스타일 추가
-            Elements.answer.classList.add('answer-typing');
+        // 답변 입력 필드에 포커스 이벤트 리스너 추가
+        this.elements.answer.addEventListener('focus', () => {
+            this.elements.answer.classList.add('answer-typing');
 
-            // 타이핑 효과 시작
-            if (Elements.answer.parentElement) {
-                const typingAnimation = anime({
-                    targets: Elements.answer,
+            // anime.js 를 사용하여 입력필드의 테두리와 금림자를 변화하는 애니메이션 추가
+            if (this.isAnimeAvailable && this.elements.answer.parentElement) {
+                this.state.typingAnimation = anime({
+                    targets: this.elements.answer,
                     boxShadow: [
                         {value: '0 0 0 2px var(--primary-container)', duration: 500},
                         {value: '0 0 0 3px var(--primary-container)', duration: 500}
@@ -268,20 +397,18 @@ const AnimationManager = {
                     loop: true,
                     direction: 'alternate'
                 });
-
-                State.typingAnimation = typingAnimation;
             }
         });
 
-        // 포커스 아웃시 애니메이션 중지
-        Elements.answer.addEventListener('blur', () => {
-            Elements.answer.classList.remove('answer-typing');
-            if (State.typingAnimation) {
-                State.typingAnimation.pause();
+        // 답변 입력 필드에 포커스 해제(blur) 이벤트 처리
+        this.elements.answer.addEventListener('blur', () => {
+            this.elements.answer.classList.remove('answer-typing');
 
-                // 원래 스타일로 복원
+            if (this.isAnimeAvailable && this.state.typingAnimation) {
+                this.state.typingAnimation.pause();
+
                 anime({
-                    targets: Elements.answer,
+                    targets: this.elements.answer,
                     boxShadow: '0 0 0 0 transparent',
                     borderColor: 'var(--outline-variant)',
                     duration: 300,
@@ -290,74 +417,92 @@ const AnimationManager = {
             }
         });
 
-        // 타이핑 중 효과
-        Elements.answer.addEventListener('input', () => {
-            // 입력 중 효과 - 간단한 스케일 효과
+        // 입력 이벤트 처리
+        this.elements.answer.addEventListener('input', () => {
+            if (!this.isAnimeAvailable) {
+                return;
+            }
+
+            // 미세한 확대/축소 애니메이션
             anime({
-                targets: Elements.answer,
+                targets: this.elements.answer,
                 scale: [1, 1.01, 1],
                 duration: 100,
                 easing: 'easeInOutQuad'
             });
 
-            // 입력된 텍스트 길이에 따라 글자색 변경 (선택 사항)
-            if (Elements.answer.value.length > 0) {
-                const intensity = Math.min(Elements.answer.value.length * 20, 100);
-                Elements.answer.style.color = `hsl(220, ${intensity}%, 40%)`;
+            // 입력된 텍스트 길이에 따라 색상 변경
+            if (this.elements.answer.value.length > 0) {
+                const intensity = Math.min(this.elements.answer.value.length * 20, 100);
+                this.elements.answer.style.color = `hsl(220, ${intensity}%, 40%)`;
             } else {
-                Elements.answer.style.color = '';
+                this.elements.answer.style.color = '';
             }
         });
-    },
+    }
 
-    // 메시지 표시 애니메이션
+    /**
+     * 메시지 표시 애니메이션
+     * @param {string} text - 표시할 메시지
+     */
     showMessage(text) {
-        // 이전 애니메이션 중단
-        if (State.animations.message) {
-            State.animations.message.pause();
+        this.elements.message.textContent = text;
+
+        if (!this.isAnimeAvailable || !text || !this.elements.messageSection) {
+            return;
         }
 
-        // 메시지 섹션 애니메이션
-        Elements.message.textContent = text;
-
-        if (text && Elements.messageSection) {
-            State.animations.message = anime({
-                targets: Elements.messageSection,
-                backgroundColor: ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0.1)'],
-                duration: 1500,
-                easing: 'easeInOutQuad'
-            });
+        if (this.state.animations.message) {
+            this.state.animations.message.pause();
         }
-    },
 
-    // 연속 정답 효과
+        this.state.animations.message = anime({
+            targets: this.elements.messageSection,
+            backgroundColor: ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0.1)'],
+            duration: 1500,
+            easing: 'easeInOutQuad'
+        });
+    }
+
+    /**
+     * 연속 정답 애니메이션
+     * @param {number} count - 연속 정답 수
+     */
     streakAnimation(count) {
-        if (!Elements.perfectRun) return;
+        if (!this.elements.perfectRun) {
+            return;
+        }
+
+        this.elements.perfectRun.textContent = count.toString();
+
+        if (!this.isAnimeAvailable) {
+            return;
+        }
 
         anime({
-            targets: Elements.perfectRun,
+            targets: this.elements.perfectRun,
             scale: [1, 1.3, 1],
             translateY: [0, -10, 0],
             color: [
-                'var(--on-surface, #1D1B20)',  // 기본 텍스트 색상으로 시작
-                '#FFD700',                     // 애니메이션 중 골드 색상
-                'var(--on-surface, #1D1B20)'   // 다시 기본 텍스트 색상으로 돌아옴
+                'var(--on-surface, #1D1B20)',
+                '#FFD700',
+                'var(--on-surface, #1D1B20)'
             ],
             duration: 1000,
-            easing: 'easeInOutQuad',
-            begin: function () {
-                Elements.perfectRun.textContent = count;
-            }
+            easing: 'easeInOutQuad'
         });
-    },
+    }
 
-    // 정답 입력 애니메이션
+    /**
+     * 정답 입력 애니메이션
+     */
     playAnswerAnimation() {
-        if (!Elements.answer) return;
+        if (!this.isAnimeAvailable || !this.elements.answer) {
+            return;
+        }
 
-        // 정답 확인 시 입력창 효과
         anime({
-            targets: Elements.answer,
+            targets: this.elements.answer,
             scale: [1, 1.05, 1],
             backgroundColor: [
                 {value: 'rgba(var(--primary-rgb, 103, 80, 164), 0.1)', duration: 300},
@@ -366,15 +511,18 @@ const AnimationManager = {
             duration: 600,
             easing: 'easeInOutQuad'
         });
-    },
+    }
 
-    // 정답 효과
+    /**
+     * 정답 효과 애니메이션
+     */
     playCorrectAnimation() {
-        if (!Elements.answer) return;
+        if (!this.isAnimeAvailable || !this.elements.answer) {
+            return;
+        }
 
-        // 정답일 때 입력창 효과
         anime({
-            targets: Elements.answer,
+            targets: this.elements.answer,
             backgroundColor: [
                 {value: 'rgba(var(--success-rgb, 20, 151, 103), 0.2)', duration: 300},
                 {value: 'rgba(var(--success-rgb, 20, 151, 103), 0)', duration: 300}
@@ -386,15 +534,18 @@ const AnimationManager = {
             duration: 600,
             easing: 'easeInOutQuad'
         });
-    },
+    }
 
-    // 오답 효과
+    /**
+     * 오답 효과 애니메이션
+     */
     playIncorrectAnimation() {
-        if (!Elements.answer) return;
+        if (!this.isAnimeAvailable || !this.elements.answer) {
+            return;
+        }
 
-        // 오답일 때 입력창 효과
         anime({
-            targets: Elements.answer,
+            targets: this.elements.answer,
             backgroundColor: [
                 {value: 'rgba(var(--error-rgb, 179, 38, 30), 0.2)', duration: 300},
                 {value: 'rgba(var(--error-rgb, 179, 38, 30), 0)', duration: 300}
@@ -407,31 +558,70 @@ const AnimationManager = {
             easing: 'easeInOutQuad'
         });
     }
-};
 
-// TTS(Text-to-Speech) 관리
-const SpeechManager = {
-    synth: window.speechSynthesis,
+    /**
+     * 난이도 별 표시
+     * @param {number} level - 난이도 레벨
+     * @returns {string} 난이도에 따른 별 HTML
+     */
+    getDifficultyStars(level) {
+        return '<i class="bi bi-star-fill"></i>'.repeat(level);
+    }
+}
 
+/**
+ * 음성 합성(TTS) 관리 클래스
+ * 텍스트를 음성으로 변환하는 기능 제공
+ */
+class SpeechController {
+    /** @type {StudyManager} */
+    state;
+    /** @type {DOMElements} */
+    elements;
+    /** @type {SpeechSynthesis} */
+    synth;
+    /** @type {AnimationController} */
+    animation;
+
+    constructor() {
+        this.state = StudyManager.getInstance();
+        this.elements = DOMElements.getInstance();
+        this.synth = window.speechSynthesis;
+        this.animation = new AnimationController();
+    }
+
+    /**
+     * TTS 시스템 초기화
+     */
     init() {
         if (this.synth.onvoiceschanged !== undefined) {
             this.synth.onvoiceschanged = () => {
-                State.voices = this.synth.getVoices();
+                this.state.voices = this.synth.getVoices();
             };
         }
-        // 기본 voice 로드 시도
-        State.voices = this.synth.getVoices();
-    },
 
+        this.state.voices = this.synth.getVoices();
+    }
+
+    /**
+     * 영어 음성 가져오기
+     * @returns {SpeechSynthesisVoice} 영어 음성
+     */
     getEnglishVoice() {
-        return State.voices.find(voice =>
+        return this.state.voices.find(voice =>
             voice.lang.includes('en') &&
             (voice.lang.includes('US') || voice.lang.includes('GB'))
-        ) || State.voices.find(voice => voice.lang.includes('en'));
-    },
+        ) || this.state.voices.find(voice => voice.lang.includes('en'));
+    }
 
+    /**
+     * 텍스트를 음성으로 변환
+     * @param {string} text - 음성으로 변환할 텍스트
+     */
     speak(text) {
-        if (State.speaking || !text) return;
+        if (this.state.speaking || !text) {
+            return;
+        }
 
         const utterance = new SpeechSynthesisUtterance(text);
         const englishVoice = this.getEnglishVoice();
@@ -446,301 +636,426 @@ const SpeechManager = {
         utterance.onerror = (event) => this.handleSpeechError(event);
 
         this.synth.speak(utterance);
-    },
+    }
 
+    /**
+     * 음성 재생 시작 핸들러
+     */
     handleSpeechStart() {
-        State.speaking = true;
+        this.state.speaking = true;
 
-        if (!Elements.speakButton) return;
-
-        // 스피킹 애니메이션
-        State.animations.speak = anime({
-            targets: Elements.speakButton,
-            scale: [1, 1.1, 1, 1.1, 1],
-            backgroundColor: ['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0.2)'],
-            loop: true,
-            duration: 1000,
-            easing: 'easeInOutQuad'
-        });
-    },
-
-    handleSpeechEnd() {
-        State.speaking = false;
-        if (State.animations.speak) {
-            State.animations.speak.pause();
-
-            if (Elements.speakButton) {
-                // 원래 상태로 되돌리기
-                anime({
-                    targets: Elements.speakButton,
-                    scale: 1,
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    duration: 300,
-                    easing: 'easeOutQuad'
-                });
-            }
+        if (!this.elements.speakButton) {
+            return;
         }
-    },
 
+        if (typeof anime !== 'undefined') {
+            this.state.animations.speak = anime({
+                targets: this.elements.speakButton,
+                scale: [1, 1.1, 1, 1.1, 1],
+                backgroundColor: ['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0.2)'],
+                loop: true,
+                duration: 1000,
+                easing: 'easeInOutQuad'
+            });
+        } else {
+            this.elements.speakButton.classList.add('speaking-animation');
+        }
+    }
+
+    /**
+     * 음성 재생 종료 핸들러
+     */
+    handleSpeechEnd() {
+        this.state.speaking = false;
+
+        if (!this.elements.speakButton) {
+            return;
+        }
+
+        if (typeof anime !== 'undefined' && this.state.animations.speak) {
+            this.state.animations.speak.pause();
+
+            anime({
+                targets: this.elements.speakButton,
+                scale: 1,
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                duration: 300,
+                easing: 'easeOutQuad'
+            });
+        } else {
+            this.elements.speakButton.classList.remove('speaking-animation');
+        }
+    }
+
+    /**
+     * 음성 재생 오류 핸들러
+     * @param {Event} event - 오류 이벤트
+     */
     handleSpeechError(event) {
         console.error('TTS 에러 발생:', event);
         this.handleSpeechEnd();
-        UIManager.showMessage('TTS 재생 중 오류가 발생했습니다.');
+
+        const ui = new UIController();
+        ui.showMessage('TTS 재생 중 오류가 발생했습니다.');
     }
-};
+}
 
-// UI 관리
-const UIManager = {
-    getDifficultyStars(level) {
-        return '<i class="bi bi-star-fill"></i>'.repeat(level);
-    },
+/**
+ * UI 컨트롤러 클래스
+ * 사용자 인터페이스 업데이트를 담당
+ */
+class UIController {
 
+    /** @type {DOMElements} */
+    elements;
+    /** @type {StudyManager} */
+    state;
+    /** @type {AnimationController} */
+    animation;
+
+    constructor() {
+        this.state = StudyManager.getInstance();
+        this.elements = DOMElements.getInstance();
+        this.animation = new AnimationController();
+    }
+
+    /**
+     * 메시지 표시
+     * @param {string} text - 표시할 메시지
+     * @param {number} duration - 메시지 표시 지속 시간 (0: 계속 표시)
+     */
     showMessage(text, duration = 0) {
-        if (AnimationManager) {
-            AnimationManager.showMessage(text);
-        } else {
-            Elements.message.textContent = text;
-        }
+        this.animation.showMessage(text);
 
         if (duration > 0) {
             setTimeout(() => {
-                if (AnimationManager) {
-                    AnimationManager.showMessage('');
-                } else {
-                    Elements.message.textContent = '';
-                }
+                this.animation.showMessage('');
             }, duration);
         }
-    },
+    }
 
+    /**
+     * 카드 초기화
+     */
     resetCard() {
-        if (AnimationManager) {
-            AnimationManager.resetCard();
-        } else {
-            Elements.card.classList.remove('flip');
-            Elements.meaning.textContent = '';
-            Elements.answer.value = '';
-            Elements.message.textContent = '';
-        }
-    },
+        this.animation.resetCard();
+    }
 
+    /**
+     * 단어 표시 업데이트
+     * @param {Object} word - 단어 객체
+     */
     updateWordDisplay(word) {
-        if (AnimationManager) {
-            AnimationManager.newWordAnimation(word);
-        } else {
-            Elements.vocabulary.textContent = word.vocabulary;
-            Elements.difficulty.innerHTML = this.getDifficultyStars(word.difficulty);
-        }
+        this.animation.newWordAnimation(word);
 
-        if (Elements.speakButton) {
-            Elements.speakButton.style.display = 'block';
+        if (this.elements.speakButton) {
+            this.elements.speakButton.style.display = 'block';
         }
 
         this.resetCard();
-    },
-
-    showCorrectAnswer(meaning) {
-        Elements.meaning.textContent = meaning;
-
-        if (AnimationManager) {
-            AnimationManager.flipCard();
-            AnimationManager.playCorrectAnimation();
-        } else {
-            Elements.card.classList.add('flip');
-        }
-    },
-
-    showIncorrectAnswer() {
-        if (AnimationManager) {
-            AnimationManager.shakeCard();
-            AnimationManager.playIncorrectAnimation();
-        } else {
-            Elements.card.classList.add('shake');
-            setTimeout(() => {
-                Elements.card.classList.remove('shake');
-                State.isProcessing = false;
-            }, 500);
-        }
     }
-};
 
-// API 통신
-const ApiService = {
+    /**
+     * 정답 표시
+     * @param {string} meaning - 단어의 의미
+     */
+    showCorrectAnswer(meaning) {
+        this.elements.meaning.textContent = meaning;
+        this.animation.flipCard();
+        this.animation.playCorrectAnimation();
+    }
+
+    /**
+     * 오답 표시
+     */
+    showIncorrectAnswer() {
+        this.animation.shakeCard();
+        this.animation.playIncorrectAnimation();
+    }
+}
+
+/**
+ * API 서비스 클래스
+ * 서버와의 통신을 담당
+ */
+class ApiService {
+    /** @type {StudyManager} */
+    state;
+
+    constructor() {
+        this.state = StudyManager.getInstance();
+    }
+
+    /**
+     * 랜덤 단어 가져오기
+     * @returns {Promise<Object>} 단어 객체
+     */
     async fetchRandomWord() {
-        const response = await fetch(`${State.API_BASE_URL}/random`);
+        const response = await fetch(`${this.state.API_BASE_URL}/random`);
         if (!response.ok) throw new Error('단어를 불러오는데 실패했습니다.');
         return response.json();
-    },
+    }
 
+    /**
+     * 정답 확인
+     * @param {number} wordId - 단어 ID
+     * @param {string} answer - 사용자 입력 답안
+     * @returns {Promise<Object>} 정답 확인 결과
+     */
     async checkAnswer(wordId, answer) {
-        const response = await fetch(`${State.API_BASE_URL}/check`, {
+        const response = await fetch(`${this.state.API_BASE_URL}/check`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({answer, wordId})
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                answer, wordId
+            })
         });
         return response.json();
-    },
+    }
 
+    /**
+     * 힌트 가져오기
+     * @param {number} wordId - 단어 ID
+     * @returns {Promise<Object>} 힌트 정보
+     */
     async fetchHint(wordId) {
-        const response = await fetch(`${State.API_BASE_URL}/${wordId}/hint`);
+        const response = await fetch(`${this.state.API_BASE_URL}/${wordId}/hint`);
         return response.json();
     }
-};
+}
 
-// 학습 관리
-const StudyManager = {
+/**
+ * 학습 관리 클래스
+ * 단어 학습 로직을 담당
+ */
+class StudyController {
+    /** @type {StudyManager} */
+    state;
+    /** @type {DOMElements} */
+    elements;
+    /** @type {UIController} */
+    ui;
+    /** @type {ApiService} */
+    api;
+    /** @type {AnimationController} */
+    animation;
+
+    constructor() {
+        this.state = StudyManager.getInstance();
+        this.elements = DOMElements.getInstance();
+        this.animation = new AnimationController();
+        this.ui = new UIController();
+        this.api = new ApiService();
+    }
+
+    /**
+     * 새 단어 로드
+     */
     async loadNewWord() {
-        UIManager.resetCard();
-        State.isProcessing = false;
+        this.ui.resetCard();
+        this.state.isProcessing = false;
 
         try {
-            State.currentWord = await ApiService.fetchRandomWord();
-            UIManager.updateWordDisplay(State.currentWord);
+            this.state.currentWord = await this.api.fetchRandomWord();
+            this.ui.updateWordDisplay(this.state.currentWord);
 
             // 새 단어가 로드되면 자동으로 입력 필드에 포커스
-            if (Elements.answer) {
+            if (this.elements.answer) {
                 setTimeout(() => {
-                    Elements.answer.focus();
+                    this.elements.answer.focus();
                 }, 500);
             }
         } catch (error) {
             console.error('단어 로드 에러:', error);
-            UIManager.showMessage(error.message);
+            this.ui.showMessage(error.message);
         }
-    },
+    }
 
+    /**
+     * 정답 확인
+     */
     async checkAnswer() {
-        if (State.isProcessing) return;
+        if (this.state.isProcessing) return;
 
-        const userAnswer = Elements.answer.value.trim();
+        const userAnswer = this.elements.answer.value.trim();
         if (!userAnswer) {
-            UIManager.showMessage('답을 입력해주세요.');
+            this.ui.showMessage('답을 입력해주세요.');
             return;
         }
 
-        State.isProcessing = true;
-
-        // 정답 확인 애니메이션
-        if (AnimationManager) {
-            AnimationManager.playAnswerAnimation();
-        }
+        // 정답 확인 중복 방지 및 애니메이션 시작
+        this.state.isProcessing = true;
+        this.animation.playAnswerAnimation();
 
         try {
-            const result = await ApiService.checkAnswer(State.currentWord.id, userAnswer);
-            UIManager.showMessage(result.message);
 
-            // 연속 정답 업데이트
-            if (AnimationManager) {
-                AnimationManager.streakAnimation(result.perfectRun);
-            } else {
-                Elements.perfectRun.textContent = result.perfectRun;
-            }
+            /** @type {{correct: boolean, message: string, perfectRun: number}} */
+            const result = await this.api.checkAnswer(this.state.currentWord.id, userAnswer);
+            this.ui.showMessage(result.message);
+            this.animation.streakAnimation(result.perfectRun);
 
             if (result.correct) {
                 this.handleCorrectAnswer();
             } else {
-                UIManager.showIncorrectAnswer();
-                Elements.perfectRun.textContent = '0';
+                this.ui.showIncorrectAnswer();
+                this.elements.perfectRun.textContent = '0';
             }
         } catch (error) {
-            UIManager.showMessage('정답 확인 중 오류가 발생했습니다.');
-            State.isProcessing = false;
+            this.ui.showMessage('정답 확인 중 오류가 발생했습니다.');
+            this.state.isProcessing = false;
         }
-    },
+    }
 
+    /**
+     * 정답 처리
+     */
     handleCorrectAnswer() {
-        UIManager.showCorrectAnswer(State.currentWord.meaning);
-
-        // 성공 애니메이션 후 다음 단어 로드
+        this.ui.showCorrectAnswer(this.state.currentWord.meaning);
         setTimeout(() => this.loadNewWord(), 1500);
-    },
+    }
 
+    /**
+     * 힌트 표시
+     */
     async showHint() {
-        if (!State.currentWord) return;
+        if (!this.state.currentWord) return;
 
-        if (State.showingHint) {
-            UIManager.showMessage('');
-            State.showingHint = false;
+        if (this.state.showingHint) {
+            this.ui.showMessage('');
+            this.state.showingHint = false;
             return;
         }
 
         try {
-            const data = await ApiService.fetchHint(State.currentWord.id);
-            UIManager.showMessage(`힌트: ${data.hint}`);
-            State.showingHint = true;
+            const data = await this.api.fetchHint(this.state.currentWord.id);
+            this.ui.showMessage(`힌트: ${data.hint}`);
+            this.state.showingHint = true;
         } catch (error) {
-            UIManager.showMessage('힌트를 불러오는데 실패했습니다.');
+            this.ui.showMessage('힌트를 불러오는데 실패했습니다.');
         }
     }
-};
-
-// 이벤트 핸들러 설정
-function setupEventListeners() {
-    // 기존 이벤트 리스너
-    if (Elements.answer) {
-        Elements.answer.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') StudyManager.checkAnswer();
-        });
-    }
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key.toLowerCase() === 'p') {
-            SpeechManager.speak(State.currentWord?.vocabulary);
-        }
-    });
-
-    // TTS 버튼 클릭 이벤트
-    if (Elements.speakButton) {
-        Elements.speakButton.addEventListener('click', () => {
-            SpeechManager.speak(State.currentWord?.vocabulary);
-        });
-    }
-
-    // 힌트 버튼 클릭 이벤트
-    if (Elements.hintButton) {
-        Elements.hintButton.addEventListener('click', () => {
-            StudyManager.showHint();
-        });
-    }
-
-    // 정답 확인 버튼 클릭 이벤트
-    if (Elements.primaryButton) {
-        Elements.primaryButton.addEventListener('click', () => {
-            StudyManager.checkAnswer();
-        });
-    }
-
-    // 다음 단어 버튼 클릭 이벤트
-    if (Elements.nextButton) {
-        Elements.nextButton.addEventListener('click', () => {
-            StudyManager.loadNewWord();
-        });
-    }
-
-    // ESC 키 입력 시 입력 포커스 해제
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && Elements.answer) {
-            Elements.answer.blur();
-        }
-    });
 }
 
-// 초기화
-function initialize() {
-    // anime.js 로드 확인
-    if (typeof anime === 'undefined') {
-        console.error('anime.js가 로드되지 않았습니다. 스크립트를 추가해주세요.');
-        // 기존 코드로 폴백
-        console.log('기본 애니메이션 모드로 실행합니다.');
-    } else {
-        console.log('anime.js가 로드되었습니다. 고급 애니메이션 모드로 실행합니다.');
-        SpeechManager.init();
-        AnimationManager.init();
+/**
+ * 이벤트 핸들러 클래스
+ * 사용자 이벤트를 처리
+ */
+class EventHandler {
+    /** @type {StudyManager} */
+    state;
+    /** @type {DOMElements} */
+    elements;
+    /** @type {StudyController} */
+    study;
+    /** @type {SpeechController} */
+    speech;
+
+    constructor() {
+        this.state = StudyManager.getInstance();
+        this.elements = DOMElements.getInstance();
+        this.study = new StudyController();
+        this.speech = new SpeechController();
     }
 
-    setupEventListeners();
-    StudyManager.loadNewWord();
+    /**
+     * 이벤트 리스너 설정
+     */
+    setupEventListeners() {
+        // 엔터키 입력 이벤트
+        if (this.elements.answer) {
+            this.elements.answer.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') this.study.checkAnswer();
+            });
+        }
+
+        // 'p' 키 누를 때 발음 듣기
+        document.addEventListener('keydown', (event) => {
+            if (event.key.toLowerCase() === 'p') {
+                this.speech.speak(this.state.currentWord?.vocabulary);
+            }
+        });
+
+        // TTS 버튼 클릭 이벤트
+        if (this.elements.speakButton) {
+            this.elements.speakButton.addEventListener('click', () => {
+                this.speech.speak(this.state.currentWord?.vocabulary);
+            });
+        }
+
+        // 힌트 버튼 클릭 이벤트
+        if (this.elements.hintButton) {
+            this.elements.hintButton.addEventListener('click', () => {
+                this.study.showHint();
+            });
+        }
+
+        // 정답 확인 버튼 클릭 이벤트
+        if (this.elements.checkAnswerBtn) {
+            this.elements.checkAnswerBtn.addEventListener('click', () => {
+                this.study.checkAnswer();
+            });
+        }
+
+        // 다음 단어 버튼 클릭 이벤트
+        if (this.elements.nextButton) {
+            this.elements.nextButton.addEventListener('click', () => {
+                this.study.loadNewWord();
+            });
+        }
+
+        // ESC 키 입력 시 입력 포커스 해제
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && this.elements.answer) {
+                this.elements.answer.blur();
+            }
+        });
+    }
 }
 
-// 앱 시작
-document.addEventListener('DOMContentLoaded', initialize);
+/**
+ * 애플리케이션 메인 클래스
+ * 애플리케이션의 진입점
+ */
+class WordStudyApp {
+    constructor() {
+        this.state = StudyManager.getInstance();
+        this.animation = new AnimationController();
+        this.speech = new SpeechController();
+        this.study = new StudyController();
+        this.eventHandler = new EventHandler();
+    }
+
+    /**
+     * 애플리케이션 초기화 및 실행
+     */
+    init() {
+        console.log('단어 학습 애플리케이션 초기화 중...');
+
+        // anime.js 로드 확인
+        if (typeof anime === 'undefined') {
+            console.warn('anime.js가 로드되지 않아 기본 애니메이션만 사용합니다.');
+        } else {
+            console.log('anime.js가 로드되었습니다. 고급 애니메이션을 사용합니다.');
+            this.animation.init();
+        }
+
+        // 음성 합성 초기화
+        this.speech.init();
+
+        // 이벤트 리스너 설정
+        this.eventHandler.setupEventListeners();
+
+        // 첫 단어 로드
+        this.study.loadNewWord();
+
+        console.log('단어 학습 애플리케이션 초기화 완료');
+    }
+}
+
+// 문서 로드 완료 시 애플리케이션 시작
+document.addEventListener('DOMContentLoaded', () => {
+    const app = new WordStudyApp();
+    app.init();
+});

@@ -1,19 +1,33 @@
-/* Main Layout */
+/* 전체 페이지 컨테이너 */
 .study-grid {
+    /* 그리드 레이아웃 설정 */
     display: grid;
-    place-items: start center;
+    /* 그리드 아이템을 시작 위치에 중앙 정렬 */
+    align-items: start;
+    justify-items: center;
+    /* 최소 높이를 100%로 설정 */
+    /* @todo 수치 계산 필요*/
     min-height: 100%;
+    /* 패딩 설정 */
     padding: var(--spacing-4);
+    /* 배경색 설정 */
     background: var(--surface-container-low);
 }
 
+/*
+ =================================================================
+ 학습 페이지 컨테이너
+*/
+/* 학습 영역 주요 컨테이너 */
 .study-container {
+    /* 최대 너비를 800px로 설정하고, 100% 너비를 초과하지 않도록 설정 */
     width: min(100%, 800px);
     display: grid;
+    /* 그리드 아이템 간의 간격 설정 */
     gap: var(--spacing-6);
 }
 
-/* Status Section */
+/* 상태 섹션: 연속 정답 및 난이도 표시 */
 .status-section {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -24,8 +38,10 @@
     box-shadow: var(--shadow-2);
 }
 
+/* 연속정답과, 난이도 표시*/
 .perfectRun-info,
 .difficulty-info {
+    /* Flexbox 를 사용하여 아이템을 정렬 */
     display: flex;
     align-items: center;
     gap: var(--spacing-3);
@@ -34,159 +50,226 @@
     border-radius: var(--border-radius);
     transition: all var(--transition-normal);
     color: var(--on-surface);
-    font-size: 1.125rem;
+    font-size: 1.25rem;
 }
 
 .perfectRun-info:hover,
 .difficulty-info:hover {
+    /* 호버 시 배경색과 위치 변경 */
     background: var(--surface-container-high);
     transform: translateY(-2px);
 }
 
 .perfectRun-info i,
 .difficulty-info i {
+    /* 아이콘 크기와 색상 설정 */
     font-size: 1.5rem;
     color: var(--primary);
 }
 
-/* Word Section */
+/* 단어 섹션 : 카드 형태로 단어와 관련 정보를 표시 */
 .word-section {
     perspective: 1000px; /* 3D 효과를 위한 원근감 설정 */
 }
 
+/* 단어 카드 */
 .word-card {
+    /* 상대적 위치 설정 */
     position: relative;
+    /* 너비를 100%로 설정 */
     width: 100%;
+    /* 높이를 300px로 설정 */
     height: 300px;
+    /* 3D 변환 스타일 유지 */
     transform-style: preserve-3d;
 }
 
 .card-side {
+    /* 카드의 앞면과 뒷면을 절대 위치로 설정 */
     position: absolute;
     width: 100%;
     height: 100%;
+    /* 카드의 뒷면을 숨기기 위한 설정 */
     backface-visibility: hidden;
+    /* Flexbox 를 사용하여 아이템을 중앙 정렬 */
     display: flex;
     align-items: center;
     justify-content: center;
+    /* 카드의 모서리를 둥글게 설정 */
     border-radius: var(--border-radius-xl);
+    /* 그림자 효과 추가 */
     box-shadow: var(--shadow-2);
 }
 
 .card-front {
+    /* 카드 앞면 배경색 설정 */
     background: var(--primary-container);
 }
 
 .card-back {
+    /* 카드 뒷면 배경색 설정 */
     background: var(--secondary-container);
+    /* 카드 뒷면을 180도 회전 */
     transform: rotateY(180deg);
 }
 
-/* 이 클래스는 JS 없이도 작동하도록 유지 */
+/* js 에서 flip 클래스를 추가할때 사용됨 */
 .word-card.flip {
     transform: rotateY(180deg);
 }
 
-/* Vocabulary Container */
+/* 단어 컨테이너 */
 .vocabulary-container {
+    /* Flexbox 를 사용하여 아이템을 중앙 정렬 */
     display: flex;
     align-items: center;
     justify-content: center;
+    /* 아이템 간의 간격 설정 */
     gap: var(--spacing-4);
 }
 
 #vocabulary {
+    /* 단어의 폰트 크기 설정 */
     font-size: 3rem;
+    /* 단어의 폰트 굵기 설정 */
     font-weight: 600;
+    /* 단어의 색상 설정 */
     color: var(--on-primary-container);
 }
 
 #meaning {
+    /* 단어 뜻의 폰트 크기 설정 */
     font-size: 2.5rem;
+    /* 단어 뜻의 폰트 굵기 설정 */
     font-weight: 600;
+    /* 단어 뜻의 색상 설정 */
     color: var(--on-secondary-container);
 }
 
+/* 발음 듣기 버튼 스타일 */
 .btn-speak {
-    width: 48px;
-    height: 48px;
-    border: none;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--on-primary-container);
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    width: 48px; /* 버튼 너비 */
+    height: 48px; /* 버튼 높이 */
+    border: none; /* 테두리 없음 */
+    border-radius: 50%; /* 둥근 모서리 */
+    background: rgba(255, 255, 255, 0.2); /* 배경색 */
+    color: var(--on-primary-container); /* 텍스트 색상 */
+    display: grid; /* 그리드 레이아웃 */
+    /* 중앙 정렬*/
+    align-items: start;
+    justify-items: center;
+    cursor: pointer; /* 커서 모양 */
+    transition: transform 0.2s ease, background-color 0.2s ease; /* 전환 효과 */
 }
 
+/* 발음 듣기 버튼 호버 스타일 */
 .btn-speak:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.3); /* 배경색 변경 */
+    transform: scale(1.1); /* 크기 확대 */
 }
 
+/* 발음 듣기 버튼 아이콘 스타일 */
 .btn-speak i {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* 아이콘 크기 */
 }
 
-/* Message Section */
+/* 메시지 섹션: 힌트, 정답여부등을 표시*/
 .message-section {
+    /* 메시지 섹션의 최소 높이 설정 */
     min-height: 48px;
+    /* 메시지 섹션의 패딩 설정 */
     padding: var(--spacing-3);
-    background: var(--surface-container);
+    /* 메시지 섹션의 배경색 설정 - 더 진한 배경색으로 수정 */
+    background: var(--surface-container-high);
+    /* 메시지 섹션의 테두리 반경 설정 */
     border-radius: var(--border-radius);
+    /* 메시지 섹션의 텍스트 정렬 설정 */
     text-align: center;
-    color: var(--on-surface-variant);
-    font-weight: 500;
+    /* 메시지 섹션의 텍스트 색상 설정 - 더 진한 색상으로 수정 */
+    color: var(--on-surface);
+    /* 메시지 섹션의 폰트 굵기 설정 */
+    font-weight: 600;
+    /* 테두리 추가 */
+    border: 1px solid var(--outline-variant);
+    /* 그림자 추가 */
+    box-shadow: var(--shadow-1);
 }
 
-/* Input Section */
+/* 입력 섹션 */
 .input-section {
-    display: flex;
-    gap: var(--spacing-2);
+    width: 100%;
 }
 
-/* 정답 */
-.input-section input {
+/* 입력 그룹 - 입력 필드와 버튼을 포함하는 컨테이너 */
+.input-group {
+    display: flex;
+    width: 100%;
+    gap: var(--spacing-2); /* 입력 필드와 버튼 사이 간격 추가 */
+}
+
+/* 입력 필드 - 더 높은 우선순위로 설정 */
+.input-group input {
     flex: 1;
     padding: var(--spacing-4);
     background: var(--surface);
     border: 2px solid var(--outline-variant);
-    border-radius: var(--border-radius);
+    border-radius: 24px !important;
+    border-top-left-radius: 24px !important;
+    border-top-right-radius: 24px !important;
+    border-bottom-left-radius: 24px !important;
+    border-bottom-right-radius: 24px !important;
     font-size: 1.25rem;
     color: var(--on-surface);
     transition: all var(--transition-normal);
 }
 
-.input-section input:focus {
+.input-group input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 1px var(--primary-container);
     outline: none;
+    box-shadow: 0 0 0 1px var(--primary-container);
 }
 
-.input-section .btn-primary {
-    padding: 0 var(--spacing-6);
-    border-radius: var(--border-radius);
+/* 확인 버튼 */
+.btn-check-answer {
+    min-width: 120px;
     background: var(--primary);
     color: var(--on-primary);
     border: none;
-    cursor: pointer;
+    border-radius: 24px !important;
+    border-top-left-radius: 24px !important;
+    border-top-right-radius: 24px !important;
+    border-bottom-left-radius: 24px !important;
+    border-bottom-right-radius: 24px !important;
+    padding: 0 var(--spacing-5);
+    font-size: 1.1rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--spacing-2);
-    font-size: 1.25rem;
+    transition: all var(--transition-normal);
 }
 
-/* Control Section */
+.btn-check-answer:hover {
+    filter: brightness(0.9);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-1);
+}
+
+.btn-check-answer i {
+    font-size: 1.4rem;
+}
+
+/* 컨트롤 섹션 */
 .control-section {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-3);
 }
 
-/* Buttons */
+/* 힌트, 다음단어 버튼 */
 .btn-hint,
-.btn-secondary {
+.next-word-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -199,27 +282,42 @@
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
+/* 힌트 */
 .btn-hint {
     background: var(--surface-container);
     color: var(--on-surface-variant);
 }
 
-.btn-secondary {
+.next-word-button {
     background: var(--secondary-container);
     color: var(--on-secondary-container);
 }
 
 .btn-hint:hover,
-.btn-secondary:hover {
+.next-word-button:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-1);
 }
 
-.btn i {
+.hint-button i {
     font-size: 1.25rem;
 }
 
-/* 흔들림 애니메이션 (JS 없을 때 사용) */
+.next-word-button i {
+    font-size: 1.25rem;
+}
+
+/*
+==============================================================
+학습 페이지 컨테이너 끝
+*/
+
+/* 흔들림 애니메이션 : 좌우로 흔들리는 애니메이션
+0%, 100%: 원래 위치
+10%, 30%, 50%, 70%, 90%: 왼쪽으로 이동 5px
+20%, 40%, 60%, 80%: 오른쪽으로 이동 5px
+사용자가 오답을 입력했을 때 흔들림 효과를 주기 위해 사용
+ */
 @keyframes shake {
     0%, 100% {
         transform: translateX(0);
@@ -232,11 +330,16 @@
     }
 }
 
+/* 0.5 초동안 지정된 속도 곡선(cubicle-bezier)으로 애니메이션
+사용자가 오답을 입력했을 때 흔들림 효과를 주기 위해 사용
+ */
 .shake {
     animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-/* 말하기 애니메이션 (JS 없을 때 사용) */
+/* 말하기 애니메이션
+keyframes 을 사용하여 애니메이션을 정의 pulse 는 크기가 커졌다 작아지는 맥박 효과와 배경색 변화를 정의
+*/
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -252,6 +355,9 @@
     }
 }
 
+/* 1초 주기로 무한 반복 애니메이션이 실행
+주로 TTS 버튼이 활성화 되었을때 시각적 피드백을 제공
+*/
 .speaking-animation {
     animation: pulse 1s infinite;
 }
