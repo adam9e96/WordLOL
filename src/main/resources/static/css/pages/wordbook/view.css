@@ -1,4 +1,4 @@
-/* Main Layout */
+/* 1. 메인 레이아웃 */
 .view-grid {
     display: grid;
     place-items: start center;
@@ -13,7 +13,7 @@
     gap: var(--spacing-6);
 }
 
-/* 단어장 정보 섹션 */
+/* 2. 단어장 정보 섹션 */
 .wordbook-info-section {
     background: var(--surface);
     border-radius: var(--border-radius-xl);
@@ -23,6 +23,7 @@
     gap: var(--spacing-5);
 }
 
+/* 2.1 단어장 정보 헤더 */
 .wordbook-info-header {
     display: flex;
     justify-content: space-between;
@@ -57,6 +58,7 @@
     font-weight: 500;
 }
 
+/* 2.2 단어장 정보 내용 */
 .wordbook-info-body {
     display: grid;
     gap: var(--spacing-4);
@@ -103,6 +105,7 @@
     font-size: 1.25rem;
 }
 
+/* 2.3 단어장 액션 버튼 */
 .wordbook-actions {
     display: flex;
     gap: var(--spacing-4);
@@ -110,7 +113,7 @@
     padding-top: var(--spacing-4);
 }
 
-/* 단어 목록 섹션 */
+/* 3. 단어 목록 섹션 */
 .words-section {
     background: var(--surface);
     border-radius: var(--border-radius-xl);
@@ -118,6 +121,7 @@
     box-shadow: var(--shadow-2);
 }
 
+/* 3.1 단어 목록 헤더 */
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -155,7 +159,7 @@
     outline: none;
 }
 
-/* 단어 테이블 */
+/* 3.2 단어 테이블 */
 .words-container {
     background: var(--surface-container);
     border-radius: var(--border-radius);
@@ -218,7 +222,7 @@
     color: #ffd700;
 }
 
-/* 버튼 스타일 */
+/* 4. 버튼 공통 스타일 */
 .btn {
     display: flex;
     align-items: center;
@@ -252,7 +256,7 @@
     border-color: var(--outline);
 }
 
-/* 로딩 상태 */
+/* 5. 로딩 상태 */
 .word-list-loading {
     display: flex;
     flex-direction: column;
@@ -263,7 +267,68 @@
     color: var(--on-surface-variant);
 }
 
-/* 반응형 */
+/* 6. 빈 상태 (검색 결과 없음, 단어 없음) */
+.empty-state, .empty-search-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    color: var(--on-surface-variant);
+}
+
+.empty-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    height: 64px;
+    background-color: var(--surface-container-high);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+.empty-icon i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.empty-search-state .empty-icon i {
+    color: var(--secondary);
+}
+
+.empty-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--on-surface);
+}
+
+.empty-message {
+    color: var(--on-surface-variant);
+    margin-bottom: 1.5rem;
+    max-width: 300px;
+}
+
+.empty-search-state button {
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.empty-search-state button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-1);
+}
+
+/* 7. 다크 모드 스타일 */
+[data-theme="dark"] .empty-icon {
+    background-color: var(--surface-container-highest);
+}
+
+/* 8. 반응형 스타일 */
 @media (max-width: 768px) {
     .wordbook-info-header {
         flex-direction: column;

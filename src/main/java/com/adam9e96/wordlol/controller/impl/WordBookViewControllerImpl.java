@@ -27,8 +27,7 @@ public class WordBookViewControllerImpl implements WordBookViewController {
 
     @Override
     @GetMapping(Constants.ViewPath.WORD_BOOK_EDIT)
-    public String showWordBookEditPage(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("wordBookId", id);
+    public String showWordBookEditPage(@PathVariable("id") Long id) {
         return "views/wordbook/edit";
     }
 
@@ -41,8 +40,7 @@ public class WordBookViewControllerImpl implements WordBookViewController {
 
     @Override
     @GetMapping(Constants.ViewPath.WORD_BOOK_VIEW)
-    public String showWordBookViewPage(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("wordBookId", id);
+    public String showWordBookViewPage(@PathVariable("id") Long id) {
         return "views/wordbook/view";
     }
 }

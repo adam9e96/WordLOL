@@ -340,3 +340,105 @@ body {
     border-color: var(--primary);
     box-shadow: 0 0 0 2px rgba(208, 188, 255, 0.25);
 }
+
+/* 단어장 리스트 */
+/* 모달 전체 스타일 */
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-3);
+    overflow: hidden;
+}
+
+/* 다크 모드 대응 */
+[data-theme="dark"] .modal .btn-cancel {
+    background: var(--surface-container-high);
+    color: var(--on-surface-variant);
+}
+
+[data-theme="dark"] .modal .btn-cancel:hover {
+    background: var(--surface-container-highest);
+    color: var(--on-surface);
+}
+
+[data-theme="dark"] .modal .text-danger {
+    background-color: rgba(179, 38, 30, 0.2);
+}
+
+/* 다크 테마에서 단어장 카드 스타일 직접 지정 */
+[data-theme="dark"] .wordbook-card {
+    background-color: var(--surface-container) !important;
+    color: var(--on-surface) !important;
+}
+
+[data-theme="dark"] .card-description {
+    background-color: var(--surface-container-high) !important;
+    color: var(--on-surface-variant) !important;
+}
+
+[data-theme="dark"] .category-chip {
+    background-color: var(--primary-container) !important;
+    color: var(--on-primary-container) !important;
+}
+
+[data-theme="dark"] .card-name {
+    color: var(--on-surface) !important;
+}
+
+/* 모달 다크 모드 스타일 */
+[data-theme="dark"] .modal-content {
+    background-color: var(--surface-container) !important;
+    color: var(--on-surface) !important;
+    border-color: var(--outline-variant) !important;
+}
+
+[data-theme="dark"] .modal-header {
+    background-color: var(--surface-container-high) !important;
+    color: var(--on-surface) !important;
+    border-color: var(--outline-variant) !important;
+}
+
+[data-theme="dark"] .modal-body {
+    background-color: var(--surface-container) !important;
+    color: var(--on-surface) !important;
+}
+
+[data-theme="dark"] .modal-footer {
+    background-color: var(--surface-container) !important;
+    border-color: var(--outline-variant) !important;
+}
+
+[data-theme="dark"] .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* 모달 내 텍스트 색상 */
+[data-theme="dark"] .modal-title {
+    color: var(--on-surface) !important;
+}
+
+[data-theme="dark"] .modal-body p {
+    color: var(--on-surface-variant) !important;
+}
+
+/* 모달 내 버튼 */
+[data-theme="dark"] .modal .btn-cancel {
+    background-color: var(--surface-container-high) !important;
+    color: var(--on-surface-variant) !important;
+    border-color: var(--outline-variant) !important;
+}
+
+[data-theme="dark"] .modal .btn-cancel:hover {
+    background-color: var(--surface-container-highest) !important;
+    color: var(--on-surface) !important;
+}
+
+[data-theme="dark"] .modal .btn-error {
+    background-color: var(--error) !important;
+    color: var(--on-error) !important;
+}
+
+[data-theme="dark"] .modal .btn-error:hover {
+    background-color: #b71c1c !important; /* 더 어두운 빨간색 */
+    color: var(--on-error) !important;
+}

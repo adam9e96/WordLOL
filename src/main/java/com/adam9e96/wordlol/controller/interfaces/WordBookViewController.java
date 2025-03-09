@@ -34,21 +34,18 @@ public interface WordBookViewController {
     /**
      * 단어장 수정 페이지를 보여줍니다.
      *
-     * @param id    단어장 ID
-     * @param model 뷰에 전달할 모델
+     * @param id 단어장 ID
      * @return 단어장 수정 페이지 뷰 이름
      */
     @Operation(summary = "단어장 수정 페이지", description = "기존 단어장의 정보를 수정할 수 있는 페이지를 보여줍니다")
     @GetMapping(Constants.ViewPath.WORD_BOOK_EDIT)
     String showWordBookEditPage(
-            @Parameter(description = "수정할 단어장의 ID") @PathVariable("id") Long id,
-            Model model);
+            @Parameter(description = "수정할 단어장의 ID") @PathVariable("id") Long id);
 
     /**
      * 단어장 학습 페이지를 보여줍니다.
      *
      * @param id    단어장 ID
-     * @param model 뷰에 전달할 모델
      * @return 단어장 학습 페이지 뷰 이름
      */
     @Operation(summary = "단어장 학습 페이지", description = "특정 단어장의 단어를 학습할 수 있는 페이지를 보여줍니다")
@@ -61,12 +58,10 @@ public interface WordBookViewController {
      * 단어장 상세 보기 페이지를 보여줍니다.
      *
      * @param id    단어장 ID
-     * @param model 뷰에 전달할 모델
      * @return 단어장 상세 보기 페이지 뷰 이름
      */
     @Operation(summary = "단어장 상세 보기 페이지", description = "단어장의 상세 정보와 포함된 단어 목록을 확인할 수 있는 페이지를 보여줍니다")
     @GetMapping(Constants.ViewPath.WORD_BOOK_VIEW)
     String showWordBookViewPage(
-            @Parameter(description = "조회할 단어장의 ID") @PathVariable("id") Long id,
-            Model model);
+            @Parameter(description = "조회할 단어장의 ID") @PathVariable("id") Long id);
 }

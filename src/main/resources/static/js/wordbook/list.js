@@ -3,10 +3,7 @@
  * 단어장 목록을 조회, 필터링, 관리하는 기능을 제공합니다.
  */
 class WordBookListManager {
-    /**
-     * 생성자
-     * 상태와 DOM 요소를 초기화합니다.
-     */
+
     constructor() {
         // 상태 관리
         this.state = {
@@ -30,9 +27,47 @@ class WordBookListManager {
             topSection: document.querySelector('.top-section'),
             wordbooksSection: document.querySelector('.wordbooks-section')
         };
+        // 페이지 가시성 변경 감지 - 브라우저 탭 전환, 앱 복귀 등
+        this.setupVisibilityChangeDetection();
+
+        // 브라우저 히스토리 이벤트 감지 - 뒤로가기, 앞으로가기
+        this.setupHistoryChangeDetection();
 
         // 이벤트 리스너 설정
         this.setupEventListeners();
+    }
+
+    /**
+     * 페이지 가시성 변경 감지 설정
+     * 페이지가 다시 보일 때 데이터 새로고침
+     */
+    setupVisibilityChangeDetection() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                console.log('페이지 다시 표시됨, 데이터 갱신');
+                this.loadWordBooks();
+            }
+        });
+    }
+
+    /**
+     * 브라우저 히스토리 변경 감지 설정
+     * 뒤로가기/앞으로가기로 돌아왔을 때 데이터 새로고침
+     */
+    setupHistoryChangeDetection() {
+        window.addEventListener('pageshow', (event) => {
+            // persisted가 true이면 페이지가 브라우저 캐시에서 복원된 것임
+            if (event.persisted) {
+                console.log('캐시에서 페이지 복원됨, 데이터 갱신');
+                this.loadWordBooks();
+            }
+        });
+
+        // 뒤로가기/앞으로가기를 감지하는 추가 방법
+        window.addEventListener('popstate', () => {
+            console.log('히스토리 탐색 감지됨 (뒤로/앞으로가기), 데이터 갱신');
+            this.loadWordBooks();
+        });
     }
 
     /**
@@ -141,18 +176,65 @@ class WordBookListManager {
 
             const response = await fetch(url);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                // 404 Not Found - 카테고리가 없는 경우 특별 처리
+                if (response.status === 404) {
+                    this.state.wordBooks = []; // 빈 배열로 설정
+                    this.renderEmptyState(); // 빈 상태 화면 표시
+                    this.state.isLoading = false;
+                    return; // 함수 종료
+                }
+
+                // 다른 종류의 HTTP 에러
+                throw new Error(`서버 오류: ${response.status}`);
             }
 
+            // 정상 응답 처리
             this.state.wordBooks = await response.json();
-            console.log('단어장 로드 완료:', this.state.wordBooks);
 
-            this.renderWordBookList();
+            // 빈 배열 체크 - 카테고리는 존재하지만 단어장이 없는 경우
+            if (this.state.wordBooks.length === 0) {
+                this.renderEmptyState();
+            } else {
+                this.renderWordBookList();
+            }
         } catch (error) {
-            console.error('단어장 목록 로딩 오류:', error);
-            this.renderErrorState(error.message);
+            // 콘솔에 오류 기록 (log.error 대신 console.error 사용)
+            console.error('단어장 목록 로딩 오류:', error.message);
+
+            // 사용자 친화적인 오류 메시지 표시
+            this.renderCustomErrorMessage(this.state.currentCategory);
         } finally {
             this.state.isLoading = false;
+        }
+    }
+
+    // 새로운 메서드: 친화적인 오류 메시지 표시
+    renderCustomErrorMessage(category) {
+        const categoryName = this.getCategoryDisplayName(category);
+
+        this.elements.wordBookList.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="bi bi-journal-x"></i>
+            </div>
+            <h3 class="empty-state-title">${categoryName} 카테고리를 찾을 수 없습니다</h3>
+            <p class="empty-state-message">선택하신 카테고리가 존재하지 않거나 접근할 수 없습니다. 다른 카테고리를 선택해주세요.</p>
+            <button class="btn btn-add_word" onclick="wordBookListManager.filterByCategory('ALL')">
+                <i class="bi bi-grid-fill"></i>
+                전체 단어장 보기
+            </button>
+        </div>
+    `;
+
+        // 카드 애니메이션 적용
+        if (this.state.isAnimeAvailable) {
+            anime({
+                targets: '.empty-state',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                easing: 'easeOutQuad',
+                duration: 800
+            });
         }
     }
 
@@ -239,22 +321,36 @@ class WordBookListManager {
         // 단어장 카드 애니메이션
         if (this.state.isAnimeAvailable) {
             const cards = document.querySelectorAll('.wordbook-card');
+
+            // 모든 카드를 초기에 보이지 않게 설정
             anime.set(cards, {
                 opacity: 0,
                 translateY: 20
             });
 
-            anime({
-                targets: cards,
-                opacity: [0, 1],
-                translateY: [20, 0],
-                easing: 'easeOutCubic',
-                duration: 800,
-                delay: anime.stagger(100)
-            });
+            // 그리드 레이아웃 계산 (몇 개의 카드가 한 행에 있는지 파악)
+            const containerWidth = this.elements.wordBookList.clientWidth;
+            const cardWidth = cards[0].offsetWidth;
+            const gap = 16; // CSS gap 값과 동일하게 설정
+            const cardsPerRow = Math.floor(containerWidth / (cardWidth + gap));
 
-            // 카드 내부 요소 애니메이션
-            cards.forEach(card => {
+            // 각 카드를 행과 열에 따라 순차적으로 애니메이션 적용
+            cards.forEach((card, index) => {
+                const row = Math.floor(index / cardsPerRow);
+                const col = index % cardsPerRow;
+
+                // 행과 열에 따른 지연 시간 계산 (위에서 아래로, 왼쪽에서 오른쪽으로)
+                const delay = (row * cardsPerRow + col) * 100;
+
+                anime({
+                    targets: card,
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    easing: 'easeOutCubic',
+                    duration: 800,
+                    delay: delay
+                });
+
                 card.classList.add('animated');
 
                 // 카드에 호버 이벤트 리스너 추가
@@ -279,6 +375,14 @@ class WordBookListManager {
                 });
             });
         }
+
+        // 카드에 다크 테마 데이터 속성 추가
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+            const cards = document.querySelectorAll('.wordbook-card');
+            cards.forEach(card => {
+                card.setAttribute('data-theme', 'dark');
+            });
+        }
     }
 
     /**
@@ -294,15 +398,15 @@ class WordBookListManager {
                     ${this.getCategoryDisplayName(book.category)}
                 </div>
                 <div class="card-header-container">
-                    <h3 class="card-title">${book.name}</h3>
+                    <h3 class="card-name">${book.name}</h3>
                 </div>
-                <p class="card-text">${book.description}</p>
+                <p class="card-description">${book.description}</p>
                 <div class="card-footer">
                     <div class="word-count">
                         <i class="bi bi-book"></i>
                         <span>단어 ${book.wordCount}개</span>
                     </div>
-                    <div class="card-actions">
+                    <div class="control-section">
                         <button class="card-btn btn-view" 
                                 onclick="wordBookListManager.navigateTo('/wordbook/${book.id}/view')"
                                 title="상세 조회">
@@ -404,38 +508,6 @@ class WordBookListManager {
         if (this.state.isAnimeAvailable) {
             anime({
                 targets: '.empty-state',
-                opacity: [0, 1],
-                translateY: [20, 0],
-                easing: 'easeOutQuad',
-                duration: 800
-            });
-        }
-    }
-
-    /**
-     * 오류 상태 렌더링
-     * @param {string} errorMessage - 오류 메시지
-     */
-    renderErrorState(errorMessage) {
-        this.elements.wordBookList.innerHTML = `
-            <div class="error-state">
-                <div class="error-state-icon">
-                    <i class="bi bi-exclamation-circle"></i>
-                </div>
-                <h3 class="error-state-title">오류가 발생했습니다</h3>
-                <p class="error-state-message">단어장 목록을 불러오는 중 문제가 발생했습니다.</p>
-                <p class="error-details">${errorMessage}</p>
-                <button class="btn btn-add_word" onclick="wordBookListManager.loadWordBooks()">
-                    <i class="bi bi-arrow-clockwise"></i>
-                    다시 시도
-                </button>
-            </div>
-        `;
-
-        // 오류 상태 애니메이션
-        if (this.state.isAnimeAvailable) {
-            anime({
-                targets: '.error-state',
                 opacity: [0, 1],
                 translateY: [20, 0],
                 easing: 'easeOutQuad',

@@ -37,6 +37,17 @@
     --surface-container-high: #ECE6F0; /* 높은 층위의 컨테이너 색상 */
     --surface-container-highest: #E6E0E9; /* 가장 높은 층위의 컨테이너 색상 */
 
+    /* Additional Colors - 추가 색상 */
+    --info: #2196F3; /* 정보 색상 */
+    --on-info: #FFFFFF; /* 정보 색상 위 텍스트/아이콘 색상 */
+    --info-container: #BBDEFB; /* 정보 컨테이너 배경색 */
+    --on-info-container: #0D47A1; /* 정보 컨테이너 위 텍스트/아이콘 색상 */
+
+    --warning: #FF9800; /* 경고 색상 */
+    --on-warning: #FFFFFF; /* 경고 색상 위 텍스트/아이콘 색상 */
+    --warning-container: #FFE0B2; /* 경고 컨테이너 배경색 */
+    --on-warning-container: #E65100; /* 경고 컨테이너 위 텍스트/아이콘 색상 */
+
     /* Error Colors - 오류 상태 표시용 색상 */
     --error: #B3261E; /* 오류 색상 */
     --on-error: #FFFFFF; /* 오류 색상 위 텍스트/아이콘 색상 */

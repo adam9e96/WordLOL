@@ -111,9 +111,21 @@ class ThemeManager {
      */
     dispatchThemeChangeEvent(theme) {
         const event = new CustomEvent('themechange', {
-            detail: { theme }
+            detail: {theme}
         });
         document.dispatchEvent(event);
+
+        // 카드 테마 강제 업데이트
+        if (window.wordBookListManager) {
+            const cards = document.querySelectorAll('.wordbook-card');
+            cards.forEach(card => {
+                if (theme === 'dark') {
+                    card.setAttribute('data-theme', 'dark');
+                } else {
+                    card.removeAttribute('data-theme');
+                }
+            });
+        }
     }
 
     /**
