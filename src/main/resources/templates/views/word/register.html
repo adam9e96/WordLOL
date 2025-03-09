@@ -13,52 +13,46 @@
 <main layout:fragment="content" class="register-grid">
     <div class="form-container">
         <h2 class="page-title">
-            <i class="bi bi-plus-circle"></i>
+            <i class="bi bi-plus-circle page-title-icon"></i>
             <span>단어 등록</span>
         </h2>
 
         <form class="needs-validation word-form" id="wordForm" novalidate>
             <div class="form-group">
-                <label class="form-label" for="vocabulary">
+                <label class="form-field-label" for="vocabulary">
                     <i class="bi bi-book"></i>
                     <span>영단어</span>
                 </label>
-                <input class="form-control" id="vocabulary"
-                       type="text"
-                       placeholder="등록할 영단어를 입력하세요"
+                <input class="form-input" id="vocabulary" type="text" placeholder="등록할 영단어를 입력하세요"
                        required
                        autofocus
                        pattern="^[a-zA-Z\s\-]+$"
                        minlength="2"
                        maxlength="100">
-                <div class="invalid-feedback">영어 단어는 최소 2자 이상 입력해야 합니다.</div>
+                <div class="input-error-feedback">영어 단어는 최소 2자 이상 입력해야 합니다.</div>
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="meaning">
+                <label class="form-field-label" for="meaning">
                     <i class="bi bi-translate"></i>
                     <span>뜻</span>
                 </label>
-                <input class="form-control" id="meaning"
-                       type="text"
-                       pattern="^[a-zA-Z가-힣\s\-\~]+$"
+                <input class="form-input" id="meaning" type="text" pattern="^[a-zA-Z가-힣\s\-\~]+$"
                        placeholder="단어의 뜻을 입력하세요"
                        required>
-                <div class="invalid-feedback">뜻을 입력해주세요.</div>
+                <div class="input-error-feedback">뜻을 입력해주세요.</div>
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="hint">
+                <label class="form-field-label" for="hint">
                     <i class="bi bi-lightbulb"></i>
                     <span>힌트</span>
                 </label>
-                <input class="form-control" id="hint"
-                       type="text"
-                       placeholder="정답에 도움이 되는 힌트를 입력해주세요">
+                <input class="form-input" id="hint" type="text" placeholder="정답에 도움이 되는 힌트를 입력해주세요">
             </div>
 
             <div class="form-group">
-                <label class="form-label">
+                <label class="form-field-label">
                     <i class="bi bi-bar-chart"></i>
                     <span>난이도</span>
                 </label>
@@ -66,58 +60,57 @@
                     <label class="difficulty-option">
                         <input type="radio" name="difficulty" value="1" class="difficulty-input">
                         <span class="difficulty-box">
-                <i class="bi bi-star-fill"></i>
-                <span>매우 쉬움</span>
-            </span>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <span class="difficulty-label">매우 쉬움</span>
+                        </span>
                     </label>
                     <label class="difficulty-option">
                         <input type="radio" name="difficulty" value="2" class="difficulty-input">
                         <span class="difficulty-box">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <span>쉬움</span>
-            </span>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <span class="difficulty-label">쉬움</span>
+                        </span>
                     </label>
                     <label class="difficulty-option">
                         <input type="radio" name="difficulty" value="3" class="difficulty-input" checked>
                         <span class="difficulty-box">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <span>보통</span>
-            </span>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <span class="difficulty-label">보통</span>
+                        </span>
                     </label>
                     <label class="difficulty-option">
                         <input type="radio" name="difficulty" value="4" class="difficulty-input">
                         <span class="difficulty-box">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <span>어려움</span>
-            </span>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <span class="difficulty-label">어려움</span>
+                        </span>
                     </label>
                     <label class="difficulty-option">
                         <input type="radio" name="difficulty" value="5" class="difficulty-input">
                         <span class="difficulty-box">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <span>매우 어려움</span>
-            </span>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <i class="bi bi-star-fill difficulty-star"></i>
+                            <span class="difficulty-label">매우 어려움</span>
+                        </span>
                     </label>
                 </div>
             </div>
 
-
-            <div class="button-group">
-                <button class="btn btn-text" id="cancelBtn" type="button">
+            <div class="form-controls">
+                <button class="btn btn-cancel" id="cancelBtn" type="button">
                     <i class="bi bi-arrow-left"></i>
                     <span>취소</span>
                 </button>
-                <button class="btn btn-primary" type="submit">
+                <button class="btn btn-register-word" type="submit">
                     <i class="bi bi-plus-lg"></i>
                     <span>단어 등록</span>
                 </button>

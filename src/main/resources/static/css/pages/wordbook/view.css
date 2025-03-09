@@ -231,12 +231,12 @@
     border: none;
 }
 
-.btn-primary {
+.btn-add_word {
     background: var(--primary);
     color: var(--on-primary);
 }
 
-.btn-primary:hover {
+.btn-add_word:hover {
     box-shadow: var(--shadow-2);
     transform: translateY(-2px);
 }

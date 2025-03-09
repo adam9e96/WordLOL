@@ -319,8 +319,8 @@ function showEditModal(word) {
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-text" data-bs-dismiss="modal" type="button">취소</button>
-                    <button class="btn btn-primary" id="saveEdit" type="button">저장</button>
+                    <button class="btn btn-cancel" data-bs-dismiss="modal" type="button">취소</button>
+                    <button class="btn btn-add_word" id="saveEdit" type="button">저장</button>
                 </div>
             </div>
         </div>

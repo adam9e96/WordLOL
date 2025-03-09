@@ -2,9 +2,6 @@
  * 오늘의 단어 페이지 관리 클래스
  */
 class DailyWordsApp {
-    /**
-     * 생성자
-     */
     constructor() {
         // API 설정
         this.API_URL = '/api/v1/words/daily';
@@ -397,6 +394,6 @@ class ApiService {
 
 // 앱 인스턴스 생성 및 초기화
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new DailyWordsApp(); // DailyWordsApp 인스턴스 생성
-    app.initialize(); // 애플리케이션 초기화
+    const app = new DailyWordsApp();
+    app.initialize();
 });

@@ -352,7 +352,7 @@ function setupEventListeners() {
     });
 
     // 정답 확인 버튼
-    const checkButton = document.querySelector('.input-group .btn-primary');
+    const checkButton = document.querySelector('.input-group .btn-add_word');
     if (checkButton) {
         console.log("정답 확인 버튼 이벤트 설정");
         checkButton.addEventListener('click', () => {

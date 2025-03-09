@@ -87,7 +87,7 @@
                     <i class="bi bi-list-ul"></i>
                     단어 목록
                 </h3>
-                <button type="button" class="btn btn-primary" onclick="addWordRow()">
+                <button type="button" class="btn btn-add_word" onclick="addWordRow()">
                     <i class="bi bi-plus-lg"></i>
                     단어 추가
                 </button>
@@ -111,12 +111,12 @@
         </section>
 
         <!-- 버튼 그룹 -->
-        <div class="button-group">
-            <button type="button" class="btn btn-text" onclick="history.back()">
+        <div class="control-section">
+            <button type="button" class="btn btn-cancel" onclick="history.back()">
                 <i class="bi bi-arrow-left"></i>
                 취소
             </button>
-            <button type="submit" class="btn btn-primary" form="wordBookForm">
+            <button type="submit" class="btn btn-add_word" form="wordBookForm">
                 <i class="bi bi-check-lg"></i>
                 저장
             </button>

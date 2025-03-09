@@ -1,16 +1,54 @@
-/* Main Content Layout */
-.main-content {
+/* CSS 변수 추가 - 반복되는 값들 */
+:root {
+    /* 애니메이션 관련 변수 */
+    --transition-standard: all 0.3s ease;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --card-shadow-hover: 0 10px 20px rgba(0, 0, 0, 0.15);
+
+    /* 카드 색상 변수 */
+    --vocabulary-color: #e74c3c;
+    --vocabulary-hover-color: #1976D2;
+    --star-color: #f1c40f;
+
+    /* 배경 투명도 */
+    --card-bg-opacity: rgba(255, 255, 255, 0.9);
+    --wrapper-bg-opacity: rgba(255, 255, 255, 0.1);
+}
+
+/* 다크 모드 변수 확장 */
+[data-theme="dark"] {
+    --card-bg-opacity: rgba(33, 31, 38, 0.9);
+    --wrapper-bg-opacity: rgba(33, 31, 38, 0.5);
+    --vocabulary-color: var(--primary);
+    --vocabulary-hover-color: #90CAF9;
+    --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* 3D 변환 공통 클래스 */
+.preserve-3d {
+    transform-style: preserve-3d;
+}
+
+/* 애니메이션 공통 클래스 */
+.animate-element {
+    transition: var(--transition-standard);
+    will-change: transform;
+}
+
+/* 일일 단어 페이지 */
+.daily-content-grid {
     display: grid;
     place-items: center;
     min-height: 100%;
     padding: 2rem;
     position: relative;
     z-index: 1;
-    perspective: 1000px; /* 3D 효과를 위한 원근감 설정 */
+    perspective: 1000px;
 }
 
-/* Background Effect */
-.main-content::before {
+/* 일일단어 페이지 백그라운드 */
+.daily-content-grid::before {
     content: '';
     position: fixed;
     top: 0;
@@ -23,96 +61,88 @@
     z-index: -1;
 }
 
-/* Container */
-.today-words-container {
+/* 일일 단어 페이지 컨테이너 */
+.daily-words-container {
     width: min(100%, 1200px);
     margin: 0 auto;
-    perspective: 1000px; /* 3D 효과를 위한 원근감 설정 */
+    perspective: 1000px;
 }
 
-/* Cards Wrapper */
+/* 단어 카드 래퍼 */
 .word-cards-wrapper {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--wrapper-bg-opacity);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: var(--border-radius-xl);
     padding: 2rem;
     box-shadow: var(--shadow-2);
-    transition: all 0.3s ease;
-    transform-style: preserve-3d; /* 자식 요소들의 3D 변환 가능하게 설정 */
+    transition: var(--transition-standard);
 }
 
-/* Cards Grid */
+/* 단어 카드 그리드 */
 .word-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
-    transform-style: preserve-3d; /* 3D 효과 유지 */
 }
 
-/* Word Card */
+/* 단어 카드 */
 .word-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--card-bg-opacity);
     border-radius: var(--border-radius);
     padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    transform-style: preserve-3d; /* 3D 효과 유지 */
-    cursor: pointer; /* 커서를 포인터로 변경하여 상호작용 가능함을 표시 */
+    box-shadow: var(--card-shadow);
+    transition: var(--transition-standard);
+    cursor: pointer;
 }
 
-/* 호버 효과는 JavaScript에서 anime.js로 처리 */
-
-/* Card Content */
+/* 카드 내용 */
 .card-content {
     display: grid;
     gap: 1rem;
     text-align: center;
-    transform-style: preserve-3d; /* 3D 효과 유지 */
 }
 
+/* 영단어 텍스트 */
 .vocabulary {
     font-size: 2rem;
     font-weight: 600;
-    color: #e74c3c; /* 텍스트 색상 (애니메이션에서 참조됨) */
-    transition: all 0.3s ease;
-    will-change: transform, color; /* 성능 최적화 */
+    color: var(--vocabulary-color);
+    transition: var(--transition-standard);
 }
 
+/* 의미 텍스트 */
 .meaning {
     font-size: 1.25rem;
     color: var(--on-surface-variant);
-    transition: all 0.3s ease;
-    will-change: transform; /* 성능 최적화 */
+    transition: var(--transition-standard);
 }
 
+/* 난이도 별표 */
 .difficulty {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
-    color: #f1c40f; /* 별표 색상 유지 */
-    transition: all 0.3s ease;
+    color: var(--star-color);
+    transition: var(--transition-standard);
 }
 
-.difficulty i {
-    will-change: transform, opacity, color; /* 성능 최적화 */
-}
-
-/* Loading State */
+/* 로딩 컨테이너 */
 .loading-container {
     display: grid;
     place-items: center;
     padding: 2rem;
 }
 
+/* 로딩 스피너 */
 .spinner {
     width: 40px;
     height: 40px;
     border: 4px solid rgba(255, 255, 255, 0.3);
     border-top-color: var(--primary);
     border-radius: 50%;
-    will-change: transform; /* 성능 최적화 */
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -121,16 +151,15 @@
     }
 }
 
-/* Error State */
+/* 에러 메시지 */
 .error-message {
     padding: 1rem;
     margin: 1rem 0;
     border-radius: var(--border-radius);
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--card-bg-opacity);
     color: var(--error);
     text-align: center;
-    opacity: 0; /* 초기에 숨겨짐, 애니메이션으로 표시됨 */
-    will-change: opacity, transform; /* 성능 최적화 */
+    opacity: 0;
 }
 
 /* 애니메이션 관련 클래스 */
@@ -145,14 +174,9 @@
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.card-hover-active {
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-}
-
-/* Responsive Adjustments */
+/* 반응형 설정 */
 @media (max-width: 768px) {
-    .main-content {
+    .daily-content-grid {
         padding: 1rem;
     }
 

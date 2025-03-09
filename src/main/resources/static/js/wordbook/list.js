@@ -12,7 +12,9 @@ class WordBookListManager {
         this.state = {
             currentCategory: 'ALL',
             isLoading: false,
-            wordBooks: []
+            wordBooks: [],
+            animations: {},
+            isAnimeAvailable: typeof anime !== 'undefined'
         };
 
         // API 엔드포인트
@@ -23,7 +25,10 @@ class WordBookListManager {
             wordBookList: document.getElementById('wordBookList'),
             filterChips: document.querySelectorAll('.filter-chip'),
             deleteModal: new bootstrap.Modal(document.getElementById('deleteModal')),
-            confirmDeleteBtn: document.getElementById('confirmDelete')
+            confirmDeleteBtn: document.getElementById('confirmDelete'),
+            contentContainer: document.querySelector('.content-container'),
+            topSection: document.querySelector('.top-section'),
+            wordbooksSection: document.querySelector('.wordbooks-section')
         };
 
         // 이벤트 리스너 설정
@@ -39,7 +44,9 @@ class WordBookListManager {
             chip.addEventListener('click', (e) => {
                 const category = e.currentTarget.getAttribute('data-category');
                 if (category) {
-                    this.filterByCategory(category);
+                    this.animateFilterChange(() => {
+                        this.filterByCategory(category);
+                    });
                 }
             });
         });
@@ -47,6 +54,75 @@ class WordBookListManager {
         // 삭제 확인 버튼 이벤트
         this.elements.confirmDeleteBtn.addEventListener('click', () => {
             this.deleteWordBook(this.state.deleteWordBookId);
+        });
+
+        // 스크롤 이벤트로 카드 나타나는 효과
+        if (this.state.isAnimeAvailable) {
+            window.addEventListener('scroll', this.handleScroll.bind(this));
+        }
+    }
+
+    /**
+     * 스크롤 이벤트 처리
+     */
+    handleScroll() {
+        const cards = document.querySelectorAll('.wordbook-card');
+        cards.forEach(card => {
+            if (this.isElementInViewport(card) && !card.classList.contains('animated')) {
+                card.classList.add('animated');
+                anime({
+                    targets: card,
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    easing: 'easeOutCubic',
+                    duration: 500,
+                    delay: 100
+                });
+            }
+        });
+    }
+
+    /**
+     * 요소가 화면에 보이는지 확인
+     * @param {HTMLElement} el - 확인할 요소
+     * @returns {boolean} - 화면에 보이면 true
+     */
+    isElementInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.bottom >= 0 &&
+            rect.left <= (window.innerWidth || document.documentElement.clientWidth) &&
+            rect.right >= 0
+        );
+    }
+
+    /**
+     * 필터 변경 애니메이션
+     * @param {Function} callback - 애니메이션 완료 후 실행할 콜백 함수
+     */
+    animateFilterChange(callback) {
+        if (!this.state.isAnimeAvailable) {
+            callback();
+            return;
+        }
+
+        anime({
+            targets: this.elements.wordBookList,
+            opacity: [1, 0],
+            translateY: [0, 10],
+            easing: 'easeOutQuad',
+            duration: 300,
+            complete: () => {
+                callback();
+                anime({
+                    targets: this.elements.wordBookList,
+                    opacity: [0, 1],
+                    translateY: [10, 0],
+                    easing: 'easeOutQuad',
+                    duration: 500
+                });
+            }
         });
     }
 
@@ -99,6 +175,16 @@ class WordBookListManager {
             const chipCategory = chip.getAttribute('data-category');
             if (chipCategory === this.state.currentCategory) {
                 chip.classList.add('active');
+
+                // 활성화된 필터 칩 애니메이션
+                if (this.state.isAnimeAvailable) {
+                    anime({
+                        targets: chip,
+                        scale: [1, 1.1, 1],
+                        easing: 'easeOutElastic(1, .5)',
+                        duration: 800
+                    });
+                }
             }
         });
     }
@@ -125,7 +211,11 @@ class WordBookListManager {
             if (response.ok) {
                 this.elements.deleteModal.hide();
                 this.showToast('단어장이 삭제되었습니다.', 'success');
-                this.loadWordBooks();
+
+                // 삭제 후 목록 다시 로드 (애니메이션과 함께)
+                this.animateFilterChange(() => {
+                    this.loadWordBooks();
+                });
             } else {
                 this.showToast('단어장 삭제 중 오류가 발생했습니다.', 'danger');
             }
@@ -145,6 +235,50 @@ class WordBookListManager {
         }
 
         this.elements.wordBookList.innerHTML = this.state.wordBooks.map(book => this.createWordBookCard(book)).join('');
+
+        // 단어장 카드 애니메이션
+        if (this.state.isAnimeAvailable) {
+            const cards = document.querySelectorAll('.wordbook-card');
+            anime.set(cards, {
+                opacity: 0,
+                translateY: 20
+            });
+
+            anime({
+                targets: cards,
+                opacity: [0, 1],
+                translateY: [20, 0],
+                easing: 'easeOutCubic',
+                duration: 800,
+                delay: anime.stagger(100)
+            });
+
+            // 카드 내부 요소 애니메이션
+            cards.forEach(card => {
+                card.classList.add('animated');
+
+                // 카드에 호버 이벤트 리스너 추가
+                card.addEventListener('mouseenter', function () {
+                    anime({
+                        targets: this,
+                        translateY: -8,
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                        easing: 'easeOutQuad',
+                        duration: 300
+                    });
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    anime({
+                        targets: this,
+                        translateY: 0,
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                        easing: 'easeOutQuad',
+                        duration: 300
+                    });
+                });
+            });
+        }
     }
 
     /**
@@ -204,7 +338,21 @@ class WordBookListManager {
      * @param {string} url - 이동할 URL
      */
     navigateTo(url) {
-        location.href = url;
+        // 이동 전 애니메이션
+        if (this.state.isAnimeAvailable) {
+            anime({
+                targets: this.elements.contentContainer,
+                opacity: [1, 0],
+                translateY: [0, -10],
+                easing: 'easeOutQuad',
+                duration: 300,
+                complete: () => {
+                    location.href = url;
+                }
+            });
+        } else {
+            location.href = url;
+        }
     }
 
     /**
@@ -219,6 +367,17 @@ class WordBookListManager {
                 <p>단어장 목록을 불러오는 중입니다...</p>
             </div>
         `;
+
+        // 로딩 스피너 애니메이션
+        if (this.state.isAnimeAvailable) {
+            this.state.animations.loading = anime({
+                targets: '.loading-state .spinner-border',
+                rotate: '1turn',
+                easing: 'linear',
+                duration: 1000,
+                loop: true
+            });
+        }
     }
 
     /**
@@ -234,12 +393,23 @@ class WordBookListManager {
                 <p class="empty-state-message">${this.state.currentCategory === 'ALL'
             ? '아직 등록된 단어장이 없습니다. 새 단어장을 만들어보세요!'
             : `'${this.getCategoryDisplayName(this.state.currentCategory)}' 카테고리에 해당하는 단어장이 없습니다.`}</p>
-                <button class="btn btn-primary" onclick="wordBookListManager.navigateTo('/wordbook/create')">
+                <button class="btn btn-add_word" onclick="wordBookListManager.navigateTo('/wordbook/create')">
                     <i class="bi bi-plus-lg"></i>
                     새 단어장 만들기
                 </button>
             </div>
         `;
+
+        // 빈 상태 애니메이션
+        if (this.state.isAnimeAvailable) {
+            anime({
+                targets: '.empty-state',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                easing: 'easeOutQuad',
+                duration: 800
+            });
+        }
     }
 
     /**
@@ -255,12 +425,23 @@ class WordBookListManager {
                 <h3 class="error-state-title">오류가 발생했습니다</h3>
                 <p class="error-state-message">단어장 목록을 불러오는 중 문제가 발생했습니다.</p>
                 <p class="error-details">${errorMessage}</p>
-                <button class="btn btn-primary" onclick="wordBookListManager.loadWordBooks()">
+                <button class="btn btn-add_word" onclick="wordBookListManager.loadWordBooks()">
                     <i class="bi bi-arrow-clockwise"></i>
                     다시 시도
                 </button>
             </div>
         `;
+
+        // 오류 상태 애니메이션
+        if (this.state.isAnimeAvailable) {
+            anime({
+                targets: '.error-state',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                easing: 'easeOutQuad',
+                duration: 800
+            });
+        }
     }
 
     /**
@@ -295,6 +476,22 @@ class WordBookListManager {
         });
 
         toast.show();
+
+        // 토스트 애니메이션
+        if (this.state.isAnimeAvailable) {
+            anime.set(toastElement, {
+                opacity: 0,
+                translateX: 50
+            });
+
+            anime({
+                targets: toastElement,
+                opacity: 1,
+                translateX: 0,
+                easing: 'easeOutElastic(1, .6)',
+                duration: 800
+            });
+        }
     }
 
     /**
@@ -374,6 +571,33 @@ class WordBookListManager {
      */
     init() {
         console.log('단어장 목록 관리자 초기화 중...');
+
+        // 페이지 로드 애니메이션
+        if (this.state.isAnimeAvailable) {
+            // 초기 설정 - 보이지 않게
+            anime.set([this.elements.topSection, this.elements.wordbooksSection], {
+                opacity: 0,
+                translateY: 20
+            });
+
+            // 순차적으로 나타나는 애니메이션
+            anime.timeline({
+                easing: 'easeOutQuad'
+            })
+                .add({
+                    targets: this.elements.topSection,
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    duration: 800
+                })
+                .add({
+                    targets: this.elements.wordbooksSection,
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    duration: 800
+                }, '-=600');
+        }
+
         // HTML에 data-category 속성 설정
         document.querySelectorAll('.filter-chip').forEach(chip => {
             const categoryText = chip.textContent.trim();

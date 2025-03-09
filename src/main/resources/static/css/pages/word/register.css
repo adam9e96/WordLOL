@@ -1,106 +1,115 @@
-/* Layout */
+/* 등록페이지 레이아웃 */
 .register-grid {
     display: grid;
     place-items: center;
     min-height: 100%;
     padding: var(--spacing-4);
-    background: var(--surface-container-low); /* 배경색 어둡게 */
+    background: var(--surface-container-low);
 }
 
-/* Form Container */
+/* 단어 등록 폼 컨테이너 */
 .form-container {
     width: min(100%, 500px);
-    background: var(--surface); /* 더 밝은 배경 */
+    background: var(--surface);
     border-radius: var(--border-radius-xl);
     padding: var(--spacing-4);
     box-shadow: var(--shadow-2);
 }
 
-/* Page Title */
+/* 단어 등록 페이지 타이틀 */
 .page-title {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
     color: var(--on-surface);
-    font-size: 2rem; /* 크기 증가 */
+    font-size: 2rem;
     font-weight: 600;
     margin-bottom: var(--spacing-4);
     padding-bottom: var(--spacing-3);
-    border-bottom: 1px solid var(--outline-variant); /* 구분선 추가 */
+    border-bottom: 1px solid var(--outline-variant);
 }
 
-.page-title i {
+.page-title-icon {
     color: var(--primary);
-    font-size: 2rem; /* 아이콘 크기 증가 */
+    font-size: 2rem;
 }
 
-/* Form Groups */
+/* 폼 요소 공통 스타일 */
 .form-group {
     display: grid;
     gap: var(--spacing-2);
-    padding: var(--spacing-3); /* 패딩 추가 */
-    /*background: var(--surface-container-highest); !* 배경색 추가 *!*/
-    /*border-radius: var(--border-radius);*/
+    padding: var(--spacing-3);
     transition: all var(--transition-normal);
 }
 
 .form-group:hover {
-    background: var(--surface-container-high); /* 호버 효과 */
+    background: var(--surface-container-high);
     box-shadow: var(--shadow-1);
-    border-radius: var(--border-radius); /* 둥근 사각형 */
+    border-radius: var(--border-radius);
 }
 
-.form-label {
+/* 입력 필드 라벨 */
+.form-field-label {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
     color: var(--on-surface);
-    font-weight: 600; /* 더 굵게 */
-    font-size: 1.1rem; /* 크기 증가 */
+    font-weight: 600;
+    font-size: 1.25rem;
 }
 
-.form-label i {
+.form-field-label i {
     color: var(--primary);
     font-size: 1.25rem;
     padding: 0.5rem;
-    background: var(--primary-container); /* 아이콘 배경 추가 */
+    background: var(--primary-container);
     border-radius: var(--border-radius);
 }
 
-/* Form Controls */
-.form-control,
+/* 입력 필드 */
+.form-input,
 .form-select {
     padding: 1rem var(--spacing-3);
-    background: var(--surface); /* 밝은 배경 */
-    border: 2px solid var(--outline-variant); /* 테두리 두껍게 */
+    background: var(--surface);
+    border: 2px solid var(--outline-variant);
     border-radius: var(--border-radius);
     color: var(--on-surface);
-    font-size: 1.1rem; /* 크기 증가 */
+    font-size: 1.1rem;
     transition: all var(--transition-normal);
 }
 
-.form-control::placeholder {
-    color: var(--outline); /* 더 진한 플레이스홀더 */
+.form-input::placeholder {
+    color: var(--outline);
 }
 
-.form-control:focus,
+.form-input:focus,
 .form-select:focus {
     background: var(--surface);
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-container); /* 포커스 효과 강화 */
+    box-shadow: 0 0 0 3px var(--primary-container);
 }
 
-/* Button Group */
-.button-group {
+/* 입력 오류 메시지 */
+.input-error-feedback {
+    color: var(--error);
+    font-size: 0.9rem;
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-2);
+    background: var(--error-container);
+    border-radius: var(--border-radius);
+}
+
+/* 버튼 영역 */
+.form-controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-3);
     margin-top: var(--spacing-4);
     padding-top: var(--spacing-3);
-    border-top: 1px solid var(--outline-variant); /* 구분선 추가 */
+    border-top: 1px solid var(--outline-variant);
 }
 
-/* Buttons */
+/* 버튼 공통 스타일 */
 .btn {
     display: flex;
     align-items: center;
@@ -108,70 +117,38 @@
     gap: var(--spacing-2);
     padding: 1rem var(--spacing-3);
     border-radius: var(--border-radius);
-    font-size: 1.1rem; /* 크기 증가 */
+    font-size: 1.1rem;
     font-weight: 600;
     transition: all var(--transition-normal);
 }
 
-.btn-primary {
+/* 취소 버튼 */
+.btn-cancel {
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
+    border: none;
+}
+
+.btn-cancel:hover {
+    transform: translateY(-2px);
+    background: var(--surface-container-high);
+    box-shadow: var(--shadow-2);
+}
+
+/* 단어 등록 버튼 */
+.btn-register-word {
     background: var(--primary);
     color: var(--on-primary);
     border: none;
 }
 
-.btn-primary:hover {
+.btn-register-word:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
-}
-
-.btn-text {
-    background: var(--surface-container); /* 배경색 추가 */
-    color: var(--on-surface-variant);
-    border: 2px solid var(--outline-variant);
-}
-
-.btn-text:hover {
-    background: var(--surface-container-high);
-    border-color: var(--outline);
-}
-
-/* 유효성 검사 피드백 */
-.invalid-feedback {
-    color: var(--error);
-    font-size: 0.9rem;
-    margin-top: var(--spacing-2);
-    padding: var(--spacing-2);
-    background: var(--error-container); /* 배경색 추가 */
-    border-radius: var(--border-radius);
-}
-
-/* Toast */
-.toast-container {
-    position: fixed;
-    top: var(--spacing-4);
-    right: var(--spacing-4);
-    z-index: 1056;
-}
-
-.toast {
-    background: var(--surface-container-highest);
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-3);
-    padding: var(--spacing-3);
-}
-
-.toast.success {
     background: var(--primary-container);
-    color: var(--on-primary-container);
 }
 
-.toast.error {
-    background: var(--error-container);
-    color: var(--on-error-container);
-}
-
-/* Difficulty Options */
+/* 난이도 선택 영역 */
 .difficulty-options {
     display: grid;
     gap: var(--spacing-2);
@@ -199,47 +176,62 @@
     transition: all var(--transition-normal);
 }
 
-.difficulty-box i {
-    color: #ffd700;  /* 별 색상 */
+.difficulty-star {
+    color: #ffd700;
     font-size: 1.1rem;
 }
 
-.difficulty-box span {
+.difficulty-label {
     margin-left: auto;
     color: var(--on-surface);
     font-weight: 500;
 }
 
-/* 호버 상태 */
+/* 난이도 선택 호버 상태 */
 .difficulty-option:hover .difficulty-box {
     background: var(--surface-container-high);
     border-color: var(--outline);
 }
 
-/* 선택된 상태 */
+/* 난이도 선택 체크 상태 */
 .difficulty-input:checked + .difficulty-box {
     background: var(--primary-container);
     border-color: var(--primary);
     color: var(--on-primary-container);
 }
 
-.difficulty-input:checked + .difficulty-box span {
+.difficulty-input:checked + .difficulty-box .difficulty-label {
     color: var(--on-primary-container);
     font-weight: 600;
 }
 
-/* 포커스 상태 */
-.difficulty-input:focus + .difficulty-box {
-    box-shadow: 0 0 0 2px var(--primary-container);
+/* 알림 토스트 */
+.toast-container {
+    position: fixed;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    z-index: 1056;
 }
 
-/* 반응형 */
-@media (max-width: 768px) {
-    .difficulty-box {
-        padding: var(--spacing-2);
-    }
+.toast {
+    background: var(--surface-container-highest);
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-3);
+    padding: var(--spacing-3);
+}
 
-    .difficulty-box i {
-        font-size: 1rem;
-    }
+.toast-success {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+.toast-error {
+    background: var(--error-container);
+    color: var(--on-error-container);
+}
+
+/* 난이도 선택 포커스 상태 */
+.difficulty-input:focus + .difficulty-box {
+    box-shadow: 0 0 0 2px var(--primary-container);
 }

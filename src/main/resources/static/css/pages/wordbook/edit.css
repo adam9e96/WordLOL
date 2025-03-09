@@ -193,7 +193,7 @@ textarea.form-control {
 }
 
 /* Button Group */
-.button-group {
+.control-section {
     display: grid;
     grid-template-columns: auto auto;
     justify-content: end;
@@ -217,24 +217,24 @@ textarea.form-control {
     font-size: 1.25rem;
 }
 
-.btn-text {
+.btn-cancel {
     background: var(--surface-container);
     color: var(--on-surface-variant);
     border: 2px solid var(--outline-variant);
 }
 
-.btn-text:hover {
+.btn-cancel:hover {
     background: var(--surface-container-high);
     border-color: var(--outline);
 }
 
-.btn-primary {
+.btn-add_word {
     background: var(--primary);
     color: var(--on-primary);
     border: none;
 }
 
-.btn-primary:hover {
+.btn-add_word:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
 }
@@ -274,7 +274,7 @@ textarea.form-control {
         display: none;
     }
 
-    .button-group {
+    .control-section {
         grid-template-columns: 1fr;
         gap: var(--spacing-3);
     }

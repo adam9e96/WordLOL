@@ -135,6 +135,10 @@
     position: relative;
     transition: all var(--transition-normal);
     min-height: 320px;
+    /* 애니메이션 관련 속성 추가 */
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    overflow: hidden;
 }
 
 .wordbook-card:hover {
@@ -142,7 +146,6 @@
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
 }
-
 
 /* 카테고리 태그 위치 고정 및 스타일 개선 */
 .category-chip {
@@ -163,8 +166,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    z-index: 2; /* 카테고리 칩이 항상 위에 오도록 함 */
 }
-
 
 .category-chip i {
     font-size: 1rem;
@@ -176,6 +179,7 @@
     margin-bottom: var(--spacing-2);
     padding-right: 70px; /* 카테고리 태그 너비만큼 여백 확보 */
     min-height: 70px; /* 최소 높이 설정 */
+    width: 100%; /* 전체 너비 사용 */
 }
 
 /* 제목 텍스트 스타일 - 말줄임 처리 추가 */
@@ -184,12 +188,10 @@
     font-weight: 600;
     color: var(--on-surface);
     margin: 0;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* 최대 2줄까지 표시 */
-    -webkit-box-orient: vertical;
-    word-break: break-word;
+    word-wrap: break-word; /* 긴 제목이 칩과 겹칠 때 줄바꿈되도록 수정 */
+    overflow-wrap: break-word;
+    hyphens: auto;
+    display: inline-block; /* 인라인 블록으로 변경하여 자연스러운 줄바꿈 */
 }
 
 /* 설명 텍스트 영역 - 높이 제한 및 말줄임 처리 */
@@ -245,6 +247,10 @@
     font-weight: 500;
     transition: all var(--transition-normal);
     border: none;
+    cursor: pointer;
+    /* 버튼 애니메이션 관련 속성 */
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 /* 조회 버튼 스타일 */
@@ -410,6 +416,56 @@
     box-shadow: var(--shadow-2);
 }
 
+/* 애니메이션 관련 추가 스타일 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pullUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 로딩 스피너 스타일 */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8);
+    grid-column: 1 / -1;
+    min-height: 300px;
+}
+
+.loading-state p {
+    margin-top: var(--spacing-4);
+    color: var(--on-surface-variant);
+}
+
 /* 호버 상태 */
 .filter-chip:hover {
     background: var(--surface-container-high);
@@ -449,7 +505,7 @@
     color: #047857; /* 사용자 정의 테마 색상 */
 }
 
-/* Responsive */
+/* 반응형 디자인 */
 @media (max-width: 768px) {
     .card-header-container {
         padding-right: 0;
@@ -461,10 +517,13 @@
         top: var(--spacing-3);
         left: var(--spacing-3);
         right: auto;
+        max-width: 80%; /* 모바일에서 더 많은 공간 차지 */
     }
 
     .card-title {
-        -webkit-line-clamp: 3; /* 모바일에서는 3줄까지 허용 */
+        font-size: 1.1rem; /* 모바일에서 폰트 크기 줄임 */
+        display: block; /* 모바일에서는 블록으로 표시 */
+        width: 100%;
     }
 
     .header-content {
@@ -485,7 +544,6 @@
         padding: var(--spacing-2) var(--spacing-3);
         font-size: 0.9rem;
     }
-
 
     .wordbooks-grid {
         grid-template-columns: 1fr;
@@ -522,5 +580,10 @@
 @media (max-width: 576px) {
     .card-actions {
         grid-template-columns: 1fr;
+    }
+
+    .top-section,
+    .wordbooks-section {
+        padding: var(--spacing-4);
     }
 }

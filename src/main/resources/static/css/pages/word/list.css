@@ -1,6 +1,4 @@
-/* Base Variables (이미 base.css에서 정의된 변수들 사용) */
-
-/* Main Container */
+/* 메인 컨테이너 */
 .word-list-container {
     width: 100%;
     max-width: var(--max-width);
@@ -12,7 +10,7 @@
     align-self: flex-start;
 }
 
-/* Header Section */
+/* 단어 목록 헤더 */
 .word-list-header {
     display: flex;
     justify-content: space-between;
@@ -25,11 +23,13 @@
     transition: all 0.3s ease;
 }
 
+/* 단어 목록 헤더 호버 */
 .word-list-header:hover {
     box-shadow: var(--shadow-2);
     transform: translateY(-3px);
 }
 
+/* 단어 목록 제목 */
 .word-list-title {
     display: flex;
     align-items: center;
@@ -43,10 +43,13 @@
     font-weight: 600;
 }
 
-.word-list-title i {
+/* 단어 목록 아이콘 */
+#word-list-title-icon {
     color: var(--primary);
+    font-size: 2rem;
 }
 
+/* 단어 추가 */
 .word-list-actions {
     display: flex;
     gap: var(--spacing-2);
@@ -57,8 +60,11 @@
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
 }
 
+/* 단어 추가 버튼 호버 */
 #AddWordButton:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-2);
@@ -79,7 +85,14 @@
     left: 100%;
 }
 
-/* Table Container */
+/* 새 단어 추가 아이콘 */
+#word-list-add {
+    font-size: 1.25rem;
+    color: var(--on-primary);
+    font-weight: 600;
+}
+
+/* 단어 테이블 컨테이너 */
 .word-list-table-container {
     background: var(--surface-container);
     border-radius: var(--border-radius);
@@ -90,11 +103,12 @@
     transition: all 0.3s ease;
 }
 
+/* 단어 테이블 컨테이너 호버 */
 .word-list-table-container:hover {
     box-shadow: var(--shadow-2);
 }
 
-/* Table Styles */
+/* 테이블 스타일 */
 .word-list-table {
     width: 100%;
     margin: 0;
@@ -102,6 +116,7 @@
     border-spacing: 0;
 }
 
+/* 테이블 헤더 */
 .word-list-table th {
     background: var(--surface-container-high);
     color: var(--on-surface);
@@ -128,6 +143,7 @@
     width: 100%;
 }
 
+/* 테이블 내용 */
 .word-list-table td {
     padding: var(--spacing-3) var(--spacing-4);
     border-bottom: 1px solid var(--outline-variant);
@@ -136,6 +152,7 @@
 }
 
 /* 단어 행(Row) 스타일 및 애니메이션 */
+/* js 에서 생성 */
 .word-list-table tbody tr {
     transition: all var(--transition-fast);
     position: relative;
@@ -172,21 +189,24 @@
     margin-right: 2px;
 }
 
+/* 관리 버튼 호버 */
 .btn-action:hover {
     transform: translateY(-2px);
 }
 
-.btn-action.btn-outline-primary:hover {
+/* 수정 버튼 호버 */
+.js-edit-btn:hover {
     background-color: var(--primary);
     color: var(--on-primary);
 }
 
-.btn-action.btn-outline-danger:hover {
+/* 삭제 버튼 호버 */
+.js-delete-btn:hover {
     background-color: var(--error);
     color: var(--on-error);
 }
 
-/* Pagination */
+/* 페이지 네이션 */
 .word-list-pagination {
     align-self: center;
     margin-top: var(--spacing-4);
@@ -203,10 +223,7 @@
     transition: all 0.3s ease;
 }
 
-.page-item:hover {
-    transform: scale(1.1);
-}
-
+/* 모든 페이지 링크에 동일한 둥근 테두리 적용 */
 .page-link {
     display: flex;
     align-items: center;
@@ -214,32 +231,45 @@
     min-width: 2.5rem;
     height: 2.5rem;
     padding: 0 var(--spacing-2);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-xxl) !important; /* Bootstrap 스타일 재정의를 위해 !important 필요 */
     background: var(--surface-container);
     color: var(--on-surface);
     border: none;
     transition: all var(--transition-fast);
 }
 
+/* 첫 번째와 마지막 항목의 스타일 재정의 */
+.page-item:first-child .page-link,
+.page-item:last-child .page-link {
+    border-radius: var(--border-radius-xxl) !important; /* Bootstrap 스타일 재정의 */
+}
+
+/* 호버 효과 */
+.page-item:hover {
+    transform: scale(1.1);
+}
+
 .page-link:hover {
     background: var(--surface-container-high);
-    transform: translateY(-2px);
     box-shadow: var(--shadow-1);
 }
 
+/* 활성 상태 */
 .page-item.active .page-link {
     background: var(--primary);
     color: var(--on-primary);
-    transform: scale(1.05);
     box-shadow: var(--shadow-1);
 }
 
+/* 비활성 상태 */
 .page-item.disabled .page-link {
     background: var(--surface-container-low);
     color: var(--outline);
     cursor: not-allowed;
     opacity: 0.7;
 }
+
+/* 페이지 네이션 END */
 
 /* 모달 관련 스타일 */
 .modal-content {
@@ -250,13 +280,15 @@
     min-width: 400px;
 }
 
+/* 모달 헤더 섹션 */
 .modal-header {
     background: var(--surface-container-high);
+    border-bottom: 1px solid var(--outline-variant);
     border-top-left-radius: var(--border-radius-xl);
     border-top-right-radius: var(--border-radius-xl);
-    border-bottom: 1px solid var(--outline-variant);
 }
 
+/* 모달 제목 */
 .modal-title {
     color: var(--on-surface);
     font-weight: 600;
@@ -265,17 +297,14 @@
     gap: var(--spacing-2);
 }
 
+/* 단어 수정 아이콘 */
 .modal-title::before {
     content: '\F4DD'; /* 부트스트랩 아이콘 코드(연필) */
     font-family: "bootstrap-icons";
     color: var(--primary);
 }
 
-.modal-footer {
-    border-top: 1px solid var(--outline-variant);
-}
-
-/* 모달 폼 요소 */
+/* 모달 본문 요소 공통 스타일 */
 .modal-body .form-group {
     margin-bottom: 1rem;
 }
@@ -285,6 +314,7 @@
     font-weight: 500;
 }
 
+/* 입력 필드 공통 스타일 */
 .modal-body .form-control,
 .modal-body .form-select {
     border: 2px solid var(--outline-variant);
@@ -295,6 +325,7 @@
     transition: all 0.3s ease;
 }
 
+/* 입력 필드 포커스 공통 스타일 */
 .modal-body .form-control:focus,
 .modal-body .form-select:focus {
     border-color: var(--primary);
@@ -302,7 +333,12 @@
     background-color: var(--surface-container-low);
 }
 
-/* 모달 버튼 */
+/* 모달 푸터 */
+.modal-footer {
+    border-top: 1px solid var(--outline-variant);
+}
+
+/* 모달 버튼 공통 스타일 */
 .modal-footer .btn {
     padding: 0.5rem 1.5rem;
     font-weight: 500;
@@ -310,28 +346,32 @@
     transition: all 0.3s ease;
 }
 
-.modal-footer .btn-primary {
+/* 저장 버튼 */
+.modal-footer .btn-modal-save {
     background-color: var(--primary);
     color: var(--on-primary);
     border: none;
 }
 
-.modal-footer .btn-primary:hover {
+.modal-footer .btn-modal-save:hover {
     background-color: var(--primary);
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
 }
 
-.modal-footer .btn-text {
+/* 취소 버튼 */
+.modal-footer .btn-modal-cancel {
     background-color: var(--surface-container);
     color: var(--on-surface-variant);
     border: 2px solid var(--outline-variant);
 }
 
-.modal-footer .btn-text:hover {
+.modal-footer .btn-modal-cancel:hover {
     background-color: var(--surface-container-high);
     border-color: var(--outline);
 }
+
+/* 수정 모달 END */
 
 /* 토스트 메시지 */
 .toast {
@@ -342,22 +382,20 @@
     z-index: 1060; /* 모달보다 위에 표시 */
 }
 
-/* 여러 개의 modal-backdrop이 쌓이는 것을 방지 */
+/* 여러 개의 modal-backdrop 이 쌓이는 것을 방지 */
 .modal-backdrop + .modal-backdrop {
     display: none;
 }
 
-/* Change the responsive media query for the header */
 @media (max-width: 991px) {
     .word-list-header {
         gap: var(--spacing-4);
     }
 
     .word-list-actions {
-        flex-shrink: 0; /* Prevent actions from shrinking */
+        flex-shrink: 0;
     }
 
-    /* Other responsive styles remain unchanged */
     .word-list-table-container {
         padding: var(--spacing-2);
     }

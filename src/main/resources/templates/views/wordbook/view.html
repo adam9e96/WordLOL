@@ -4,6 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/default}">
 <head>
+    <meta charset="UTF-8">
     <title>단어장 상세 보기</title>
     <th:block layout:fragment="css">
         <link rel="stylesheet" th:href="@{/css/pages/wordbook/view.css}">
@@ -48,7 +49,7 @@
                 </div>
             </div>
             <div class="wordbook-actions">
-                <button class="btn btn-primary" id="study-btn">
+                <button class="btn btn-add_word" id="study-btn">
                     <i class="bi bi-play-fill"></i>
                     학습하기
                 </button>

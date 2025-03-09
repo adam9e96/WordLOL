@@ -1,4 +1,8 @@
-/* Header Layout */
+/*
+header 에 대한 스타일을 정의
+단, 다크모드에 대한 스타일은 theme.css 에서 정의
+*/
+/* 헤더 - 전체 헤더 컨테이너의 기본 스타일 설정 */
 .header {
     width: 100%;
     padding: 0.75rem;
@@ -7,129 +11,127 @@
     box-shadow: var(--shadow-1);
 }
 
+/* 헤더 컨테이너 - 헤더의 내부 요소들을 담는 컨테이너
+로고, 검색창, 로그인 버튼이 이 안에 배치됨
+*/
 .header-container {
     max-width: var(--max-width);
-    margin: 0 auto;
+    margin: 0 auto; /* 가운데 정렬을 위한 마진 설정 */
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    flex-direction: column; /* 요소들을 세로로 배치 */
+    gap: 1rem; /* 요소들 사이의 간격 */
 }
 
-/* Top Row Layout */
-.header-top-row {
+/* 헤더 1행 - 로고, 검색창, 로그인 버튼이 있는 행 */
+.header-top {
+    /* Flexbox 를 사용하여 자식 요소들을 가로로 배치하고, 가운데 정렬 */
     display: flex;
     align-items: center;
+    /* 자식 요소들 간의 간격을 1rem 으로 설정 */
     gap: 1rem;
+    /* 내부 여백을 0.5rem 으로 설정 */
     padding: 0.5rem;
+    /* 배경색을 var(--surface-container-lowest)로 설정 */
     background: var(--surface-container-lowest);
+    /* 모서리를 var(--border-radius)로 둥글게 설정 */
     border-radius: var(--border-radius);
+    /* 그림자 효과를 var(--shadow-1)로 설정 */
     box-shadow: var(--shadow-1);
 }
 
+/* 브랜드 로고 섹션 - 로고가 들어가는 컨테이너 */
 .header-brand-section {
     padding: 0.5rem 1rem;
     background: var(--surface-container);
     border-radius: var(--border-radius);
-    transition: background-color var(--transition-fast);
-    white-space: nowrap;
+    transition: background-color var(--transition-fast); /* 배경색 변경시 애니메이션 효과 */
+    white-space: nowrap; /* 로고 텍스트가 줄바꿈 되지 않도록 설정 */
 }
 
+/* 브랜드 로고 섹션 호버시 - 마우스가 올라갔을 때의 스타일 */
 .header-brand-section:hover {
-    background: var(--surface-container-high);
+    background: var(--surface-container-high); /* 호버시 배경색 변경 */
 }
 
-.header-search-section {
-    flex: 1;
-    background: var(--surface-container);
-    border-radius: var(--border-radius);
-    padding: 0.5rem;
+/* 브랜드 로고 - 실제 로고 텍스트 스타일 */
+.header-brand {
+    font-size: 1.5rem; /* 글자 크기 */
+    font-weight: 600; /* 글자 굵기 (반굵게) */
+    color: var(--primary); /* 글자 색상 */
+    text-decoration: none; /* 링크 밑줄 제거 */
     display: flex;
     align-items: center;
-    transition: all var(--transition-fast);
+    gap: 0.5rem; /* 아이콘과 텍스트 사이 간격 */
+    transition: color var(--transition-fast); /* 색상 변경시 애니메이션 효과 */
 }
 
-.header-search-section:focus-within {
-    background: var(--surface-container-high);
-    box-shadow: var(--shadow-2);
+/* 로고 텍스트에 마우스 호버시 효과 */
+.header-brand:hover {
+    color: var(--on-primary-container); /* 호버시 글자색 변경 */
 }
 
-.header-auth-section {
-    padding: 0.5rem 1rem;
+/* 로고 앞에 지구본 이모지 추가 */
+.header-brand::before {
+    content: '🌍'; /* 지구본 이모지를 로고 앞에 추가 */
+    font-size: 1.5rem;
+}
+
+/* 검색바 섹션 - 검색창이 들어가는 컨테이너 */
+.header-search-section {
+    flex: 1; /* 남은 공간을 모두 차지하도록 설정 */
     background: var(--surface-container);
     border-radius: var(--border-radius);
-    transition: background-color var(--transition-fast);
-    white-space: nowrap;
-}
-
-.header-auth-section:hover {
-    background: var(--surface-container-high);
-}
-
-/* Navigation Layout */
-.header-bottom-row {
-    width: 100%;
-}
-
-.header-nav-section {
-    background: var(--surface-container-lowest);
-    border-radius: var(--border-radius);
-    padding: 0.5rem;
-    box-shadow: var(--shadow-1);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.header-nav-section::-webkit-scrollbar {
-    display: none;
-}
-
-.navbar-nav {
+    padding: 0.25rem;
     display: flex;
-    flex-flow: row nowrap;
-    gap: 0.5rem;
-    padding: 0;
-    margin: 0;
-    list-style: none;
+    align-items: center;
+    transition: all var(--transition-fast); /* 스타일 변경시 애니메이션 효과 */
 }
 
-.nav-item {
-    flex: 0 0 auto;
-    white-space: nowrap;
+/* 검색바에 포커스가 있을 때의 스타일 */
+.header-search-section:focus-within {
+    background: var(--surface-container-high); /* 포커스시 배경색 변경 */
+    box-shadow: var(--shadow-2); /* 포커스시 그림자 강화 */
 }
 
+/* 검색바 폼 - 실제 검색 입력 요소를 감싸는 폼 */
 .search-form {
     display: flex;
     width: 100%;
     align-items: center;
 }
 
+/* 검색바 컨테이너 - 입력창 영역 */
 .search-container {
-    flex: 1;
-    min-width: 0;
+    flex: 1; /* 남은 공간을 모두 차지 */
+    min-width: 0; /* flex 아이템의 최소 너비 설정 */
     position: relative;
 }
 
+/* 검색바 입력창 - 실제 텍스트 입력하는 요소 */
 .search-input {
     width: 100%;
-    border: none;
-    background: transparent;
+    border: none; /* 테두리 제거 */
+    background: transparent; /* 배경 투명하게 */
     color: var(--on-surface);
     font-size: 1rem;
     padding: 0.5rem 0.75rem;
 }
 
+/* 검색창 포커스시 외곽선 제거 */
 .search-input:focus {
     outline: none;
 }
 
+/* 검색창 플레이스홀더 스타일 */
 .search-input::placeholder {
     color: var(--outline);
 }
 
+/* 검색버튼 스타일 */
 .search-button {
-    background: transparent;
-    border: none;
-    cursor: pointer;
+    background: transparent; /* 배경 투명 */
+    border: none; /* 테두리 없음 */
+    cursor: pointer; /* 마우스 커서를 포인터로 변경 */
     padding: 0.5rem;
     display: flex;
     align-items: center;
@@ -137,35 +139,138 @@
     transition: all var(--transition-fast);
 }
 
+/* 검색버튼 호버시 효과 */
 .search-button:hover {
-    background: var(--surface-container-high);
-    border-radius: 50%;
+    background: var(--surface-container-high); /* 호버시 배경색 변경 */
+    border-radius: 50%; /* 원형 모양으로 변경 */
 }
 
+/* 검색 아이콘 스타일 */
 .search-icon {
     color: var(--outline);
-    font-size: 1.1rem;
-    flex-shrink: 0;
+    font-size: 1.25rem;
+    flex-shrink: 0; /* 아이콘 크기 유지 */
 }
 
+/* 로그인 섹션 - 로그인 버튼이 있는 영역 */
+.header-auth-section {
+    /* 패딩 설정 */
+    padding: 0.7rem 1rem;
+    /* 배경색 설정 */
+    background: var(--surface-container);
+    /* 테두리 반경 설정 */
+    border-radius: var(--border-radius);
+    /* 배경색 전환 효과 설정 */
+    transition: background-color var(--transition-fast);
+    /* 텍스트 줄바꿈 방지 */
+    white-space: nowrap;
+}
 
-/* Mobile Responsive */
+/* 로그인 섹션 호버시 효과 */
+.header-auth-section:hover {
+    /* 호버 시 배경색 설정 */
+    background: var(--surface-container-high);
+}
+
+/* 로그인 링크 스타일 */
+.auth-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* 아이콘과 텍스트 사이 간격 */
+    color: var(--primary);
+    text-decoration: none; /* 링크 밑줄 제거 */
+    font-weight: 500; /* 글자 약간 굵게 */
+    transition: color var(--transition-fast);
+}
+
+/* 로그인 링크 호버시 효과 */
+.auth-link:hover {
+    color: var(--on-primary-container); /* 호버시 글자색 변경 */
+}
+
+/* 로그인 아이콘 스타일 */
+.auth-link i {
+    font-size: 1.25rem;
+}
+
+/* 카테고리 메뉴 영역 - 네비게이션이 있는 헤더 하단부 */
+.header-bottom {
+    width: 100%;
+}
+
+/* 카테고리 메뉴 섹션 - 네비게이션 컨테이너 */
+.header-nav-section {
+    background: var(--surface-container-lowest);
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    box-shadow: var(--shadow-1);
+    overflow-x: auto; /* 가로 스크롤 허용 */
+    -webkit-overflow-scrolling: touch; /* 모바일 스크롤 부드럽게 */
+}
+
+/* 웹킷 기반 브라우저에서 스크롤바 숨기기 */
+.header-nav-section::-webkit-scrollbar {
+    display: none;
+}
+
+/* 네비게이션 바 - 메뉴 항목들의 컨테이너 */
+.navbar-nav {
+    display: flex;
+    flex-flow: row nowrap; /* 가로로 나열하고 줄바꿈 없게 설정 */
+    gap: 0.5rem; /* 메뉴 항목 사이 간격 */
+    padding: 0;
+    margin: 0;
+    list-style: none; /* 리스트 기본 스타일 제거 */
+}
+
+/* 네비게이션 아이템 - 개별 메뉴 항목 */
+.nav-item {
+    flex: 0 0 auto; /* 크기 고정 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+/* 네비게이션 링크 - 메뉴 항목의 링크 스타일 */
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--on-surface);
+    text-decoration: none; /* 링크 밑줄 제거 */
+    font-size: 0.95rem;
+    font-weight: 500; /* 약간 굵게 */
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+    background: var(--surface-container);
+}
+
+/* 네비게이션 링크 호버시 효과 */
+.nav-link:hover {
+    background: var(--surface-container-high); /* 호버시 배경색 변경 */
+}
+
+/* 현재 활성화된 네비게이션 링크 스타일 */
+.nav-link.active {
+    background: var(--primary-container); /* 활성 상태 배경색 */
+    color: var(--on-primary-container); /* 활성 상태 글자색 */
+}
+
+/* 모바일 반응형 스타일 - 화면 너비가 768px 이하일 때 적용 */
 @media (max-width: 768px) {
-    .header-top-row {
-        justify-content: space-between;
+    .header-top {
+        justify-content: space-between; /* 양쪽 끝에 요소 배치 */
     }
 
     .header-search-section {
-        display: none;
+        display: none; /* 모바일에서는 검색창 숨기기 */
     }
 
     .header-brand-section,
     .header-auth-section {
-        width: auto;
+        width: auto; /* 너비 자동 조정 */
     }
 
     .header-nav-section {
-        overflow-x: auto;
+        overflow-x: auto; /* 가로 스크롤 허용 */
     }
 
     .navbar-nav {

@@ -1,136 +1,142 @@
-/* Base Variables */
+/*
+ * base.css
+ * 웹사이트의 기본 디자인 시스템 변수 및 기본 스타일을 정의
+ * Material You 디자인 원칙을 따르는 변수들과 기본 레이아웃 구조 포함
+ */
+
+/* Base Variables - 전체 사이트에서 사용되는 CSS 변수 정의 */
 :root {
-    /* Typography */
+    /* Typography - 사이트 전반에 사용되는 폰트 정의 */
     --font-family-base: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
     system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
     "Noto Sans KR", "Malgun Gothic", sans-serif;
 
+    /* Primary Colors - 주요 브랜드 색상 및 관련 색상 */
+    --primary: #6750A4; /* 주 색상 - 보라색 계열 */
+    --on-primary: #FFFFFF; /* 주 색상 위에 표시되는 텍스트/아이콘 색상 */
+    --primary-container: #EADDFF; /* 주 색상의 컨테이너 배경색 */
+    --on-primary-container: #e21212; /* 주 색상 컨테이너 위 텍스트/아이콘 색상 - 빨간색으로 설정됨(일반적이지 않은 설정) */
 
-    /* Primary Colors */
-    --primary: #6750A4;
-    --on-primary: #FFFFFF;
-    --primary-container: #EADDFF;
-    --on-primary-container: #e21212;
-
-    /* Secondary Colors */
-    --secondary: #625B71;
-    --on-secondary: #FFFFFF;
-    --secondary-container: #E8DEF8;
-    --on-secondary-container: #1E192B;
-    --on-surface-variant: #49454F; /* 추가 */
-    --surface-variant: #E7E0EC; /* 추가 */
-
-
-    /* Surface Colors */
-    --surface: #FEF7FF;
-    --on-surface: #1D1B20; /* 추가: 표면 위 텍스트 색상 */
-    --surface-dim: #DED8E1;
-    --surface-bright: #FEF7FF;
-    --surface-container-lowest: #FFFFFF;
-    --surface-container-low: #F7F2FA;
-    --surface-container: #F3EDF7;
-    --surface-container-high: #ECE6F0;
-    --surface-container-highest: #E6E0E9;
-
-    /* Error Colors */
-    --error: #B3261E;
-    --on-error: #FFFFFF;
-    --error-container: #F9DEDC;
-    --on-error-container: #410E0B;
+    /* Secondary Colors - 보조 색상 및 관련 색상 */
+    --secondary: #625B71; /* 보조 색상 */
+    --on-secondary: #FFFFFF; /* 보조 색상 위에 표시되는 텍스트/아이콘 색상 */
+    --secondary-container: #E8DEF8; /* 보조 색상의 컨테이너 배경색 */
+    --on-secondary-container: #1E192B; /* 보조 색상 컨테이너 위 텍스트/아이콘 색상 */
+    --on-surface-variant: #49454F; /* 표면 변형 위 텍스트/아이콘 색상 */
+    --surface-variant: #E7E0EC; /* 표면 변형 색상 */
 
 
-    /* Spacing Variables */
-    --spacing-1: calc(var(--spacing-unit) * 0.25); /* 4px */
-    --spacing-2: calc(var(--spacing-unit) * 0.5); /* 8px */
-    --spacing-3: calc(var(--spacing-unit) * 0.75); /* 12px */
-    --spacing-4: calc(var(--spacing-unit) * 1); /* 16px */
-    --spacing-5: calc(var(--spacing-unit) * 1.25); /* 20px */
-    --spacing-6: calc(var(--spacing-unit) * 1.5); /* 24px */
-    --spacing-7: calc(var(--spacing-unit) * 1.75); /* 28px */
-    --spacing-8: calc(var(--spacing-unit) * 2); /* 32px */
+    /* Surface Colors - 표면 및 배경 색상 계열 */
+    --surface: #FEF7FF; /* 기본 표면 색상 */
+    --on-surface: #1D1B20; /* 표면 위 텍스트/아이콘 색상 */
+    --surface-dim: #DED8E1; /* 어두운 표면 색상 */
+    --surface-bright: #FEF7FF; /* 밝은 표면 색상 */
+    --surface-container-lowest: #FFFFFF; /* 가장 낮은 층위의 컨테이너 색상 */
+    --surface-container-low: #F7F2FA; /* 낮은 층위의 컨테이너 색상 */
+    --surface-container: #F3EDF7; /* 기본 컨테이너 색상 */
+    --surface-container-high: #ECE6F0; /* 높은 층위의 컨테이너 색상 */
+    --surface-container-highest: #E6E0E9; /* 가장 높은 층위의 컨테이너 색상 */
+
+    /* Error Colors - 오류 상태 표시용 색상 */
+    --error: #B3261E; /* 오류 색상 */
+    --on-error: #FFFFFF; /* 오류 색상 위 텍스트/아이콘 색상 */
+    --error-container: #F9DEDC; /* 오류 컨테이너 배경색 */
+    --on-error-container: #410E0B; /* 오류 컨테이너 위 텍스트/아이콘 색상 */
 
 
-    /* State Layer Colors */
-    --hover-primary: rgba(103, 80, 164, 0.08);
-    --hover-surface: rgba(28, 27, 31, 0.08);
-    --active-primary: rgba(103, 80, 164, 0.12);
-    --active-surface: rgba(28, 27, 31, 0.12);
+    /* Spacing Variables - 일관된 여백 시스템을 위한 변수 */
+    --spacing-1: calc(var(--spacing-unit) * 0.25); /* 4px - 최소 여백 */
+    --spacing-2: calc(var(--spacing-unit) * 0.5); /* 8px - 작은 여백 */
+    --spacing-3: calc(var(--spacing-unit) * 0.75); /* 12px - 중소 여백 */
+    --spacing-4: calc(var(--spacing-unit) * 1); /* 16px - 기본 여백 */
+    --spacing-5: calc(var(--spacing-unit) * 1.25); /* 20px - 중간 여백 */
+    --spacing-6: calc(var(--spacing-unit) * 1.5); /* 24px - 중대 여백 */
+    --spacing-7: calc(var(--spacing-unit) * 1.75); /* 28px - 큰 여백 */
+    --spacing-8: calc(var(--spacing-unit) * 2); /* 32px - 최대 여백 */
 
-    /* Outline Colors */
-    --outline: #79747E;
-    --outline-variant: #CAC4D0;
 
-    /* Utility Colors */
-    --error: #B3261E;
-    --success: #149767;
+    /* State Layer Colors - 상호작용 상태 표시용 색상 */
+    --hover-primary: rgba(103, 80, 164, 0.08); /* 주 요소 호버 상태 배경색 */
+    --hover-surface: rgba(28, 27, 31, 0.08); /* 표면 요소 호버 상태 배경색 */
+    --active-primary: rgba(103, 80, 164, 0.12); /* 주 요소 활성 상태 배경색 */
+    --active-surface: rgba(28, 27, 31, 0.12); /* 표면 요소 활성 상태 배경색 */
 
-    /* Elevation (Shadows) */
+    /* Outline Colors - 외곽선 색상 */
+    --outline: #79747E; /* 기본 외곽선 색상 */
+    --outline-variant: #CAC4D0; /* 변형 외곽선 색상 */
+
+    /* Utility Colors - 유용한 상태 표시 색상 */
+    --success: #149767; /* 성공 상태 색상 */
+
+    /* Elevation (Shadows) - 층위감을 표현하는 그림자 스타일 */
     --shadow-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15),
-    0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    0px 1px 2px 0px rgba(0, 0, 0, 0.30); /* 레벨 1 그림자 - 낮은 고도 */
     --shadow-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15),
-    0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    0px 1px 2px 0px rgba(0, 0, 0, 0.30); /* 레벨 2 그림자 - 중간 고도 */
     --shadow-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15),
-    0px 1px 3px 0px rgba(0, 0, 0, 0.30);
+    0px 1px 3px 0px rgba(0, 0, 0, 0.30); /* 레벨 3 그림자 - 높은 고도 */
 
-    /* Layout */
-    --header-height: 75px;
-    --max-width: 1200px;
-    --spacing-unit: 1rem;
-    --border-radius: 16px;
-    --border-radius-xl: 28px;
+    /* Layout - 레이아웃 관련 변수 */
+    --header-height: 75px; /* 헤더 높이 */
+    --max-width: 1200px; /* 최대 콘텐츠 너비 */
+    --spacing-unit: 1rem; /* 기본 간격 단위 (16px) */
+    --border-radius: 16px; /* 기본 모서리 둥글기 */
+    --border-radius-xl: 28px; /* 큰 모서리 둥글기 */
+    --border-radius-xxl: 32px; /* 매우 큰 모서리 둥글기 */
 
-    /* Z-index */
-    --z-header: 1000;
-    --z-header-toggle: 1001;
+    /* Z-index - 요소 쌓임 순서 */
+    --z-header: 1000; /* 헤더의 z-index */
+    --z-header-toggle: 1001; /* 헤더 토글 버튼의 z-index */
 
-    /* Transitions */
-    --transition-fast: 0.2s ease;
-    --transition-normal: 0.3s ease-in-out;
+    /* Transitions - 애니메이션 효과 */
+    --transition-fast: 0.2s ease; /* 빠른 전환 효과 */
+    --transition-normal: 0.3s ease-in-out; /* 일반 전환 효과 */
 }
 
-/* Base Reset & Defaults */
+/* Base Reset & Defaults - 브라우저 기본 스타일 초기화 및 기본 스타일 설정 */
 *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+    box-sizing: border-box; /* 박스 모델을 border-box로 통일 */
+    margin: 0; /* 기본 마진 제거 */
+    padding: 0; /* 기본 패딩 제거 */
 }
 
+/* 기본 body 스타일 및 레이아웃 구조 */
 body {
-    font-family: var(--font-family-base), system-ui, -apple-system, sans-serif; /* 제네릭 폰트 패밀리 추가 */
-    background-color: var(--surface);
-    color: var(--on-surface);
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-rows: auto 1fr;
+    font-family: var(--font-family-base), system-ui, -apple-system, sans-serif; /* 기본 폰트 설정 */
+    background-color: var(--surface); /* 배경색 설정 */
+    color: var(--on-surface); /* 텍스트 색상 설정 */
+    min-height: 100vh; /* 최소 높이를 뷰포트 높이로 설정 */
+    margin: 0; /* 마진 제거 */
+    padding: 0; /* 패딩 제거 */
+    display: grid; /* 그리드 레이아웃 사용 */
+    grid-template-rows: auto 1fr; /* 행 구조: 헤더(자동 높이) + 메인(나머지 공간) */
     grid-template-areas:
-        "header"
-        "main";
-    overflow-x: hidden;
+        "header" /* 헤더 영역 */
+        "main"; /* 메인 콘텐츠 영역 */
+    overflow-x: hidden; /* 가로 스크롤 방지 */
 }
 
-/* Grid Areas */
+/* Grid Areas - 레이아웃 영역 정의 */
 header {
-    grid-area: header;
-    position: relative;
-    z-index: var(--z-header);
+    grid-area: header; /* 헤더 영역으로 지정 */
+    position: relative; /* 상대 위치 지정 */
+    z-index: var(--z-header); /* z-index 설정 */
 }
 
 main {
-    grid-area: main;
-    display: grid;
-    place-items: center;
-    padding: var(--spacing-unit);
+    grid-area: main; /* 메인 영역으로 지정 */
+    display: grid; /* 그리드 레이아웃 사용 */
+    place-items: center; /* 콘텐츠 중앙 정렬 */
+    padding: var(--spacing-unit); /* 패딩 설정 */
 }
 
-/* Utility Classes */
+/* Utility Classes - 유틸리티 클래스 정의 */
 .container {
-    width: min(calc(100% - 2rem), var(--max-width));
-    margin: 0 auto;
-    padding: 0 var(--spacing-unit);
+    width: min(calc(100% - 2rem), var(--max-width)); /* 반응형 너비 설정 */
+    margin: 0 auto; /* 중앙 정렬 */
+    padding: 0 var(--spacing-unit); /* 좌우 패딩 */
 }
 
 .hidden {
-    display: none !important;
+    display: none !important; /* 요소 숨김 처리 */
 }

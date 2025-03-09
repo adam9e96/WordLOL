@@ -20,7 +20,7 @@
                     <i class="bi bi-journal-text"></i>
                     <span>단어장 목록</span>
                 </h2>
-                <button class="btn btn-primary create-btn" onclick="wordBookListManager.navigateTo('/wordbook/create')">
+                <button class="btn btn-add_word create-btn" onclick="wordBookListManager.navigateTo('/wordbook/create')">
                     <i class="bi bi-plus-lg"></i>
                     <span>새 단어장 만들기</span>
                 </button>
@@ -78,7 +78,7 @@
                     <p class="text-danger">이 작업은 되돌릴 수 없습니다.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-text" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
                         취소
                     </button>
                     <button type="button" class="btn btn-error" id="confirmDelete">

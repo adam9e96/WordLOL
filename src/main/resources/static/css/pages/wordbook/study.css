@@ -304,7 +304,7 @@
     box-shadow: var(--shadow-2);
 }
 
-.input-group .btn-primary {
+.input-group .btn-add_word {
     border-radius: 0; /* 모서리 제거 */
     padding: 0 var(--spacing-6); /* 패딩 조정 */
 }
@@ -334,7 +334,7 @@
     font-size: 1.25rem;
 }
 
-.btn-primary {
+.btn-add_word {
     background: var(--primary);
     color: var(--on-primary);
 }
@@ -349,7 +349,7 @@
     box-shadow: var(--shadow-2);
 }
 
-.btn-primary:hover {
+.btn-add_word:hover {
     background: var(--primary);
 }
 

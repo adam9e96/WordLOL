@@ -14,12 +14,12 @@
     <!-- 페이지 타이틀 -->
     <div class="word-list-header">
         <div class="word-list-title">
-            <i class="bi bi-book"></i>
+            <i class="bi bi-book" id="word-list-title-icon"></i>
             <h2>단어 목록</h2>
         </div>
         <div class="word-list-actions">
-            <button class="btn btn-primary rounded-pill" id="AddWordButton">
-                <i class="bi bi-plus"></i> 새 단어 추가
+            <button class="btn btn-add_word rounded-pill" id="AddWordButton">
+                <i class="bi bi-plus" id="word-list-add"></i> 새 단어 추가
             </button>
         </div>
     </div>
@@ -86,8 +86,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-text" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-primary" id="saveEdit">저장</button>
+                    <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-modal-save" id="saveEdit">저장</button>
                 </div>
             </div>
         </div>

@@ -216,24 +216,24 @@ textarea.form-control {
     border-color: var(--outline);
 }
 
-.btn-text {
+.btn-cancel {
     background: var(--surface-container);
     color: var(--on-surface-variant);
     border: 2px solid var(--outline-variant);
 }
 
-.btn-text:hover {
+.btn-cancel:hover {
     background: var(--surface-container-high);
     border-color: var(--outline);
 }
 
-.btn-primary {
+.btn-add_word {
     background: var(--primary);
     color: var(--on-primary);
     border: none;
 }
 
-.btn-primary:hover {
+.btn-add_word:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
 }
@@ -259,7 +259,7 @@ textarea.form-control {
 }
 
 /* Button Group */
-.button-group {
+.control-section {
     display: grid;
     grid-template-columns: auto auto;
     justify-content: end;
@@ -344,7 +344,7 @@ textarea.form-control {
         color: var(--on-surface-variant);
     }
 
-    .button-group {
+    .control-section {
         grid-template-columns: 1fr;
         gap: var(--spacing-3);
     }
@@ -522,7 +522,7 @@ textarea.form-control {
     .btn-remove,
     .add-word-btn,
     .bulk-actions,
-    .button-group {
+    .control-section {
         display: none;
     }
 }
