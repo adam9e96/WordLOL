@@ -677,13 +677,13 @@
     box-shadow: var(--shadow-2);
 }
 
-.btn-add_word {
+.btn-check-answer {
     background: var(--primary);
     border-radius: var(--border-radius);
     color: var(--on-primary);
 }
 
-.btn-add_word:hover {
+.btn-check-answer:hover {
     background: var(--primary-container);
     color: var(--on-primary-container);
     transform: translateY(-4px);

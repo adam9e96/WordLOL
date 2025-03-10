@@ -213,7 +213,6 @@
     padding: var(--spacing-4);
     background: var(--surface);
     border: 2px solid var(--outline-variant);
-    border-radius: 24px !important;
     border-top-left-radius: 24px !important;
     border-top-right-radius: 24px !important;
     border-bottom-left-radius: 24px !important;
@@ -235,7 +234,6 @@
     background: var(--primary);
     color: var(--on-primary);
     border: none;
-    border-radius: 24px !important;
     border-top-left-radius: 24px !important;
     border-top-right-radius: 24px !important;
     border-bottom-left-radius: 24px !important;

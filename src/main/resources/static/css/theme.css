@@ -163,7 +163,7 @@ body {
     border-color: var(--primary);
 }
 
-[data-theme="dark"] .btn-add_word {
+[data-theme="dark"] .btn-check-answer {
     background-color: var(--primary);
     color: var(--on-primary);
 }

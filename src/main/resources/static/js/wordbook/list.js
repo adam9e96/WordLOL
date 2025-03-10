@@ -219,7 +219,7 @@ class WordBookListManager {
             </div>
             <h3 class="empty-state-title">${categoryName} 카테고리를 찾을 수 없습니다</h3>
             <p class="empty-state-message">선택하신 카테고리가 존재하지 않거나 접근할 수 없습니다. 다른 카테고리를 선택해주세요.</p>
-            <button class="btn btn-add_word" onclick="wordBookListManager.filterByCategory('ALL')">
+            <button class="btn btn-check-answer" onclick="wordBookListManager.filterByCategory('ALL')">
                 <i class="bi bi-grid-fill"></i>
                 전체 단어장 보기
             </button>
@@ -497,7 +497,7 @@ class WordBookListManager {
                 <p class="empty-state-message">${this.state.currentCategory === 'ALL'
             ? '아직 등록된 단어장이 없습니다. 새 단어장을 만들어보세요!'
             : `'${this.getCategoryDisplayName(this.state.currentCategory)}' 카테고리에 해당하는 단어장이 없습니다.`}</p>
-                <button class="btn btn-add_word" onclick="wordBookListManager.navigateTo('/wordbook/create')">
+                <button class="btn btn-check-answer" onclick="wordBookListManager.navigateTo('/wordbook/create')">
                     <i class="bi bi-plus-lg"></i>
                     새 단어장 만들기
                 </button>

@@ -4,7 +4,6 @@ import com.adam9e96.wordlol.common.Constants;
 import com.adam9e96.wordlol.controller.interfaces.WordBookViewController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,8 +32,7 @@ public class WordBookViewControllerImpl implements WordBookViewController {
 
     @Override
     @GetMapping(Constants.ViewPath.WORD_BOOK_STUDY)
-    public String showWordBookStudyPage(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("wordBookId", id);
+    public String showWordBookStudyPage(@PathVariable("id") Long id) {
         return "views/wordbook/study";
     }
 
