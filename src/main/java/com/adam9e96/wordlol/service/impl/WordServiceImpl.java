@@ -1,10 +1,7 @@
 package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.common.Constants;
-import com.adam9e96.wordlol.dto.WordRequest;
-import com.adam9e96.wordlol.dto.WordResponse;
-import com.adam9e96.wordlol.dto.WordSearchRequest;
-import com.adam9e96.wordlol.dto.WordStudyResponse;
+import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
@@ -239,12 +236,12 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public List<Word> findRandomWords() {
+    public List<DailyWordResponse> findRandomWords() {
         List<Word> randomWords = wordMapper.findRandom5Words();
         if (randomWords.isEmpty()) {
             throw new WordNotFoundException(0L);
         }
-        return randomWords;
+        return wordEntityMapper.toDailyWordDtoList(randomWords);
     }
 
     @Override

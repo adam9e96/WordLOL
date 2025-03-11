@@ -1,9 +1,6 @@
 package com.adam9e96.wordlol.service.interfaces;
 
-import com.adam9e96.wordlol.dto.WordRequest;
-import com.adam9e96.wordlol.dto.WordResponse;
-import com.adam9e96.wordlol.dto.WordSearchRequest;
-import com.adam9e96.wordlol.dto.WordStudyResponse;
+import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.Word;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -164,7 +161,7 @@ public interface WordService {
             @ApiResponse(responseCode = "200", description = "랜덤 단어 목록 조회 성공"),
             @ApiResponse(responseCode = "404", description = "단어가 없음")
     })
-    List<Word> findRandomWords();
+    List<DailyWordResponse> findRandomWords();
 
     /**
      * 단어의 중복 여부를 확인합니다.

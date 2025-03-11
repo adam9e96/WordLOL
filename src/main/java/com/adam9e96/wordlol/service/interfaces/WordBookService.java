@@ -1,6 +1,6 @@
 package com.adam9e96.wordlol.service.interfaces;
 
-import com.adam9e96.wordlol.dto.WordBookRequest;
+import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.Category;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.entity.WordBook;
@@ -36,7 +36,7 @@ public interface WordBookService {
         @ApiResponse(responseCode = "400", description = "유효하지 않은 입력"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    WordBook createWordBook(@Parameter(description = "생성할 단어장 정보", required = true) WordBookRequest request);
+    WordBookResponse createWordBook(@Parameter(description = "생성할 단어장 정보", required = true) WordBookRequest request);
 
     /**
      * 단어장 ID로 해당 단어장의 단어 목록을 조회합니다.
@@ -50,7 +50,7 @@ public interface WordBookService {
         @ApiResponse(responseCode = "200", description = "단어 목록 조회 성공"),
         @ApiResponse(responseCode = "404", description = "단어장을 찾을 수 없음")
     })
-    List<Word> findWordsByWordBookId(@Parameter(description = "조회할 단어장의 ID", required = true) Long wordBookId);
+    List<WordResponse> findWordsByWordBookId(@Parameter(description = "조회할 단어장의 ID", required = true) Long wordBookId);
 
     /**
      * 카테고리별 단어장 목록을 조회합니다.
@@ -64,7 +64,7 @@ public interface WordBookService {
         @ApiResponse(responseCode = "200", description = "단어장 목록 조회 성공"),
         @ApiResponse(responseCode = "404", description = "해당 카테고리의 단어장을 찾을 수 없음")
     })
-    List<WordBook> findWordBookListByCategory(@Parameter(description = "조회할 카테고리", required = true) Category category);
+    List<WordBookResponse> findWordBookListByCategory(@Parameter(description = "조회할 카테고리", required = true) Category category);
 
     /**
      * 모든 단어장 목록을 조회합니다.
@@ -77,7 +77,7 @@ public interface WordBookService {
         @ApiResponse(responseCode = "200", description = "단어장 목록 조회 성공"),
         @ApiResponse(responseCode = "404", description = "단어장이 없음")
     })
-    List<WordBook> findAllWordBookList();
+    List<WordBookListResponse> findAllWordBookList();
 
     /**
      * 카테고리별 단어 목록을 조회합니다.
@@ -90,7 +90,7 @@ public interface WordBookService {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "단어 목록 조회 성공")
     })
-    List<Word> findWordsByBookCategory(@Parameter(description = "조회할 카테고리", required = true) Category category);
+    List<WordResponse> findWordsByBookCategory(@Parameter(description = "조회할 카테고리", required = true) Category category);
 
     /**
      * 학습용 단어장 데이터를 조회합니다.
@@ -106,7 +106,7 @@ public interface WordBookService {
         @ApiResponse(responseCode = "200", description = "학습 데이터 조회 성공"),
         @ApiResponse(responseCode = "404", description = "단어장을 찾을 수 없거나 단어가 없음")
     })
-    List<Word> findWordBookStudyData(@Parameter(description = "조회할 단어장의 ID", required = true) Long wordBookId);
+    List<WordBookStudyResponse> findWordBookStudyData(@Parameter(description = "조회할 단어장의 ID", required = true) Long wordBookId);
 
     /**
      * 단어장 ID로 단어장을 조회합니다.
@@ -121,7 +121,7 @@ public interface WordBookService {
                      content = @Content(schema = @Schema(implementation = WordBook.class))),
         @ApiResponse(responseCode = "404", description = "단어장을 찾을 수 없음")
     })
-    WordBook findWordBookById(@Parameter(description = "조회할 단어장의 ID", required = true) Long id);
+    WordBookDetailResponse findWordBookById(@Parameter(description = "조회할 단어장의 ID", required = true) Long id);
 
     /**
      * 단어장 정보를 수정합니다.
@@ -141,7 +141,7 @@ public interface WordBookService {
         @ApiResponse(responseCode = "404", description = "단어장을 찾을 수 없음"),
         @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    WordBook updateWordBookById(
+    WordBookResponse updateWordBookById(
         @Parameter(description = "수정할 단어장의 ID", required = true) Long id,
         @Parameter(description = "수정할 단어장 정보", required = true) WordBookRequest request
     );

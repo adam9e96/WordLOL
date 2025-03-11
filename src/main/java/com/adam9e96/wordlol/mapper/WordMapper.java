@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.mapper;
 
+import com.adam9e96.wordlol.dto.DailyWordResponse;
 import com.adam9e96.wordlol.dto.WordSearchRequest;
 import com.adam9e96.wordlol.entity.Word;
 import org.apache.ibatis.annotations.Mapper;

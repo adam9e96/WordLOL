@@ -1,11 +1,11 @@
 package com.adam9e96.wordlol.mapping;
 
+import com.adam9e96.wordlol.dto.DailyWordResponse;
 import com.adam9e96.wordlol.dto.WordRequest;
 import com.adam9e96.wordlol.dto.WordResponse;
 import com.adam9e96.wordlol.dto.WordStudyResponse;
 import com.adam9e96.wordlol.entity.Word;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -16,6 +16,8 @@ public interface WordEntityMapper {
     WordResponse toDto(Word word);
 
     WordStudyResponse toStudyDto(Word word);
+
+    List<DailyWordResponse> toDailyWordDtoList(List<Word> words);
 
     // 자동 변환 대신 직접 구현
     default Word toEntity(WordRequest request) {

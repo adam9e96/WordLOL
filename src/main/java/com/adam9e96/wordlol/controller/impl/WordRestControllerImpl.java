@@ -124,9 +124,8 @@ public class WordRestControllerImpl implements WordRestController {
     @Override
     @GetMapping(Constants.ApiPath.WORD_DAILY)
     public ResponseEntity<List<DailyWordResponse>> getDailyWords() {
-        List<Word> words = wordService.findRandomWords();
-        return ResponseEntity.ok().body(
-                toDailyWordListResponse(words));
+        List<DailyWordResponse> response = wordService.findRandomWords();
+        return ResponseEntity.ok().body(response);
     }
 
     /**
@@ -163,6 +162,7 @@ public class WordRestControllerImpl implements WordRestController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Word> wordPage = wordService.findAllWithPaging(pageable);
         PageResponse<WordResponse> response = new PageResponse<>(
+
                 wordPage.map(this::toWordResponse)
         );
         return ResponseEntity.ok(response);
@@ -186,18 +186,6 @@ public class WordRestControllerImpl implements WordRestController {
         return ResponseEntity.ok(response);
     }
 
-
-    private WordStudyResponse toWordStudyResponse(Word word) {
-        return new WordStudyResponse(
-                word.getId(),
-                word.getVocabulary(),
-                word.getMeaning(),
-                word.getHint(),
-                word.getDifficulty()
-        );
-    }
-
-
     private WordResponse toWordResponse(Word word) {
         return new WordResponse(
                 word.getId(),
@@ -210,13 +198,4 @@ public class WordRestControllerImpl implements WordRestController {
         );
     }
 
-
-    private List<DailyWordResponse> toDailyWordListResponse(List<Word> words) {
-        return words.stream()
-                .map(word -> new DailyWordResponse(
-                        word.getVocabulary(),
-                        word.getMeaning(),
-                        word.getDifficulty()))
-                .toList();
-    }
 }

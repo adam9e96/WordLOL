@@ -1,13 +1,14 @@
 package com.adam9e96.wordlol.service.impl;
 
-import com.adam9e96.wordlol.dto.WordBookRequest;
-import com.adam9e96.wordlol.dto.WordRequest;
+import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.Category;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.entity.WordBook;
 import com.adam9e96.wordlol.exception.wordbook.*;
 import com.adam9e96.wordlol.mapper.WordBookMapper;
 import com.adam9e96.wordlol.mapper.WordMapper;
+import com.adam9e96.wordlol.mapping.WordBookEntityMapper;
+import com.adam9e96.wordlol.mapping.WordEntityMapper;
 import com.adam9e96.wordlol.repository.WordBookRepository;
 import com.adam9e96.wordlol.repository.WordRepository;
 import com.adam9e96.wordlol.service.interfaces.WordBookService;
@@ -33,10 +34,12 @@ public class WordBookServiceImpl implements WordBookService {
     private final WordMapper wordMapper;
     private final WordBookMapper wordBookMapper;
     private final WordBookValidator wordBookValidator;
+    private final WordBookEntityMapper wordBookEntityMapper;
+    private final WordEntityMapper wordEntityMapper;
 
     @Transactional
     @Override
-    public WordBook createWordBook(WordBookRequest request) {
+    public WordBookResponse createWordBook(WordBookRequest request) {
         try {
             // 입력값 유효성 검사
             wordBookValidator.validate(request);
@@ -68,7 +71,8 @@ public class WordBookServiceImpl implements WordBookService {
             WordBook savedWordBook = wordBookRepository.save(wordBook);
             log.debug("단어장 생성 완료: ID={}", savedWordBook.getId());
 
-            return savedWordBook;
+            // 단어장 생성 후 단어 목록을 WordResponse로 변환
+            return wordBookEntityMapper.toResponse(savedWordBook);
         } catch (DataIntegrityViolationException e) {
             log.debug("단어장 생성 중 데이터 무결성 오류 : {}", e.getMessage());
             throw new WordBookCreationException();
@@ -87,7 +91,7 @@ public class WordBookServiceImpl implements WordBookService {
      */
     @Transactional(readOnly = true)
     @Override
-    public List<Word> findWordsByWordBookId(Long wordBookId) {
+    public List<WordResponse> findWordsByWordBookId(Long wordBookId) {
         try {
             // 먼저 단어장 존재 여부 확인
             if (!isWordBookExists(wordBookId)) {
@@ -102,7 +106,10 @@ public class WordBookServiceImpl implements WordBookService {
                 throw new WordBookEmptyWordsException(wordBookId);
             }
 
-            return words;
+            // 단어 목록을 WordResponse 로 변환
+            return words.stream()
+                    .map(wordEntityMapper::toDto)
+                    .toList();
         } catch (WordBookNotFoundException | WordBookEmptyWordsException e) {
             // 이미 생성된 예외는 그대로 전달
             throw e;
@@ -123,7 +130,7 @@ public class WordBookServiceImpl implements WordBookService {
      */
     @Override
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션으로 최적화
-    public List<WordBook> findWordBookListByCategory(Category category) {
+    public List<WordBookResponse> findWordBookListByCategory(Category category) {
 
         try {
             // 단어장 목록 조회
@@ -135,7 +142,9 @@ public class WordBookServiceImpl implements WordBookService {
                 throw new WordBookNotFoundException(category);
             }
 
-            return wordBooks;
+            return wordBooks.stream()
+                    .map(wordBookEntityMapper::toResponse)
+                    .toList();
         } catch (Exception e) {
             log.error("카테고리 '{}'의 단어장 목록 조회 중 오류 발생", category, e);
             throw new WordBookNotFoundException(category);
@@ -151,7 +160,7 @@ public class WordBookServiceImpl implements WordBookService {
      */
     @Transactional(readOnly = true)
     @Override
-    public List<WordBook> findAllWordBookList() {
+    public List<WordBookListResponse> findAllWordBookList() {
         try {
             List<WordBook> wordBooks = wordBookRepository.findAll();
 
@@ -159,8 +168,10 @@ public class WordBookServiceImpl implements WordBookService {
                 log.debug("등록된 단어장 없습니다");
                 throw new WordBookEmptyException();
             }
-            log.debug("단어장 목록 조회 완료: {} 개 단어장 발견 됨", wordBooks.size());
-            return wordBooks;
+            return wordBooks.stream()
+                    .map(wordBookEntityMapper::toListDto)
+                    .toList();
+
         } catch (Exception e) {
             log.error("단어장 목록 조회 중 오류 발생", e);
             throw new WordBookEmptyException();
@@ -169,18 +180,25 @@ public class WordBookServiceImpl implements WordBookService {
     }
 
     @Override
-    public List<Word> findWordsByBookCategory(Category category) {
-        return wordRepository.findByWordBookCategory(category);
+    public List<WordResponse> findWordsByBookCategory(Category category) {
+        List<Word> words = wordRepository.findByWordBookCategory(category);
+        return words.stream()
+                .map(wordEntityMapper::toDto)
+                .toList();
     }
 
 
     @Transactional
     @Override
-    public WordBook findWordBookById(Long id) {
-        return wordBookMapper.findById(id).orElseThrow(() -> {
-            log.debug("단어장(ID: {})을 찾을 수 없습니다", id);
-            return new WordBookNotFoundException(id);
-        });
+    public WordBookDetailResponse findWordBookById(Long id) {
+
+        return wordBookEntityMapper.toDetailDto(wordBookRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.debug("단어장(ID: {})을 찾을 수 없습니다", id);
+                    return new WordBookNotFoundException(id);
+                })
+        );
+
     }
 
 
@@ -192,7 +210,7 @@ public class WordBookServiceImpl implements WordBookService {
      * @throws WordBookNotFoundException 단어장이 존재하지 않는 경우
      */
     @Override
-    public List<Word> findWordBookStudyData(Long wordBookId) {
+    public List<WordBookStudyResponse> findWordBookStudyData(Long wordBookId) {
 
         // 단어장 존재 여부 확인
         if (!wordBookRepository.existsById(wordBookId)) {
@@ -210,12 +228,17 @@ public class WordBookServiceImpl implements WordBookService {
 
         log.debug("단어장 학습 데이터 조회 완료 - wordBookId: {}, 단어 수: {}",
                 wordBookId, words.size());
-        return words;
+
+        // 단어 목록 반환
+        // 단어장에 속한 단어들만 반환
+        return words.stream()
+                .map(wordBookEntityMapper::toStudyDto)
+                .toList();
     }
 
     @Transactional
     @Override
-    public WordBook updateWordBookById(Long id, WordBookRequest request) {
+    public WordBookResponse updateWordBookById(Long id, WordBookRequest request) {
         log.info("단어장 수정 시작 - id: {}", id);
         // 유효성 검사
         wordBookValidator.validateUpdate(request, id);
@@ -237,7 +260,9 @@ public class WordBookServiceImpl implements WordBookService {
             // 저장 및 반환
             WordBook savedWordBook = wordBookRepository.save(wordBook);
             log.debug("단어장 수정 완료 - id: {}", id);
-            return savedWordBook;
+            // 단어장 수정 후 단어 목록을 WordResponse로 변환
+            return wordBookEntityMapper.toResponse(savedWordBook);
+
         } catch (Exception e) {
             log.error("단어장 수정 중 오류 발생 - id: {}", id, e);
             throw new WordBookUpdateException();
