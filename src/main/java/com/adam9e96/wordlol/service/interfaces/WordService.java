@@ -1,7 +1,9 @@
 package com.adam9e96.wordlol.service.interfaces;
 
 import com.adam9e96.wordlol.dto.WordRequest;
+import com.adam9e96.wordlol.dto.WordResponse;
 import com.adam9e96.wordlol.dto.WordSearchRequest;
+import com.adam9e96.wordlol.dto.WordStudyResponse;
 import com.adam9e96.wordlol.entity.Word;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,7 +67,7 @@ public interface WordService {
                     content = @Content(schema = @Schema(implementation = Word.class))),
             @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
     })
-    Word findById(@Parameter(description = "조회할 단어의 ID", required = true) Long id);
+    WordResponse findById(@Parameter(description = "조회할 단어의 ID", required = true) Long id);
 
     /**
      * 단어 정보를 수정합니다.
@@ -128,7 +130,7 @@ public interface WordService {
                     content = @Content(schema = @Schema(implementation = Word.class))),
             @ApiResponse(responseCode = "404", description = "단어가 없음")
     })
-    Word findRandomWord();
+    WordStudyResponse findRandomWord();
 
     /**
      * 단어의 답안을 검증합니다.

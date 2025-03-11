@@ -1,22 +1,170 @@
-// 상태 관리
-const State = {
-    currentPage: initialPage || 0,
-    pageSize: 20,
-    keyword: initialKeyword || '',
-    isProcessing: false,
-    API_BASE_URL: '/api/v1/words'
-};
+/**
+ * 단어 검색 애플리케이션
+ * 클래스 기반 구조로 유지보수성 개선
+ */
+class SearchApp {
+    /**
+     * 생성자
+     */
+    constructor() {
+        // 상태 관리
+        this.state = {
+            currentPage: initialPage || 0,
+            pageSize: 20,
+            keyword: initialKeyword || '',
+            isProcessing: false,
+            API_BASE_URL: '/api/v1/words'
+        };
 
-// DOM 요소 캐싱
-const Elements = {
-    pagination: document.getElementById('pagination'),
-    wordList: document.getElementById('wordList'),
-    toast: document.getElementById('toast'),
-    resultCount: document.getElementById('resultCount')
-};
+        // DOM 요소 캐싱
+        this.elements = {
+            pagination: document.getElementById('pagination'),
+            wordList: document.getElementById('wordList'),
+            toast: document.getElementById('toast'),
+            resultCount: document.getElementById('resultCount')
+        };
 
-// UI 관리
-const UIManager = {
+        // 매니저 초기화
+        this.uiManager = new UIManager(this.elements);
+        this.apiService = new ApiService(this.state.API_BASE_URL);
+        this.paginationManager = new PaginationManager(this.state, this.uiManager);
+        this.wordManager = new WordManager(this.state, this.apiService, this.uiManager);
+    }
+
+    /**
+     * 애플리케이션 초기화
+     */
+    initialize() {
+        console.log('검색 페이지 초기화 시작');
+        console.log('검색 키워드:', this.state.keyword);
+        console.log('초기 페이지:', this.state.currentPage);
+
+        // 이벤트 리스너 설정
+        this.setupEventListeners();
+
+        // 초기 검색 결과 로드
+        this.loadSearchResults(this.state.currentPage)
+            .then(() => console.log('검색 결과 로드 완료'))
+            .catch(error => console.error('검색 결과 로드 실패:', error));
+    }
+
+    /**
+     * 이벤트 리스너 설정
+     */
+    setupEventListeners() {
+        // 페이지네이션 클릭 이벤트
+        this.elements.pagination.addEventListener('click', (e) => this.handlePaginationClick(e));
+
+        // 테이블 클릭 이벤트 (수정/삭제)
+        this.elements.wordList.addEventListener('click', (e) => this.handleTableClick(e));
+
+        // 브라우저 뒤로가기/앞으로가기 이벤트
+        window.addEventListener('popstate', () => this.handlePopState());
+    }
+
+    /**
+     * 페이지네이션 클릭 핸들러
+     * @param {Event} e - 클릭 이벤트
+     */
+    handlePaginationClick(e) {
+        const button = e.target.closest('button');
+        if (!button?.dataset.page) return;
+
+        e.preventDefault();
+        const page = parseInt(button.dataset.page);
+        if (!isNaN(page)) {
+            this.loadSearchResults(page);
+        }
+    }
+
+    /**
+     * 테이블 클릭 핸들러 (수정/삭제 버튼)
+     * @param {Event} e - 클릭 이벤트
+     */
+    handleTableClick(e) {
+        if (this.state.isProcessing) return;
+
+        const button = e.target.closest('button');
+        if (!button) return;
+
+        const id = button.dataset.id;
+        if (!id) return;
+
+        try {
+            this.state.isProcessing = true;
+
+            if (button.classList.contains('edit-btn')) {
+                this.wordManager.editWord(id);
+            } else if (button.classList.contains('delete-btn')) {
+                this.wordManager.deleteWord(id)
+                    .then(() => this.loadSearchResults(this.state.currentPage));
+            }
+        } finally {
+            this.state.isProcessing = false;
+        }
+    }
+
+    /**
+     * 브라우저 history 변경 이벤트 핸들러
+     */
+    handlePopState() {
+        const url = new URL(window.location);
+        this.state.currentPage = parseInt(url.searchParams.get('page') || '0');
+        this.state.keyword = url.searchParams.get('keyword') || '';
+
+        this.loadSearchResults(this.state.currentPage);
+    }
+
+    /**
+     * 검색 결과 로드
+     * @param {number} page - 페이지 번호
+     * @returns {Promise<Object>} 검색 결과 데이터
+     */
+    async loadSearchResults(page) {
+        try {
+            console.log('검색 결과 로드 시작: 페이지 ' + page);
+            this.state.currentPage = page;
+            this.paginationManager.updateUrl(page);
+
+            const data = await this.apiService.searchWords(
+                this.state.keyword,
+                page,
+                this.state.pageSize
+            );
+
+            this.uiManager.updateWordList(data.content, data.totalElements);
+            this.uiManager.updatePagination(
+                data.totalPages,
+                this.paginationManager.generatePaginationButtons(data.totalPages)
+            );
+
+            return data;
+        } catch (error) {
+            console.error('검색 결과 로드 오류:', error);
+            this.uiManager.showToast(error.message, false);
+            throw error;
+        }
+    }
+}
+
+/**
+ * UI 관리 클래스
+ * UI 요소 업데이트 및 관련 기능 제공
+ */
+class UIManager {
+    /**
+     * 생성자
+     * @param {Object} elements - DOM 요소 참조
+     */
+    constructor(elements) {
+        this.elements = elements;
+    }
+
+    /**
+     * 난이도 배지 HTML 생성
+     * @param {number} level - 난이도 레벨
+     * @returns {string} 배지 HTML
+     */
     getDifficultyBadge(level) {
         const badges = {
             1: ['success', '매우 쉬움'],
@@ -27,8 +175,13 @@ const UIManager = {
         };
         const [colorClass, label] = badges[level] || ['secondary', '알 수 없음'];
         return `<span class="badge bg-${colorClass}">${label}</span>`;
-    },
+    }
 
+    /**
+     * 날짜 시간 포맷팅
+     * @param {string} dateTimeStr - ISO 형식 날짜 문자열
+     * @returns {string} 포맷팅된 날짜 문자열
+     */
     formatDateTime(dateTimeStr) {
         if (!dateTimeStr) return '-';
         const date = new Date(dateTimeStr);
@@ -39,25 +192,37 @@ const UIManager = {
             hour: '2-digit',
             minute: '2-digit'
         });
-    },
+    }
 
+    /**
+     * 토스트 메시지 표시
+     * @param {string} message - 표시할 메시지
+     * @param {boolean} isSuccess - 성공 여부
+     */
     showToast(message, isSuccess = true) {
-        const toastBody = Elements.toast.querySelector('.toast-body');
-        const existingToast = bootstrap.Toast.getInstance(Elements.toast);
+        const toastElement = this.elements.toast;
+        const toastBody = toastElement.querySelector('.toast-body');
+        const existingToast = bootstrap.Toast.getInstance(toastElement);
 
         if (existingToast) {
             existingToast.dispose();
         }
 
-        Elements.toast.className = `toast align-items-center text-white bg-${isSuccess ? 'success' : 'danger'}`;
+        toastElement.className = `toast align-items-center text-white bg-${isSuccess ? 'success' : 'danger'}`;
         toastBody.textContent = message;
 
-        new bootstrap.Toast(Elements.toast, {
+        new bootstrap.Toast(toastElement, {
             delay: 2000,
             autohide: true
         }).show();
-    },
+    }
 
+    /**
+     * 단어 행 요소 생성
+     * @param {Object} word - 단어 객체
+     * @param {number} index - 인덱스 (애니메이션 지연용)
+     * @returns {HTMLElement} 생성된 행 요소
+     */
     createWordRow(word, index) {
         const row = document.createElement('tr');
         row.style.animationDelay = `${index * 0.05}s`;
@@ -76,51 +241,146 @@ const UIManager = {
                 <i class="bi bi-trash"></i>
             </button>
         </td>
-    `;
+        `;
         return row;
-    },
+    }
 
+    /**
+     * 단어 목록 업데이트
+     * @param {Array<Object>} words - 단어 객체 배열
+     * @param {number} totalElements - 전체 항목 수
+     */
     updateWordList(words, totalElements) {
-        Elements.wordList.innerHTML = '';
+        this.elements.wordList.innerHTML = '';
 
         if (words.length === 0) {
             const emptyRow = document.createElement('tr');
             emptyRow.innerHTML = '<td colspan="7" class="text-center py-4">검색 결과가 없습니다.</td>';
-            Elements.wordList.appendChild(emptyRow);
+            this.elements.wordList.appendChild(emptyRow);
 
-            if (Elements.resultCount) {
-                Elements.resultCount.textContent = '0';
+            if (this.elements.resultCount) {
+                this.elements.resultCount.textContent = '0';
             }
             return;
         }
 
         words.forEach((word, index) => {
-            Elements.wordList.appendChild(this.createWordRow(word, index));
+            this.elements.wordList.appendChild(this.createWordRow(word, index));
         });
 
-        if (Elements.resultCount) {
-            Elements.resultCount.textContent = totalElements;
+        if (this.elements.resultCount) {
+            this.elements.resultCount.textContent = totalElements;
         }
-    },
-
-    updatePagination(totalPages) {
-        const paginationButtons = PaginationManager.generatePaginationButtons(totalPages);
-        Elements.pagination.innerHTML = paginationButtons;
     }
-};
 
-// API 서비스
-const ApiService = {
-    async searchWords(page) {
+    /**
+     * 페이지네이션 업데이트
+     * @param {number} totalPages - 전체 페이지 수
+     * @param {string} paginationButtons - 페이지네이션 버튼 HTML
+     */
+    updatePagination(totalPages, paginationButtons) {
+        this.elements.pagination.innerHTML = paginationButtons;
+    }
+
+    /**
+     * 단어 수정 모달 표시
+     * @param {Object} word - 단어 객체
+     * @param {Function} saveCallback - 저장 콜백 함수
+     */
+    showEditModal(word, saveCallback) {
+        // 기존 모달이 있으면 제거
+        const existingModal = document.getElementById('editModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // 모달 생성
+        const modalHTML = `
+        <div class="modal fade" id="editModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">단어 수정</h5>
+                        <button class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm">
+                            <input id="editId" type="hidden" value="${word.id}">
+                            <div class="form-group mb-3">
+                                <label class="form-label" for="editVocabulary">영단어</label>
+                                <input class="form-control" id="editVocabulary" required type="text" value="${word.vocabulary}">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label class="form-label" for="editMeaning">의미</label>
+                                <input class="form-control" id="editMeaning" required type="text" value="${word.meaning}">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label class="form-label" for="editHint">힌트</label>
+                                <input class="form-control" id="editHint" type="text" value="${word.hint || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editDifficulty">난이도</label>
+                                <select class="form-select" id="editDifficulty" required>
+                                    <option value="1" ${word.difficulty === 1 ? 'selected' : ''}>매우 쉬움</option>
+                                    <option value="2" ${word.difficulty === 2 ? 'selected' : ''}>쉬움</option>
+                                    <option value="3" ${word.difficulty === 3 ? 'selected' : ''}>보통</option>
+                                    <option value="4" ${word.difficulty === 4 ? 'selected' : ''}>어려움</option>
+                                    <option value="5" ${word.difficulty === 5 ? 'selected' : ''}>매우 어려움</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-cancel" data-bs-dismiss="modal" type="button">취소</button>
+                        <button class="btn btn-add_word" id="saveEdit" type="button">저장</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+
+        // 모달을 body에 추가
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // 모달 인스턴스 생성 및 표시
+        const modal = new bootstrap.Modal(document.getElementById('editModal'));
+        modal.show();
+
+        // 저장 버튼에 이벤트 리스너 추가
+        document.getElementById('saveEdit').addEventListener('click', saveCallback);
+    }
+}
+
+/**
+ * API 서비스 클래스
+ * 서버와의 통신 처리
+ */
+class ApiService {
+    /**
+     * 생성자
+     * @param {string} baseUrl - API 기본 URL
+     */
+    constructor(baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    /**
+     * 단어 검색 API 호출
+     * @param {string} keyword - 검색 키워드
+     * @param {number} page - 페이지 번호
+     * @param {number} size - 페이지 크기
+     * @returns {Promise<Object>} 검색 결과
+     */
+    async searchWords(keyword, page, size) {
         try {
-            console.log(`검색 요청: keyword=${State.keyword}, page=${page}`);
+            console.log(`검색 요청: keyword=${keyword}, page=${page}`);
 
-            const url = new URL(`${State.API_BASE_URL}/search`, window.location.origin);
+            const url = new URL(`${this.baseUrl}/search`, window.location.origin);
             url.searchParams.append('page', page);
-            url.searchParams.append('size', State.pageSize);
+            url.searchParams.append('size', size);
 
-            if (State.keyword) {
-                url.searchParams.append('keyword', State.keyword);
+            if (keyword) {
+                url.searchParams.append('keyword', keyword);
             }
 
             console.log(`API 요청 URL: ${url.toString()}`);
@@ -139,16 +399,27 @@ const ApiService = {
             console.error('API 호출 중 오류:', error);
             throw error;
         }
-    },
+    }
 
+    /**
+     * 단어 상세 조회 API 호출
+     * @param {number} id - 단어 ID
+     * @returns {Promise<Object>} 단어 객체
+     */
     async fetchWord(id) {
-        const response = await fetch(`${State.API_BASE_URL}/${id}`);
+        const response = await fetch(`${this.baseUrl}/${id}`);
         if (!response.ok) throw new Error('단어 정보를 불러오는데 실패했습니다.');
         return response.json();
-    },
+    }
 
+    /**
+     * 단어 수정 API 호출
+     * @param {number} id - 단어 ID
+     * @param {Object} data - 수정할 단어 데이터
+     * @returns {Promise<Response>} API 응답
+     */
     async updateWord(id, data) {
-        const response = await fetch(`${State.API_BASE_URL}/${id}`, {
+        const response = await fetch(`${this.baseUrl}/${id}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
@@ -160,42 +431,76 @@ const ApiService = {
         }
 
         return response;
-    },
+    }
 
+    /**
+     * 단어 삭제 API 호출
+     * @param {number} id - 단어 ID
+     * @returns {Promise<Response>} API 응답
+     */
     async deleteWord(id) {
-        const response = await fetch(`${State.API_BASE_URL}/${id}`, {
+        const response = await fetch(`${this.baseUrl}/${id}`, {
             method: 'DELETE'
         });
         if (!response.ok) throw new Error('단어 삭제에 실패했습니다.');
         return response;
     }
-};
+}
 
-// 페이지네이션 관리
-const PaginationManager = {
+/**
+ * 페이지네이션 관리 클래스
+ */
+class PaginationManager {
+    /**
+     * 생성자
+     * @param {Object} state - 애플리케이션 상태
+     * @param {UIManager} uiManager - UI 관리자
+     */
+    constructor(state, uiManager) {
+        this.state = state;
+        this.uiManager = uiManager;
+    }
+
+    /**
+     * URL 업데이트
+     * @param {number} page - 페이지 번호
+     */
     updateUrl(page) {
         const url = new URL(window.location);
         url.searchParams.set('page', page);
         window.history.pushState({}, '', url);
-    },
+    }
 
+    /**
+     * 페이지네이션 버튼 HTML 생성
+     * @param {number} totalPages - 전체 페이지 수
+     * @returns {string} 페이지네이션 버튼 HTML
+     */
     generatePaginationButtons(totalPages) {
         if (totalPages <= 1) return '';
 
-        const startPage = Math.max(0, State.currentPage - 2);
-        const endPage = Math.min(totalPages - 1, State.currentPage + 2);
+        const startPage = Math.max(0, this.state.currentPage - 2);
+        const endPage = Math.min(totalPages - 1, this.state.currentPage + 2);
 
         const buttons = [
-            this.createNavigationButton(0, 'bi-chevron-double-left', '첫 페이지', State.currentPage === 0),
-            this.createNavigationButton(State.currentPage - 1, 'bi-chevron-left', '이전 페이지', State.currentPage === 0),
+            this.createNavigationButton(0, 'bi-chevron-double-left', '첫 페이지', this.state.currentPage === 0),
+            this.createNavigationButton(this.state.currentPage - 1, 'bi-chevron-left', '이전 페이지', this.state.currentPage === 0),
             ...this.createNumberButtons(startPage, endPage),
-            this.createNavigationButton(State.currentPage + 1, 'bi-chevron-right', '다음 페이지', State.currentPage >= totalPages - 1),
-            this.createNavigationButton(totalPages - 1, 'bi-chevron-double-right', '마지막 페이지', State.currentPage >= totalPages - 1)
+            this.createNavigationButton(this.state.currentPage + 1, 'bi-chevron-right', '다음 페이지', this.state.currentPage >= totalPages - 1),
+            this.createNavigationButton(totalPages - 1, 'bi-chevron-double-right', '마지막 페이지', this.state.currentPage >= totalPages - 1)
         ];
 
         return buttons.join('');
-    },
+    }
 
+    /**
+     * 네비게이션 버튼 HTML 생성
+     * @param {number} page - 페이지 번호
+     * @param {string} icon - 아이콘 클래스
+     * @param {string} title - 툴팁 제목
+     * @param {boolean} disabled - 비활성화 여부
+     * @returns {string} 버튼 HTML
+     */
     createNavigationButton(page, icon, title, disabled) {
         return `
             <li class="page-item ${disabled ? 'disabled' : ''}">
@@ -206,15 +511,21 @@ const PaginationManager = {
                     <i class="bi ${icon}"></i>
                 </button>
             </li>`;
-    },
+    }
 
+    /**
+     * 페이지 번호 버튼 HTML 생성
+     * @param {number} startPage - 시작 페이지
+     * @param {number} endPage - 끝 페이지
+     * @returns {Array<string>} 버튼 HTML 배열
+     */
     createNumberButtons(startPage, endPage) {
         return Array.from(
             {length: endPage - startPage + 1},
             (_, i) => {
                 const page = startPage + i;
                 return `
-                    <li class="page-item ${page === State.currentPage ? 'active' : ''}">
+                    <li class="page-item ${page === this.state.currentPage ? 'active' : ''}">
                         <button class="page-link" 
                                 data-page="${page}"
                                 title="${page + 1} 페이지">
@@ -224,203 +535,99 @@ const PaginationManager = {
             }
         );
     }
-};
+}
 
-// 단어 검색 관리
-const SearchManager = {
-    async loadSearchResults(page) {
-        try {
-            console.log('검색 결과 로드 시작: 페이지 ' + page);
-            State.currentPage = page;
-            PaginationManager.updateUrl(page);
-
-            const data = await ApiService.searchWords(page);
-
-            UIManager.updateWordList(data.content, data.totalElements);
-            UIManager.updatePagination(data.totalPages);
-
-            return data;
-        } catch (error) {
-            console.error('검색 결과 로드 오류:', error);
-            UIManager.showToast(error.message, false);
-            throw error;
-        }
+/**
+ * 단어 관리 클래스
+ */
+class WordManager {
+    /**
+     * 생성자
+     * @param {Object} state - 애플리케이션 상태
+     * @param {ApiService} apiService - API 서비스
+     * @param {UIManager} uiManager - UI 관리자
+     */
+    constructor(state, apiService, uiManager) {
+        this.state = state;
+        this.apiService = apiService;
+        this.uiManager = uiManager;
     }
-};
 
-// 단어 관리
-const WordManager = {
+    /**
+     * 단어 수정
+     * @param {number} id - 단어 ID
+     */
     async editWord(id) {
         try {
-            const word = await ApiService.fetchWord(id);
-            showEditModal(word);
+            const word = await this.apiService.fetchWord(id);
+            this.uiManager.showEditModal(word, () => this.handleEditSave());
         } catch (error) {
             console.error('단어 조회 오류:', error);
-            UIManager.showToast(error.message, false);
+            this.uiManager.showToast(error.message, false);
+            this.state.isProcessing = false;
         }
-    },
+    }
 
+    /**
+     * 단어 삭제
+     * @param {number} id - 단어 ID
+     */
     async deleteWord(id) {
-        if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) return;
+        if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) {
+            this.state.isProcessing = false;
+            return;
+        }
 
         try {
-            await ApiService.deleteWord(id);
-            UIManager.showToast('단어가 삭제되었습니다.', true);
-            await SearchManager.loadSearchResults(State.currentPage);
+            await this.apiService.deleteWord(id);
+            this.uiManager.showToast('단어가 삭제되었습니다.', true);
+            return true;
         } catch (error) {
             console.error('단어 삭제 오류:', error);
-            UIManager.showToast(error.message, false);
+            this.uiManager.showToast(error.message, false);
+            this.state.isProcessing = false;
+            return false;
         }
     }
-};
 
-// 단어 수정 모달 표시 함수
-function showEditModal(word) {
-    // 기존 모달이 있으면 제거
-    const existingModal = document.getElementById('editModal');
-    if (existingModal) {
-        existingModal.remove();
-    }
-
-    // 모달 생성
-    const modalHTML = `
-    <div class="modal fade" id="editModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">단어 수정</h5>
-                    <button class="btn-close" data-bs-dismiss="modal" type="button"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editForm">
-                        <input id="editId" type="hidden" value="${word.id}">
-                        <div class="form-group mb-3">
-                            <label class="form-label" for="editVocabulary">영단어</label>
-                            <input class="form-control" id="editVocabulary" required type="text" value="${word.vocabulary}">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="form-label" for="editMeaning">의미</label>
-                            <input class="form-control" id="editMeaning" required type="text" value="${word.meaning}">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="form-label" for="editHint">힌트</label>
-                            <input class="form-control" id="editHint" type="text" value="${word.hint || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="editDifficulty">난이도</label>
-                            <select class="form-select" id="editDifficulty" required>
-                                <option value="1" ${word.difficulty === 1 ? 'selected' : ''}>매우 쉬움</option>
-                                <option value="2" ${word.difficulty === 2 ? 'selected' : ''}>쉬움</option>
-                                <option value="3" ${word.difficulty === 3 ? 'selected' : ''}>보통</option>
-                                <option value="4" ${word.difficulty === 4 ? 'selected' : ''}>어려움</option>
-                                <option value="5" ${word.difficulty === 5 ? 'selected' : ''}>매우 어려움</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-cancel" data-bs-dismiss="modal" type="button">취소</button>
-                    <button class="btn btn-check-answer" id="saveEdit" type="button">저장</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    `;
-
-    // 모달을 body에 추가
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-    // 모달 인스턴스 생성 및 표시
-    const modal = new bootstrap.Modal(document.getElementById('editModal'));
-    modal.show();
-
-    // 저장 버튼에 이벤트 리스너 추가
-    document.getElementById('saveEdit').addEventListener('click', handleEditSave);
-}
-
-// 단어 수정 저장 처리 함수
-async function handleEditSave() {
-    const id = document.getElementById('editId').value;
-    const data = {
-        vocabulary: document.getElementById('editVocabulary').value.trim(),
-        meaning: document.getElementById('editMeaning').value.trim(),
-        hint: document.getElementById('editHint').value.trim(),
-        difficulty: parseInt(document.getElementById('editDifficulty').value)
-    };
-
-    try {
-        await ApiService.updateWord(id, data);
-        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-        UIManager.showToast('단어가 수정되었습니다.', true);
-        await SearchManager.loadSearchResults(State.currentPage);
-    } catch (error) {
-        console.error('단어 수정 오류:', error);
-        UIManager.showToast(error.message, false);
-    }
-}
-
-// 이벤트 핸들러
-const EventHandlers = {
-    handlePaginationClick(e) {
-        const button = e.target.closest('button');
-        if (!button?.dataset.page) return;
-
-        e.preventDefault();
-        const page = parseInt(button.dataset.page);
-        if (!isNaN(page)) {
-            SearchManager.loadSearchResults(page);
-        }
-    },
-
-    handleTableClick(e) {
-        if (State.isProcessing) return;
-
-        const button = e.target.closest('button');
-        if (!button) return;
-
-        const id = button.dataset.id;
-        if (!id) return;
+    /**
+     * 단어 수정 저장 처리
+     */
+    async handleEditSave() {
+        const id = document.getElementById('editId').value;
+        const data = {
+            vocabulary: document.getElementById('editVocabulary').value.trim(),
+            meaning: document.getElementById('editMeaning').value.trim(),
+            hint: document.getElementById('editHint').value.trim(),
+            difficulty: parseInt(document.getElementById('editDifficulty').value)
+        };
 
         try {
-            State.isProcessing = true;
-            if (button.classList.contains('edit-btn')) {
-                WordManager.editWord(id);
-            } else if (button.classList.contains('delete-btn')) {
-                WordManager.deleteWord(id);
-            }
+            await this.apiService.updateWord(id, data);
+            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+            this.uiManager.showToast('단어가 수정되었습니다.', true);
+
+            // 검색 결과 다시 로드 이벤트 발생
+            const customEvent = new CustomEvent('wordUpdated', {detail: {id}});
+            document.dispatchEvent(customEvent);
+        } catch (error) {
+            console.error('단어 수정 오류:', error);
+            this.uiManager.showToast(error.message, false);
         } finally {
-            State.isProcessing = false;
+            this.state.isProcessing = false;
         }
-    },
-
-    handlePopState() {
-        const url = new URL(window.location);
-        State.currentPage = parseInt(url.searchParams.get('page') || '0');
-        State.keyword = url.searchParams.get('keyword') || '';
-
-        SearchManager.loadSearchResults(State.currentPage);
     }
-};
-
-// 초기화
-function initialize() {
-    console.log('검색 페이지 초기화 시작');
-
-    // 이벤트 리스너 설정
-    Elements.pagination.addEventListener('click', EventHandlers.handlePaginationClick);
-    Elements.wordList.addEventListener('click', EventHandlers.handleTableClick);
-    window.addEventListener('popstate', EventHandlers.handlePopState);
-
-    // 초기 검색 결과 로드
-    SearchManager.loadSearchResults(State.currentPage)
-        .then(() => console.log('검색 결과 로드 완료'))
-        .catch(error => console.error('검색 결과 로드 실패:', error));
 }
 
-// 앱 시작
+
+
+// 애플리케이션 인스턴스 생성 및 초기화
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('검색 페이지 로드됨');
-    console.log('검색 키워드:', State.keyword);
-    console.log('초기 페이지:', State.currentPage);
-    initialize();
+    const app = new SearchApp();
+    app.initialize();
+
+    // 단어 수정 완료 이벤트 리스너
+    document.addEventListener('wordUpdated', () => {
+        app.loadSearchResults(app.state.currentPage);
+    });
 });

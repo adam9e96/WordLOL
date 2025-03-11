@@ -52,7 +52,7 @@ public class WordRestControllerImpl implements WordRestController {
     @Override
     @GetMapping(Constants.ApiPath.WORD_ID)
     public ResponseEntity<WordResponse> getWord(@PathVariable("id") Long id) {
-        WordResponse response = toResponse(wordService.findById(id));
+        WordResponse response = wordService.findById(id);
         return ResponseEntity.ok(response);
     }
 
@@ -73,8 +73,7 @@ public class WordRestControllerImpl implements WordRestController {
     @Override
     @GetMapping(Constants.ApiPath.WORD_RANDOM)
     public ResponseEntity<WordStudyResponse> getRandomWord() {
-        Word randomWord = wordService.findRandomWord();
-        WordStudyResponse response = toWordStudyResponse(randomWord);
+        WordStudyResponse response = wordService.findRandomWord();
         return ResponseEntity.ok(response);
     }
 
@@ -109,8 +108,8 @@ public class WordRestControllerImpl implements WordRestController {
     @Override
     @GetMapping(Constants.ApiPath.WORD_HINT)
     public ResponseEntity<Map<String, String>> getWordHint(@PathVariable("id") Long id) {
-        Word word = wordService.findById(id);
-        return ResponseEntity.ok().body(Map.of("hint", word.getHint()));
+        WordResponse wordResponse = wordService.findById(id);
+        return ResponseEntity.ok().body(Map.of("hint", wordResponse.hint()));
     }
 
     @Override
@@ -195,19 +194,6 @@ public class WordRestControllerImpl implements WordRestController {
                 word.getMeaning(),
                 word.getHint(),
                 word.getDifficulty()
-        );
-    }
-
-
-    private WordResponse toResponse(Word word) {
-        return new WordResponse(
-                word.getId(),
-                word.getVocabulary(),
-                word.getMeaning(),
-                word.getHint(),
-                word.getDifficulty(),
-                word.getCreatedAt(),
-                word.getUpdatedAt()
         );
     }
 

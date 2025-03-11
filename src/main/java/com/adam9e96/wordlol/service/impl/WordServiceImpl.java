@@ -2,7 +2,9 @@ package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.common.Constants;
 import com.adam9e96.wordlol.dto.WordRequest;
+import com.adam9e96.wordlol.dto.WordResponse;
 import com.adam9e96.wordlol.dto.WordSearchRequest;
+import com.adam9e96.wordlol.dto.WordStudyResponse;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
@@ -10,6 +12,7 @@ import com.adam9e96.wordlol.exception.word.WordDeletionException;
 import com.adam9e96.wordlol.exception.word.WordNotFoundException;
 import com.adam9e96.wordlol.exception.word.WordUpdateException;
 import com.adam9e96.wordlol.mapper.WordMapper;
+import com.adam9e96.wordlol.mapping.WordEntityMapper;
 import com.adam9e96.wordlol.repository.WordRepository;
 import com.adam9e96.wordlol.service.interfaces.WordService;
 import com.adam9e96.wordlol.validator.WordValidator;
@@ -32,6 +35,7 @@ public class WordServiceImpl implements WordService {
     private final WordRepository wordRepository;
     private final WordMapper wordMapper;
     private final WordValidator wordValidator;
+    private final WordEntityMapper wordEntityMapper;
 
     /**
      * @todo 유효성 검사로직에서 다중처리가 안됨 가장 먼저 실패한것만 리턴됨 그거 빼면 OK
@@ -119,9 +123,9 @@ public class WordServiceImpl implements WordService {
 
 
     @Override
-    public Word findById(Long id) {
-        return wordMapper.findById(id)
-                .orElseThrow(() -> new WordNotFoundException(id));
+    public WordResponse findById(Long id) {
+        Word word = wordMapper.findById(id).orElseThrow(() -> new WordNotFoundException(id));
+        return wordEntityMapper.toDto(word);
     }
 
     @Transactional
@@ -201,7 +205,7 @@ public class WordServiceImpl implements WordService {
      * [OPTIMIZED] - 2025.03.05 완료
      */
     @Override
-    public Word findRandomWord() {
+    public WordStudyResponse findRandomWord() {
         try {
             // 1. 단어 개수 확인 (선택적)
             long count = wordMapper.countAll();
@@ -215,7 +219,8 @@ public class WordServiceImpl implements WordService {
             if (randomWord == null) {
                 throw new WordNotFoundException(0L);
             }
-            return randomWord;
+            return wordEntityMapper.toStudyDto(randomWord);
+//            return randomWord;
         } catch (Exception e) {
             log.error("랜덤 단어 조회 중 오류 발생: {}", e.getMessage(), e);
             throw new WordNotFoundException(0L);
@@ -227,7 +232,8 @@ public class WordServiceImpl implements WordService {
     @Override
     public Boolean validateAnswer(Long id, String userAnswer) {
         // 1. 단어 조회
-        Word word = findById(id);
+        Word word = wordMapper.findById(id)
+                .orElseThrow(() -> new WordNotFoundException(id));
         // 2. 정답 확인
         return validateAnswer(word.getMeaning(), userAnswer);
     }

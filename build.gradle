@@ -30,7 +30,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'
+    testImplementation 'org.springframework.security:spring-security-test'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'
@@ -44,6 +47,30 @@ dependencies {
 // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 
+//    implementation 'io.jsonwebtoken:jjwt-api:0.9.1' // 자바 JWT 라이브러리
+    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6' // 자바 JWT 라이브러리
+
+
+    // JWT 관련 의존성
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6' // JJWT API 인터페이스 정의
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6' // JJWT-impl 실제 구현체 (런타임에만 필요)
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // JJWT-impl JSON 직렬화/역직렬화 구현체 (런타임에만 필요)
+
+
+    // JJWT 0.12+ 버전부터는 자체적으로 필요한 의존성을 처리하므로 아래의 의존성은 필요없음
+//    // https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api
+//    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2' // XML 문서와 자바 객체 간의 매핑 자동화
+//    // JAXB API 의존성 (오타 수정 및 최신 버전 사용) // XML 문서와 자바 객체 간의 매핑 자동화
+//    // https://github.com/jakartaee/jaxb-api/releases/tag/4.0.2
+//    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5' // JAXB 구현체 추가
+
+    // OAuth2 를 사용하기 위한 의존성
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // MapStruct 의존성 추가
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 }
 
 tasks.named('test') {
