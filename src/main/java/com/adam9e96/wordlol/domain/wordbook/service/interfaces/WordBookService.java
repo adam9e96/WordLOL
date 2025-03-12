@@ -1,9 +1,9 @@
-package com.adam9e96.wordlol.service.interfaces;
+package com.adam9e96.wordlol.domain.wordbook.service.interfaces;
 
 import com.adam9e96.wordlol.domain.word.dto.WordResponse;
-import com.adam9e96.wordlol.dto.*;
+import com.adam9e96.wordlol.domain.wordbook.dto.*;
 import com.adam9e96.wordlol.entity.Category;
-import com.adam9e96.wordlol.entity.WordBook;
+import com.adam9e96.wordlol.domain.wordbook.entity.WordBook;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

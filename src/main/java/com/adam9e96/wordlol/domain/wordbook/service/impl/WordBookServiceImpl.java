@@ -1,19 +1,19 @@
-package com.adam9e96.wordlol.service.impl;
+package com.adam9e96.wordlol.domain.wordbook.service.impl;
 
 import com.adam9e96.wordlol.domain.word.dto.WordRequest;
 import com.adam9e96.wordlol.domain.word.dto.WordResponse;
-import com.adam9e96.wordlol.dto.*;
+import com.adam9e96.wordlol.domain.wordbook.dto.*;
 import com.adam9e96.wordlol.entity.Category;
 import com.adam9e96.wordlol.domain.word.entity.Word;
-import com.adam9e96.wordlol.entity.WordBook;
+import com.adam9e96.wordlol.domain.wordbook.entity.WordBook;
 import com.adam9e96.wordlol.exception.wordbook.*;
-import com.adam9e96.wordlol.mapper.WordBookMapper;
+import com.adam9e96.wordlol.domain.wordbook.mapper.WordBookMapper;
 import com.adam9e96.wordlol.domain.word.mapper.WordMapper;
-import com.adam9e96.wordlol.mapping.WordBookEntityMapper;
+import com.adam9e96.wordlol.domain.wordbook.mapping.WordBookEntityMapper;
 import com.adam9e96.wordlol.domain.word.mapping.WordEntityMapper;
-import com.adam9e96.wordlol.repository.WordBookRepository;
+import com.adam9e96.wordlol.domain.wordbook.repository.WordBookRepository;
 import com.adam9e96.wordlol.domain.word.repository.WordRepository;
-import com.adam9e96.wordlol.service.interfaces.WordBookService;
+import com.adam9e96.wordlol.domain.wordbook.service.interfaces.WordBookService;
 import com.adam9e96.wordlol.validator.WordBookValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

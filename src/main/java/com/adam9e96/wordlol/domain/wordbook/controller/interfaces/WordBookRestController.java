@@ -1,7 +1,7 @@
-package com.adam9e96.wordlol.controller.interfaces;
+package com.adam9e96.wordlol.domain.wordbook.controller.interfaces;
 
 import com.adam9e96.wordlol.domain.word.dto.WordResponse;
-import com.adam9e96.wordlol.dto.*;
+import com.adam9e96.wordlol.domain.wordbook.dto.*;
 import com.adam9e96.wordlol.entity.Category;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

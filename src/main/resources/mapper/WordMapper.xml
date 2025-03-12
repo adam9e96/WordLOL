@@ -16,7 +16,7 @@
         <result property="updatedAt" column="updated_at"/>
 
         <!-- 연관된 WordBook 객체 매핑 -->
-        <association property="wordBook" javaType="com.adam9e96.wordlol.entity.WordBook">
+        <association property="wordBook" javaType="com.adam9e96.wordlol.domain.wordbook.entity.WordBook">
             <!-- WordBook 의 기본키 매핑 (WordBook 클래스에 setId 메소드가 있어야 함) -->
             <id property="id" column="word_book_id"/>
         </association>

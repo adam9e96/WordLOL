@@ -1,10 +1,10 @@
-package com.adam9e96.wordlol.controller.impl;
+package com.adam9e96.wordlol.domain.wordbook.controller.impl;
 
-import com.adam9e96.wordlol.controller.interfaces.WordBookRestController;
+import com.adam9e96.wordlol.domain.wordbook.controller.interfaces.WordBookRestController;
 import com.adam9e96.wordlol.domain.word.dto.WordResponse;
-import com.adam9e96.wordlol.dto.*;
+import com.adam9e96.wordlol.domain.wordbook.dto.*;
 import com.adam9e96.wordlol.entity.Category;
-import com.adam9e96.wordlol.service.interfaces.WordBookService;
+import com.adam9e96.wordlol.domain.wordbook.service.interfaces.WordBookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,11 +1,11 @@
-package com.adam9e96.wordlol.dto;
+package com.adam9e96.wordlol.domain.wordbook.dto;
 
 import com.adam9e96.wordlol.entity.Category;
 
 import java.time.LocalDateTime;
 
-// 목록용 DTO
-public record WordBookListResponse(
+// 단어장 응답 DTO
+public record WordBookResponse(
         Long id,
         String name,
         String description,

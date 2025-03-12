@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- WordBookMapper 인터페이스와 매핑되는 XML 파일 -->
-<mapper namespace="com.adam9e96.wordlol.mapper.WordBookMapper">
+<mapper namespace="com.adam9e96.wordlol.domain.wordbook.mapper.WordBookMapper">
     <!--
         resultMap: 결과를 매핑할 때 사용할 resultMap을 지정
         id: resultMap의 고유한 식별자
@@ -10,7 +10,7 @@
         property: resultMap이 매핑할 객체의 필드
         column: 쿼리 결과의 컬럼명
     -->
-    <resultMap id="WordBookResultMap" type="com.adam9e96.wordlol.entity.WordBook">
+    <resultMap id="WordBookResultMap" type="com.adam9e96.wordlol.domain.wordbook.entity.WordBook">
         <!-- 단어장 기본 정보 매핑 -->
         <id property="id" column="id"/> <!-- id 필드를 id 컬럼과 매핑 -->
         <result property="name" column="name"/> <!-- name 필드를 name 컬럼과 매핑 -->

@@ -1,6 +1,7 @@
-package com.adam9e96.wordlol.entity;
+package com.adam9e96.wordlol.domain.wordbook.entity;
 
 import com.adam9e96.wordlol.domain.word.entity.Word;
+import com.adam9e96.wordlol.entity.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

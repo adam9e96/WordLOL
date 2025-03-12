@@ -1,11 +1,11 @@
-package com.adam9e96.wordlol.mapping;
+package com.adam9e96.wordlol.domain.wordbook.mapping;
 
-import com.adam9e96.wordlol.dto.WordBookDetailResponse;
-import com.adam9e96.wordlol.dto.WordBookListResponse;
-import com.adam9e96.wordlol.dto.WordBookResponse;
-import com.adam9e96.wordlol.dto.WordBookStudyResponse;
+import com.adam9e96.wordlol.domain.wordbook.dto.WordBookDetailResponse;
+import com.adam9e96.wordlol.domain.wordbook.dto.WordBookListResponse;
+import com.adam9e96.wordlol.domain.wordbook.dto.WordBookResponse;
+import com.adam9e96.wordlol.domain.wordbook.dto.WordBookStudyResponse;
 import com.adam9e96.wordlol.domain.word.entity.Word;
-import com.adam9e96.wordlol.entity.WordBook;
+import com.adam9e96.wordlol.domain.wordbook.entity.WordBook;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

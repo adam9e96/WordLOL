@@ -1,7 +1,7 @@
-package com.adam9e96.wordlol.controller.impl;
+package com.adam9e96.wordlol.domain.wordbook.controller.impl;
 
 import com.adam9e96.wordlol.common.Constants;
-import com.adam9e96.wordlol.controller.interfaces.WordBookViewController;
+import com.adam9e96.wordlol.domain.wordbook.controller.interfaces.WordBookViewController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

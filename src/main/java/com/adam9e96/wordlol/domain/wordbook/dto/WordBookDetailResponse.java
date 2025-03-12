@@ -1,4 +1,4 @@
-package com.adam9e96.wordlol.dto;
+package com.adam9e96.wordlol.domain.wordbook.dto;
 
 import com.adam9e96.wordlol.entity.Category;
 

@@ -1,7 +1,7 @@
-package com.adam9e96.wordlol.mapper;
+package com.adam9e96.wordlol.domain.wordbook.mapper;
 
 import com.adam9e96.wordlol.entity.Category;
-import com.adam9e96.wordlol.entity.WordBook;
+import com.adam9e96.wordlol.domain.wordbook.entity.WordBook;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

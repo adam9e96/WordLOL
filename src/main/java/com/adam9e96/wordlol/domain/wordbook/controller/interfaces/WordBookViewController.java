@@ -1,4 +1,4 @@
-package com.adam9e96.wordlol.controller.interfaces;
+package com.adam9e96.wordlol.domain.wordbook.controller.interfaces;
 
 import com.adam9e96.wordlol.common.Constants;
 import io.swagger.v3.oas.annotations.Operation;
