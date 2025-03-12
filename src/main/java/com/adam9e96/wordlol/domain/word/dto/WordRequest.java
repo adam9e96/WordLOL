@@ -1,4 +1,4 @@
-package com.adam9e96.wordlol.dto;
+package com.adam9e96.wordlol.domain.word.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

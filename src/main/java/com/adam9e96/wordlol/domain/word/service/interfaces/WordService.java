@@ -1,5 +1,9 @@
 package com.adam9e96.wordlol.domain.word.service.interfaces;
 
+import com.adam9e96.wordlol.domain.word.dto.DailyWordResponse;
+import com.adam9e96.wordlol.domain.word.dto.WordRequest;
+import com.adam9e96.wordlol.domain.word.dto.WordResponse;
+import com.adam9e96.wordlol.domain.word.dto.WordSearchRequest;
 import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.domain.word.entity.Word;
 import io.swagger.v3.oas.annotations.Operation;

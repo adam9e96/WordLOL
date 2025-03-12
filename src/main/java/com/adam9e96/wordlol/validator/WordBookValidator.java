@@ -1,7 +1,7 @@
 package com.adam9e96.wordlol.validator;
 
 import com.adam9e96.wordlol.dto.WordBookRequest;
-import com.adam9e96.wordlol.dto.WordRequest;
+import com.adam9e96.wordlol.domain.word.dto.WordRequest;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

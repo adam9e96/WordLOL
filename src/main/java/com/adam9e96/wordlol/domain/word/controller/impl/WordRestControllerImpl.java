@@ -2,6 +2,7 @@ package com.adam9e96.wordlol.domain.word.controller.impl;
 
 import com.adam9e96.wordlol.common.Constants;
 import com.adam9e96.wordlol.domain.word.controller.interfaces.WordRestController;
+import com.adam9e96.wordlol.domain.word.dto.*;
 import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.domain.word.entity.Word;
 import com.adam9e96.wordlol.service.interfaces.StudyProgressService;

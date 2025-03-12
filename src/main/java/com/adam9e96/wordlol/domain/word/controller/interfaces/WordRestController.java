@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.domain.word.controller.interfaces;
 
+import com.adam9e96.wordlol.domain.word.dto.*;
 import com.adam9e96.wordlol.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

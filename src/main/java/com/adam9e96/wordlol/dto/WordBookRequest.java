@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.dto;
 
+import com.adam9e96.wordlol.domain.word.dto.WordRequest;
 import com.adam9e96.wordlol.entity.Category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

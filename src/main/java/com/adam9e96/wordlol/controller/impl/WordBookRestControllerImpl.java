@@ -1,6 +1,7 @@
 package com.adam9e96.wordlol.controller.impl;
 
 import com.adam9e96.wordlol.controller.interfaces.WordBookRestController;
+import com.adam9e96.wordlol.domain.word.dto.WordResponse;
 import com.adam9e96.wordlol.dto.*;
 import com.adam9e96.wordlol.entity.Category;
 import com.adam9e96.wordlol.service.interfaces.WordBookService;

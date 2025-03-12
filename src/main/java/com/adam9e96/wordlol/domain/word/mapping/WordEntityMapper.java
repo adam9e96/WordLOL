@@ -1,8 +1,8 @@
-package com.adam9e96.wordlol.mapping;
+package com.adam9e96.wordlol.domain.word.mapping;
 
-import com.adam9e96.wordlol.dto.DailyWordResponse;
-import com.adam9e96.wordlol.dto.WordRequest;
-import com.adam9e96.wordlol.dto.WordResponse;
+import com.adam9e96.wordlol.domain.word.dto.DailyWordResponse;
+import com.adam9e96.wordlol.domain.word.dto.WordRequest;
+import com.adam9e96.wordlol.domain.word.dto.WordResponse;
 import com.adam9e96.wordlol.dto.WordStudyResponse;
 import com.adam9e96.wordlol.domain.word.entity.Word;
 import org.mapstruct.Mapper;

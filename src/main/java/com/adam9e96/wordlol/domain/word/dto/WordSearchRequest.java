@@ -1,4 +1,4 @@
-package com.adam9e96.wordlol.dto;
+package com.adam9e96.wordlol.domain.word.dto;
 
 /**
  * 단어 검색 요청 DTO
