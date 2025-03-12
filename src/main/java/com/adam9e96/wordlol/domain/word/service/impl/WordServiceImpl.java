@@ -1,17 +1,17 @@
-package com.adam9e96.wordlol.service.impl;
+package com.adam9e96.wordlol.domain.word.service.impl;
 
 import com.adam9e96.wordlol.common.Constants;
 import com.adam9e96.wordlol.dto.*;
-import com.adam9e96.wordlol.entity.Word;
+import com.adam9e96.wordlol.domain.word.entity.Word;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
 import com.adam9e96.wordlol.exception.word.WordDeletionException;
 import com.adam9e96.wordlol.exception.word.WordNotFoundException;
 import com.adam9e96.wordlol.exception.word.WordUpdateException;
-import com.adam9e96.wordlol.mapper.WordMapper;
+import com.adam9e96.wordlol.domain.word.mapper.WordMapper;
 import com.adam9e96.wordlol.mapping.WordEntityMapper;
-import com.adam9e96.wordlol.repository.WordRepository;
-import com.adam9e96.wordlol.service.interfaces.WordService;
+import com.adam9e96.wordlol.domain.word.repository.WordRepository;
+import com.adam9e96.wordlol.domain.word.service.interfaces.WordService;
 import com.adam9e96.wordlol.validator.WordValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

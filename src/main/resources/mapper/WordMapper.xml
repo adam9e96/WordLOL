@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.adam9e96.wordlol.mapper.WordMapper">
+<mapper namespace="com.adam9e96.wordlol.domain.word.mapper.WordMapper">
 
     <!-- EnglishWord 엔티티의 결과 매핑 -->
-    <resultMap id="WordResultMap" type="com.adam9e96.wordlol.entity.Word">
+    <resultMap id="WordResultMap" type="com.adam9e96.wordlol.domain.word.entity.Word">
         <!-- 기본 키 매핑 -->
         <id property="id" column="id"/>
         <!-- 일반 컬럼 매핑 -->
@@ -24,7 +24,7 @@
 
     <!-- 단어를 추가하는 INSERT 문 -->
     <insert id="save"
-            parameterType="com.adam9e96.wordlol.entity.Word"
+            parameterType="com.adam9e96.wordlol.domain.word.entity.Word"
             useGeneratedKeys="true"
             keyProperty="id">
         INSERT INTO word(vocabulary, meaning, hint, difficulty, created_at, updated_at)
@@ -40,7 +40,7 @@
 
 
     <update id="update"
-            parameterType="com.adam9e96.wordlol.entity.Word">
+            parameterType="com.adam9e96.wordlol.domain.word.entity.Word">
         UPDATE word
         SET vocabulary = #{vocabulary},
             meaning    = #{meaning},

@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.entity;
 
+import com.adam9e96.wordlol.domain.word.entity.Word;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.adam9e96.wordlol.controller.interfaces;
+package com.adam9e96.wordlol.domain.word.controller.interfaces;
 
 import com.adam9e96.wordlol.common.Constants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**

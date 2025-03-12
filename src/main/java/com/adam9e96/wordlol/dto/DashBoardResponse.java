@@ -1,6 +1,6 @@
 package com.adam9e96.wordlol.dto;
 
-import com.adam9e96.wordlol.entity.Word;
+import com.adam9e96.wordlol.domain.word.entity.Word;
 
 import java.util.List;
 

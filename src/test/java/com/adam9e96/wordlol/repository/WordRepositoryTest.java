@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.repository;
 
+import com.adam9e96.wordlol.domain.word.repository.WordRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

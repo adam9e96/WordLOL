@@ -4,7 +4,7 @@ import com.adam9e96.wordlol.dto.WordBookDetailResponse;
 import com.adam9e96.wordlol.dto.WordBookListResponse;
 import com.adam9e96.wordlol.dto.WordBookResponse;
 import com.adam9e96.wordlol.dto.WordBookStudyResponse;
-import com.adam9e96.wordlol.entity.Word;
+import com.adam9e96.wordlol.domain.word.entity.Word;
 import com.adam9e96.wordlol.entity.WordBook;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

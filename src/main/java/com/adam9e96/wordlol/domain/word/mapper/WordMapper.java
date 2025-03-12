@@ -1,8 +1,6 @@
-package com.adam9e96.wordlol.mapper;
+package com.adam9e96.wordlol.domain.word.mapper;
 
-import com.adam9e96.wordlol.dto.DailyWordResponse;
-import com.adam9e96.wordlol.dto.WordSearchRequest;
-import com.adam9e96.wordlol.entity.Word;
+import com.adam9e96.wordlol.domain.word.entity.Word;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;

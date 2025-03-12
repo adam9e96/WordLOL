@@ -1,7 +1,7 @@
-package com.adam9e96.wordlol.repository;
+package com.adam9e96.wordlol.domain.word.repository;
 
 import com.adam9e96.wordlol.entity.Category;
-import com.adam9e96.wordlol.entity.Word;
+import com.adam9e96.wordlol.domain.word.entity.Word;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

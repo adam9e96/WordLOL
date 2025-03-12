@@ -25,7 +25,7 @@
         - property: wordBook 엔티티의 words 필드와 매핑
         - ofType: 컬렉션의 요소 타입 (EnglishWord)
         -->
-        <collection property="words" ofType="com.adam9e96.wordlol.entity.Word">
+        <collection property="words" ofType="com.adam9e96.wordlol.domain.word.entity.Word">
             <id property="id" column="word_id"/> <!-- id 필드를 word_id 컬럼과 매핑 -->
             <result property="vocabulary" column="vocabulary"/> <!-- vocabulary 필드를 vocabulary 컬럼과 매핑 -->
             <result property="meaning" column="meaning"/> <!-- meaning 필드를 meaning 컬럼과 매핑 -->

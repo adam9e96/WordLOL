@@ -1,5 +1,6 @@
-package com.adam9e96.wordlol.entity;
+package com.adam9e96.wordlol.domain.word.entity;
 
+import com.adam9e96.wordlol.entity.WordBook;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;

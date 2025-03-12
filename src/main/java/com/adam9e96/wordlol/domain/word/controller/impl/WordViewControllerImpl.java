@@ -1,7 +1,7 @@
-package com.adam9e96.wordlol.controller.impl;
+package com.adam9e96.wordlol.domain.word.controller.impl;
 
 import com.adam9e96.wordlol.common.Constants;
-import com.adam9e96.wordlol.controller.interfaces.WordViewController;
+import com.adam9e96.wordlol.domain.word.controller.interfaces.WordViewController;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

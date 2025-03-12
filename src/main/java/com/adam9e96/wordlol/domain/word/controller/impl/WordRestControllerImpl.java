@@ -1,11 +1,11 @@
-package com.adam9e96.wordlol.controller.impl;
+package com.adam9e96.wordlol.domain.word.controller.impl;
 
 import com.adam9e96.wordlol.common.Constants;
-import com.adam9e96.wordlol.controller.interfaces.WordRestController;
+import com.adam9e96.wordlol.domain.word.controller.interfaces.WordRestController;
 import com.adam9e96.wordlol.dto.*;
-import com.adam9e96.wordlol.entity.Word;
+import com.adam9e96.wordlol.domain.word.entity.Word;
 import com.adam9e96.wordlol.service.interfaces.StudyProgressService;
-import com.adam9e96.wordlol.service.interfaces.WordService;
+import com.adam9e96.wordlol.domain.word.service.interfaces.WordService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
