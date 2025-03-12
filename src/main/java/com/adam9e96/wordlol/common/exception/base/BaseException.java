@@ -1,4 +1,4 @@
-package com.adam9e96.wordlol.exception.base;
+package com.adam9e96.wordlol.common.exception.base;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

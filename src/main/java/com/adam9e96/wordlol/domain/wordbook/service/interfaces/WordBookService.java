@@ -1,5 +1,7 @@
 package com.adam9e96.wordlol.domain.wordbook.service.interfaces;
 
+import com.adam9e96.wordlol.common.exception.validation.ValidationException;
+import com.adam9e96.wordlol.common.exception.wordbook.*;
 import com.adam9e96.wordlol.domain.word.dto.WordResponse;
 import com.adam9e96.wordlol.domain.wordbook.dto.*;
 import com.adam9e96.wordlol.entity.Category;
@@ -26,8 +28,8 @@ public interface WordBookService {
      *
      * @param request 생성할 단어장 정보
      * @return 생성된 단어장 엔티티
-     * @throws com.adam9e96.wordlol.exception.validation.ValidationException 유효하지 않은 입력인 경우
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookCreationException 단어장 생성 중 오류가 발생한 경우
+     * @throws ValidationException 유효하지 않은 입력인 경우
+     * @throws WordBookCreationException 단어장 생성 중 오류가 발생한 경우
      */
     @Operation(summary = "단어장 생성", description = "새로운 단어장을 생성합니다")
     @ApiResponses(value = {
@@ -43,7 +45,7 @@ public interface WordBookService {
      *
      * @param wordBookId 조회할 단어장의 ID
      * @return 단어장에 속한 단어 목록
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookNotFoundException 단어장이 존재하지 않는 경우
+     * @throws WordBookNotFoundException 단어장이 존재하지 않는 경우
      */
     @Operation(summary = "단어장의 단어 목록 조회", description = "단어장 ID로 해당 단어장의 단어 목록을 조회합니다")
     @ApiResponses(value = {
@@ -57,7 +59,7 @@ public interface WordBookService {
      *
      * @param category 조회할 카테고리
      * @return 해당 카테고리의 단어장 목록
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookNotFoundException 해당 카테고리의 단어장이 없는 경우
+     * @throws WordBookNotFoundException 해당 카테고리의 단어장이 없는 경우
      */
     @Operation(summary = "카테고리별 단어장 목록 조회", description = "특정 카테고리의 단어장 목록을 조회합니다")
     @ApiResponses(value = {
@@ -70,7 +72,7 @@ public interface WordBookService {
      * 모든 단어장 목록을 조회합니다.
      *
      * @return 전체 단어장 목록
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookEmptyException 단어장이 하나도 없는 경우
+     * @throws WordBookEmptyException 단어장이 하나도 없는 경우
      */
     @Operation(summary = "전체 단어장 목록 조회", description = "모든 단어장 목록을 조회합니다")
     @ApiResponses(value = {
@@ -98,8 +100,8 @@ public interface WordBookService {
      *
      * @param wordBookId 조회할 단어장의 ID
      * @return 학습용 단어 목록
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookNotFoundException 단어장이 존재하지 않는 경우
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookEmptyException 단어장에 단어가 없는 경우
+     * @throws WordBookNotFoundException 단어장이 존재하지 않는 경우
+     * @throws WordBookEmptyException 단어장에 단어가 없는 경우
      */
     @Operation(summary = "학습용 단어장 데이터 조회", description = "학습에 필요한 단어장 데이터를 조회합니다")
     @ApiResponses(value = {
@@ -113,7 +115,7 @@ public interface WordBookService {
      *
      * @param id 조회할 단어장의 ID
      * @return 조회된 단어장 엔티티
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookNotFoundException 단어장이 존재하지 않는 경우
+     * @throws WordBookNotFoundException 단어장이 존재하지 않는 경우
      */
     @Operation(summary = "단어장 조회", description = "단어장 ID로 단어장을 조회합니다")
     @ApiResponses(value = {
@@ -129,9 +131,9 @@ public interface WordBookService {
      * @param id 수정할 단어장의 ID
      * @param request 수정할 단어장 정보
      * @return 수정된 단어장 엔티티
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookNotFoundException 단어장이 존재하지 않는 경우
-     * @throws com.adam9e96.wordlol.exception.validation.ValidationException 유효하지 않은 입력인 경우
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookUpdateException 단어장 수정 중 오류가 발생한 경우
+     * @throws WordBookNotFoundException 단어장이 존재하지 않는 경우
+     * @throws ValidationException 유효하지 않은 입력인 경우
+     * @throws WordBookUpdateException 단어장 수정 중 오류가 발생한 경우
      */
     @Operation(summary = "단어장 수정", description = "단어장 정보를 수정합니다")
     @ApiResponses(value = {
@@ -150,8 +152,8 @@ public interface WordBookService {
      * 단어장을 삭제합니다.
      *
      * @param id 삭제할 단어장의 ID
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookNotFoundException 단어장이 존재하지 않는 경우
-     * @throws com.adam9e96.wordlol.exception.wordbook.WordBookDeletionException 단어장 삭제 중 오류가 발생한 경우
+     * @throws WordBookNotFoundException 단어장이 존재하지 않는 경우
+     * @throws WordBookDeletionException 단어장 삭제 중 오류가 발생한 경우
      */
     @Operation(summary = "단어장 삭제", description = "단어장을 삭제합니다")
     @ApiResponses(value = {

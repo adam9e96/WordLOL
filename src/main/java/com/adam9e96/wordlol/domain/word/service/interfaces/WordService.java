@@ -1,5 +1,10 @@
 package com.adam9e96.wordlol.domain.word.service.interfaces;
 
+import com.adam9e96.wordlol.common.exception.validation.ValidationException;
+import com.adam9e96.wordlol.common.exception.word.WordCreationException;
+import com.adam9e96.wordlol.common.exception.word.WordDeletionException;
+import com.adam9e96.wordlol.common.exception.word.WordNotFoundException;
+import com.adam9e96.wordlol.common.exception.word.WordUpdateException;
 import com.adam9e96.wordlol.domain.word.dto.DailyWordResponse;
 import com.adam9e96.wordlol.domain.word.dto.WordRequest;
 import com.adam9e96.wordlol.domain.word.dto.WordResponse;
@@ -28,8 +33,8 @@ public interface WordService {
      * 새로운 단어를 생성합니다.
      *
      * @param request 생성할 단어 정보
-     * @throws com.adam9e96.wordlol.exception.validation.ValidationException 유효하지 않은 입력인 경우
-     * @throws com.adam9e96.wordlol.exception.word.WordCreationException     단어 생성 중 오류가 발생한 경우
+     * @throws ValidationException 유효하지 않은 입력인 경우
+     * @throws WordCreationException     단어 생성 중 오류가 발생한 경우
      */
     @Operation(summary = "단어 생성", description = "새로운 단어를 생성합니다")
     @ApiResponses(value = {
@@ -44,7 +49,7 @@ public interface WordService {
      *
      * @param requests 생성할 단어 정보 목록
      * @return 성공적으로 생성된 단어의 수
-     * @throws com.adam9e96.wordlol.exception.validation.ValidationException 유효하지 않은 입력이 있는 경우
+     * @throws ValidationException 유효하지 않은 입력이 있는 경우
      */
     @Operation(summary = "다수 단어 생성", description = "여러 단어를 일괄 생성합니다")
     @ApiResponses(value = {
@@ -60,7 +65,7 @@ public interface WordService {
      *
      * @param id 조회할 단어의 ID
      * @return 조회된 단어 엔티티
-     * @throws com.adam9e96.wordlol.exception.word.WordNotFoundException 단어가 존재하지 않는 경우
+     * @throws WordNotFoundException 단어가 존재하지 않는 경우
      */
     @Operation(summary = "단어 조회", description = "ID로 단어를 조회합니다")
     @ApiResponses(value = {
@@ -75,9 +80,9 @@ public interface WordService {
      *
      * @param id      수정할 단어의 ID
      * @param request 수정할 단어 정보
-     * @throws com.adam9e96.wordlol.exception.word.WordNotFoundException     단어가 존재하지 않는 경우
-     * @throws com.adam9e96.wordlol.exception.validation.ValidationException 유효하지 않은 입력인 경우
-     * @throws com.adam9e96.wordlol.exception.word.WordUpdateException       단어 수정 중 오류가 발생한 경우
+     * @throws WordNotFoundException     단어가 존재하지 않는 경우
+     * @throws ValidationException 유효하지 않은 입력인 경우
+     * @throws WordUpdateException       단어 수정 중 오류가 발생한 경우
      */
     @Operation(summary = "단어 수정", description = "단어 정보를 수정합니다")
     @ApiResponses(value = {
@@ -95,8 +100,8 @@ public interface WordService {
      * 단어를 삭제합니다.
      *
      * @param id 삭제할 단어의 ID
-     * @throws com.adam9e96.wordlol.exception.word.WordNotFoundException 단어가 존재하지 않는 경우
-     * @throws com.adam9e96.wordlol.exception.word.WordDeletionException 단어 삭제 중 오류가 발생한 경우
+     * @throws WordNotFoundException 단어가 존재하지 않는 경우
+     * @throws WordDeletionException 단어 삭제 중 오류가 발생한 경우
      */
     @Operation(summary = "단어 삭제", description = "단어를 삭제합니다")
     @ApiResponses(value = {
@@ -123,7 +128,7 @@ public interface WordService {
      * 랜덤 단어를 조회합니다. 학습 기능에서 사용됩니다.
      *
      * @return 무작위로 선택된 단어
-     * @throws com.adam9e96.wordlol.exception.word.WordNotFoundException 단어가 없는 경우
+     * @throws WordNotFoundException 단어가 없는 경우
      */
     @Operation(summary = "랜덤 단어 조회", description = "학습용 랜덤 단어를 조회합니다")
     @ApiResponses(value = {
@@ -139,8 +144,8 @@ public interface WordService {
      * @param id         검증할 단어의 ID
      * @param userAnswer 사용자가 입력한 답안
      * @return 정답 여부 (true: 정답, false: 오답)
-     * @throws com.adam9e96.wordlol.exception.word.WordNotFoundException     단어가 존재하지 않는 경우
-     * @throws com.adam9e96.wordlol.exception.validation.ValidationException 유효하지 않은 입력인 경우
+     * @throws WordNotFoundException     단어가 존재하지 않는 경우
+     * @throws ValidationException 유효하지 않은 입력인 경우
      */
     @Operation(summary = "답안 검증", description = "단어의 답안을 검증합니다")
     @ApiResponses(value = {
@@ -158,7 +163,7 @@ public interface WordService {
      * 랜덤 단어 목록을 조회합니다. 일일 학습 기능에서 사용됩니다.
      *
      * @return 무작위로 선택된 단어 목록
-     * @throws com.adam9e96.wordlol.exception.word.WordNotFoundException 단어가 없는 경우
+     * @throws WordNotFoundException 단어가 없는 경우
      */
     @Operation(summary = "랜덤 단어 목록 조회", description = "일일 학습용 랜덤 단어 목록을 조회합니다")
     @ApiResponses(value = {

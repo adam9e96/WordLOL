@@ -2,7 +2,7 @@ package com.adam9e96.wordlol.validator;
 
 import com.adam9e96.wordlol.common.Constants;
 import com.adam9e96.wordlol.domain.word.dto.WordRequest;
-import com.adam9e96.wordlol.exception.validation.ValidationException;
+import com.adam9e96.wordlol.common.exception.validation.ValidationException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 

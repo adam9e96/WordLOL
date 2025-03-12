@@ -1,11 +1,11 @@
-package com.adam9e96.wordlol.exception.handler;
+package com.adam9e96.wordlol.common.exception.handler;
 
 import com.adam9e96.wordlol.dto.ErrorResponse;
-import com.adam9e96.wordlol.exception.validation.ValidationException;
-import com.adam9e96.wordlol.exception.word.WordCreationException;
-import com.adam9e96.wordlol.exception.word.WordDeletionException;
-import com.adam9e96.wordlol.exception.word.WordNotFoundException;
-import com.adam9e96.wordlol.exception.word.WordUpdateException;
+import com.adam9e96.wordlol.common.exception.validation.ValidationException;
+import com.adam9e96.wordlol.common.exception.word.WordCreationException;
+import com.adam9e96.wordlol.common.exception.word.WordDeletionException;
+import com.adam9e96.wordlol.common.exception.word.WordNotFoundException;
+import com.adam9e96.wordlol.common.exception.word.WordUpdateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

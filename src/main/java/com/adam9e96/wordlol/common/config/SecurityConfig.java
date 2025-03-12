@@ -1,4 +1,4 @@
-package com.adam9e96.wordlol.config;
+package com.adam9e96.wordlol.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

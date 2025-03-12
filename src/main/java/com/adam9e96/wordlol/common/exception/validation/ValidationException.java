@@ -1,6 +1,6 @@
-package com.adam9e96.wordlol.exception.validation;
+package com.adam9e96.wordlol.common.exception.validation;
 
-import com.adam9e96.wordlol.exception.base.BaseException;
+import com.adam9e96.wordlol.common.exception.base.BaseException;
 import org.springframework.http.HttpStatus;
 
 /**

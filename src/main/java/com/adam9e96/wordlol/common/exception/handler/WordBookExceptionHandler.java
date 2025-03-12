@@ -1,7 +1,7 @@
-package com.adam9e96.wordlol.exception.handler;
+package com.adam9e96.wordlol.common.exception.handler;
 
+import com.adam9e96.wordlol.common.exception.wordbook.*;
 import com.adam9e96.wordlol.dto.ErrorResponse;
-import com.adam9e96.wordlol.exception.wordbook.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
