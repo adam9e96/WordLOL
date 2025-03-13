@@ -13,7 +13,7 @@ import com.adam9e96.wordlol.exception.word.WordNotFoundException;
 import com.adam9e96.wordlol.exception.word.WordUpdateException;
 import com.adam9e96.wordlol.dto.response.WordStudyResponse;
 import com.adam9e96.wordlol.repository.mybatis.WordMapper;
-import com.adam9e96.wordlol.mapper.WordEntityMapper;
+import com.adam9e96.wordlol.mapper.entity.WordEntityMapper;
 import com.adam9e96.wordlol.repository.jpa.WordRepository;
 import com.adam9e96.wordlol.service.interfaces.WordService;
 import com.adam9e96.wordlol.validator.WordValidator;

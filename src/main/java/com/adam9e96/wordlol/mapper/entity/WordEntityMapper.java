@@ -1,4 +1,4 @@
-package com.adam9e96.wordlol.mapper;
+package com.adam9e96.wordlol.mapper.entity;
 
 import com.adam9e96.wordlol.dto.response.DailyWordResponse;
 import com.adam9e96.wordlol.dto.request.WordRequest;
