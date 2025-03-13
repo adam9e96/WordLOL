@@ -1,8 +1,8 @@
 package com.adam9e96.wordlol.service.impl;
 
-import com.adam9e96.wordlol.dto.DashBoardResponse;
-import com.adam9e96.wordlol.domain.word.entity.Word;
-import com.adam9e96.wordlol.domain.word.mapper.WordMapper;
+import com.adam9e96.wordlol.dto.response.DashBoardResponse;
+import com.adam9e96.wordlol.entity.Word;
+import com.adam9e96.wordlol.repository.mybatis.WordMapper;
 import com.adam9e96.wordlol.service.interfaces.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

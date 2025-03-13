@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- WordBookMapper 인터페이스와 매핑되는 XML 파일 -->
-<mapper namespace="com.adam9e96.wordlol.domain.wordbook.mapper.WordBookMapper">
+<mapper namespace="com.adam9e96.wordlol.repository.mybatis.WordBookMapper">
     <!--
         resultMap: 결과를 매핑할 때 사용할 resultMap을 지정
         id: resultMap의 고유한 식별자
@@ -10,7 +10,7 @@
         property: resultMap이 매핑할 객체의 필드
         column: 쿼리 결과의 컬럼명
     -->
-    <resultMap id="WordBookResultMap" type="com.adam9e96.wordlol.domain.wordbook.entity.WordBook">
+    <resultMap id="WordBookResultMap" type="com.adam9e96.wordlol.entity.WordBook">
         <!-- 단어장 기본 정보 매핑 -->
         <id property="id" column="id"/> <!-- id 필드를 id 컬럼과 매핑 -->
         <result property="name" column="name"/> <!-- name 필드를 name 컬럼과 매핑 -->
@@ -25,7 +25,7 @@
         - property: wordBook 엔티티의 words 필드와 매핑
         - ofType: 컬렉션의 요소 타입 (EnglishWord)
         -->
-        <collection property="words" ofType="com.adam9e96.wordlol.domain.word.entity.Word">
+        <collection property="words" ofType="com.adam9e96.wordlol.entity.Word">
             <id property="id" column="word_id"/> <!-- id 필드를 word_id 컬럼과 매핑 -->
             <result property="vocabulary" column="vocabulary"/> <!-- vocabulary 필드를 vocabulary 컬럼과 매핑 -->
             <result property="meaning" column="meaning"/> <!-- meaning 필드를 meaning 컬럼과 매핑 -->

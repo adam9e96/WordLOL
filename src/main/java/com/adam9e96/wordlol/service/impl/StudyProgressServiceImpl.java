@@ -1,7 +1,7 @@
 package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.entity.UserStudyProgress;
-import com.adam9e96.wordlol.repository.UserStudyProgressRepository;
+import com.adam9e96.wordlol.repository.jpa.UserStudyProgressRepository;
 import com.adam9e96.wordlol.service.interfaces.StudyProgressService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

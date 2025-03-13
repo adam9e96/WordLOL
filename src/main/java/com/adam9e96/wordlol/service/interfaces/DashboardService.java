@@ -1,6 +1,6 @@
 package com.adam9e96.wordlol.service.interfaces;
 
-import com.adam9e96.wordlol.dto.DashBoardResponse;
+import com.adam9e96.wordlol.dto.response.DashBoardResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
