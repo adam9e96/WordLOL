@@ -12,55 +12,99 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Spring Security 설정 클래스
+ * 인증, 인가, 로그인, 로그아웃 등 보안 관련 설정을 담당
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * 보안 필터 체인 설정
+     * 모든 HTTP 요청에 대한 보안 규칙을 정의함
+     *
+     * @param http HttpSecurity 객체
+     * @return 구성된 SecurityFilterChain
+     * @throws Exception 보안 설정 중 발생할 수 있는 예외
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // CSRF 보호 비활성화 (REST API 또는 개발 환경에서 사용)
                 .csrf(csrf -> csrf.disable())
+
+                // HTTP 요청 인가 규칙 설정
                 .authorizeHttpRequests(auth -> auth
+                        // 공개 접근 가능한 리소스 설정 (로그인 없이 접근 가능)
                         .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll()
+                        // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
+
+                // 폼 로그인 설정
                 .formLogin(form -> form
+                        // 커스텀 로그인 페이지 URL
                         .loginPage("/login")
+                        // 로그인 성공 시 리다이렉트할 URL
                         .defaultSuccessUrl("/word/dashboard")
+                        // 로그인 페이지는 모든 사용자에게 접근 허용
                         .permitAll()
                 )
+
+                // 로그아웃 설정
                 .logout(logout -> logout
+                        // 로그아웃 성공 시 리다이렉트할 URL
                         .logoutSuccessUrl("/")
+                        // 로그아웃은 모든 사용자에게 허용
                         .permitAll()
                 );
 
-        // H2 콘솔 사용을 위한 설정
+        // H2 데이터베이스 콘솔 사용을 위한 프레임 옵션 비활성화
+        // H2 콘솔은 iframe을 사용하므로 X-Frame-Options을 비활성화해야 함
         http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 
         return http.build();
     }
 
+    /**
+     * 비밀번호 인코더 빈 설정
+     * 사용자 비밀번호를 안전하게 해시화하는 데 사용
+     *
+     * @return BCrypt 비밀번호 인코더
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // BCrypt 해싱 알고리즘 사용
     }
 
-    // 개발용 임시 사용자 (실제 운영에서는 데이터베이스에서 불러옴)
+    /**
+     * 사용자 상세 서비스 빈 설정
+     * 인증에 필요한 사용자 정보를 제공
+     * <p>
+     * 참고: 이 구현은 개발 환경을 위한 임시 설정임
+     * 실제 운영 환경에서는 데이터베이스에서 사용자 정보를 가져오는 구현으로 대체해야 함
+     *
+     * @param encoder 비밀번호 인코더
+     * @return 메모리 내 사용자 관리자
+     */
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
+        // 일반 사용자 계정 생성
         UserDetails user = User.builder()
-                .username("user")
-                .password(encoder.encode("password"))
-                .roles("USER")
+                .username("user") // 사용자 아이디
+                .password(encoder.encode("password")) // 비밀번호 해시화
+                .roles("USER") // 사용자 역할(권한)
                 .build();
 
+        // 관리자 계정 생성
         UserDetails admin = User.builder()
-                .username("admin")
-                .password(encoder.encode("admin"))
-                .roles("ADMIN")
+                .username("admin") // 관리자 아이디
+                .password(encoder.encode("admin")) // 비밀번호 해시화
+                .roles("ADMIN") // 관리자 역할(권한)
                 .build();
 
+        // 메모리 내 사용자 관리자에 사용자 추가
         return new InMemoryUserDetailsManager(user, admin);
     }
 }
-
