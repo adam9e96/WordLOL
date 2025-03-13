@@ -57,7 +57,7 @@ public final class Constants {
         public static final int MAX_LENGTH = 100;
         public static final String MAX_LENGTH_MESSAGE = "100자를 초과할 수 없습니다.";
 
-        public static final String EMPTY_VOCABULARY_MESSAGE = "단어를 입력해주세요.DogCake";
+        public static final String EMPTY_VOCABULARY_MESSAGE = "단어를 입력해주세요.";
         public static final String INVALID_VOCABULARY_MESSAGE = "영단어는 영문자, 공백, 하이픈만 포함할 수 있습니다.";
 
         public static final String EMPTY_MEANING_MESSAGE = "뜻을 입력해주세요.";
@@ -68,7 +68,7 @@ public final class Constants {
         public static final int DIFFICULTY_MAX = 5;
         public static final String DIFFICULTY_MESSAGE = "난이도는 1에서 5사이의 값이어야 합니다.";
 
-        public static final String EXISTS_VOCABULARY_MESSAGE = "이미 존재하는 단어입니다. DogCake_";
+        public static final String EXISTS_VOCABULARY_MESSAGE = "이미 존재하는 단어입니다.";
 
         public static final String EMPTY_ID_MESSAGE = "단어 ID는 필수입니다.";
         public static final String EMPTY_UPDATE_WORD_MESSAGE = "수정할 단어는 필수입니다.";
