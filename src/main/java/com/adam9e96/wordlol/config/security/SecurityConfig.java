@@ -4,6 +4,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,32 +36,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // CSRF 보호 비활성화 (REST API 또는 개발 환경에서 사용)
-                .csrf(csrf -> csrf.disable())
-
-                // HTTP 요청 인가 규칙 설정
-                .authorizeHttpRequests(auth -> auth
-                        // 공개 접근 가능한 리소스 설정 (로그인 없이 접근 가능)
-                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll()
-                        // 그 외 모든 요청은 인증 필요
-                        .anyRequest().authenticated()
-                )
-
-                // 폼 로그인 설정
-                .formLogin(form -> form
-                        // 커스텀 로그인 페이지 URL
-                        .loginPage("/login")
-                        // 로그인 성공 시 리다이렉트할 URL
-                        .defaultSuccessUrl("/word/dashboard")
-                        // 로그인 페이지는 모든 사용자에게 접근 허용
-                        .permitAll()
-                )
-
-                // 로그아웃 설정
-                .logout(logout -> logout
-                        // 로그아웃 성공 시 리다이렉트할 URL
-                        .logoutSuccessUrl("/")
-                        // 로그아웃은 모든 사용자에게 허용
-                        .permitAll()
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(this::customAuthorizeRequests)
+                .formLogin(this::formLogin)
+                .logout(this::logout
                 );
 
         // H2 데이터베이스 콘솔 사용을 위한 프레임 옵션 비활성화
@@ -66,6 +48,32 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    /**
+     * HTTP 요청 인가 규칙을 커스터마이징하는 메서드
+     * HTTP 요청 인가 규칙 설정
+     *
+     * @param auth AuthorizeHttpRequestsConfigurer 객체
+     */
+    private void customAuthorizeRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
+        // 공개 접근 가능한 리소스 설정 (로그인 없이 접근 가능함)
+        auth.requestMatchers("/", "/login", "/js/**", "/css/**", "/images/**", "/h2-console/**").permitAll()
+                .anyRequest().authenticated(); // 그 외 모든 요청은 인증 필요
+    }
+
+    // 폼 로그인 설정
+    private void formLogin(FormLoginConfigurer<HttpSecurity> auth) {
+        auth.loginPage("/login") // 커스텀 로그인 페이지 URL
+                .defaultSuccessUrl("/word/dashboard") // 로그인 성공 시 리다이렉트할 URL
+                .permitAll(); // 로그인 페이지는 모든 사용자에게 접근 허용
+    }
+
+    // 로그아웃 설정
+    private void logout(LogoutConfigurer<HttpSecurity> auth) {
+        auth.logoutSuccessUrl("/")
+                .permitAll(); // 로그아웃 페이지는 모든 사용자에게 접근 허용
+    }
+
 
     /**
      * 비밀번호 인코더 빈 설정
