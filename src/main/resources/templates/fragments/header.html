@@ -28,12 +28,22 @@
             </div>
 
             <!-- 로그인 -->
-            <div class="header-auth-section">
-                <a class="auth-link" href="/auth/login">
-                    <i class="bi bi-person"></i>
-                    <span>로그인</span>
+            <div class="header-auth-section" th:if="${session.user == null}">
+                <a class="auth-link" href="/oauth2/authorization/google">
+                    <i class="bi bi-google"></i>
+                    <span>Google 로그인</span>
                 </a>
             </div>
+            <div class="header-auth-section" th:if="${session.user != null}">
+                <div class="user-info">
+                    <img th:src="${session.user.picture}" alt="프로필 이미지" class="profile-img"/>
+                    <span th:text="${session.user.name}">사용자</span>
+                    <a href="/logout" class="logout-link">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
             <!-- 다크모드 -->
             <div class="theme-toggle-container">
                 <button id="theme-toggle" class="theme-toggle" aria-label="테마 변경">
