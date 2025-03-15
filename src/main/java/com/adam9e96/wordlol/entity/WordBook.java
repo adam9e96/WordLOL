@@ -46,6 +46,10 @@ public class WordBook {
     @Builder.Default
     private List<Word> words = new ArrayList<>(); // 초기화 추가
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public static WordBook createWordBook(String name, String description, Category category) {
         return WordBook.builder()
                 .name(name)

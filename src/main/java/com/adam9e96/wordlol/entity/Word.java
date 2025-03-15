@@ -80,6 +80,10 @@ public class Word {
     @JsonIgnore
     private WordBook wordBook;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     /**
      * 영어 단어 객체를 생성하기 위한 빌더 패턴 생성자입니다.
      *
