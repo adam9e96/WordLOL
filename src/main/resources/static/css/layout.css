@@ -193,6 +193,40 @@ header 에 대한 스타일을 정의
     font-size: 1.25rem;
 }
 
+/* 프로필 이미지 스타일 */
+.profile-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 8px;
+}
+
+/* 사용자 정보 컨테이너 스타일 */
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: var(--surface-container);
+    border-radius: var(--border-radius);
+    transition: background-color var(--transition-fast);
+}
+
+.user-info:hover {
+    background: var(--surface-container-high);
+}
+
+/* 로그아웃 링크 스타일 */
+.logout-link {
+    margin-left: 8px;
+    color: var(--outline);
+    transition: color var(--transition-fast);
+}
+
+.logout-link:hover {
+    color: var(--primary);
+}
+
 /* 카테고리 메뉴 영역 - 네비게이션이 있는 헤더 하단부 */
 .header-bottom {
     width: 100%;
