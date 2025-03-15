@@ -26,6 +26,8 @@ public class User {
     private String email;
 
     private String name;
+
+    @Column(length = 2048)
     private String picture;
 
     @Enumerated(EnumType.STRING)
