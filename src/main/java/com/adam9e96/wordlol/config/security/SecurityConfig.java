@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.config.security;
 
+import com.adam9e96.wordlol.service.interfaces.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,12 +34,18 @@ public class SecurityConfig {
      * @throws Exception 보안 설정 중 발생할 수 있는 예외
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
         http
                 // CSRF 보호 비활성화 (REST API 또는 개발 환경에서 사용)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(this::customAuthorizeRequests)
-                .formLogin(this::formLogin)
+                .oauth2Login(oauth2 -> {
+                    oauth2.userInfoEndpoint(userInfo -> {
+                                userInfo.userService(customOAuth2UserService);
+                            }).defaultSuccessUrl("/word/dashboard")
+                            .failureUrl("/login?error=true");
+                })
+//                .formLogin(this::formLogin)
                 .logout(this::logout
                 );
 
