@@ -39,12 +39,8 @@ public class SecurityConfig {
                 // CSRF 보호 비활성화 (REST API 또는 개발 환경에서 사용)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(this::customAuthorizeRequests)
-                .oauth2Login(oauth2 -> {
-                    oauth2.userInfoEndpoint(userInfo -> {
-                                userInfo.userService(customOAuth2UserService);
-                            }).defaultSuccessUrl("/word/dashboard")
-                            .failureUrl("/login?error=true");
-                })
+                .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)).defaultSuccessUrl("/word/dashboard")
+                        .failureUrl("/login?error=true"))
 //                .formLogin(this::formLogin)
                 .logout(this::logout
                 );

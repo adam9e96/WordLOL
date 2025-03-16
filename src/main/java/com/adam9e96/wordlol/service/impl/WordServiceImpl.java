@@ -5,6 +5,7 @@ import com.adam9e96.wordlol.dto.response.DailyWordResponse;
 import com.adam9e96.wordlol.dto.request.WordRequest;
 import com.adam9e96.wordlol.dto.response.WordResponse;
 import com.adam9e96.wordlol.dto.request.WordSearchRequest;
+import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
@@ -12,6 +13,7 @@ import com.adam9e96.wordlol.exception.word.WordDeletionException;
 import com.adam9e96.wordlol.exception.word.WordNotFoundException;
 import com.adam9e96.wordlol.exception.word.WordUpdateException;
 import com.adam9e96.wordlol.dto.response.WordStudyResponse;
+import com.adam9e96.wordlol.repository.jpa.UserRepository;
 import com.adam9e96.wordlol.repository.mybatis.WordMapper;
 import com.adam9e96.wordlol.mapper.entity.WordEntityMapper;
 import com.adam9e96.wordlol.repository.jpa.WordRepository;
@@ -37,13 +39,16 @@ public class WordServiceImpl implements WordService {
     private final WordMapper wordMapper;
     private final WordValidator wordValidator;
     private final WordEntityMapper wordEntityMapper;
+    private final UserRepository userRepository;
 
     /**
      * @todo 유효성 검사로직에서 다중처리가 안됨 가장 먼저 실패한것만 리턴됨 그거 빼면 OK
      * [OPTIMIZED] - 2025.03.05 완료
      */
     @Override
-    public void createWord(WordRequest request) {
+    public void createWord(WordRequest request, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
         try {
             // 1. 입력값 검증 (단어, 뜻, 힌트, 난이도)
             wordValidator.validate(request);
@@ -57,6 +62,7 @@ public class WordServiceImpl implements WordService {
                     .meaning(request.meaning())
                     .hint(request.hint())
                     .difficulty(request.difficulty())
+                    .user(user)
                     .build();
             // 4. DB에 저장
             wordMapper.save(word);
@@ -69,7 +75,10 @@ public class WordServiceImpl implements WordService {
 
     @Transactional
     @Override
-    public int createWords(List<WordRequest> requests) {
+    public int createWords(List<WordRequest> requests,String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+
         // 1. 요청이 없으면 0 반환
         if (requests == null || requests.isEmpty()) {
             return 0;
@@ -95,6 +104,7 @@ public class WordServiceImpl implements WordService {
                         .meaning(request.meaning())
                         .hint(request.hint())
                         .difficulty(request.difficulty())
+                        .user(user)
                         .build();
 
                 wordsToSave.add(word);

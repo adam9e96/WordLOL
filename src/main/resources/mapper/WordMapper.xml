@@ -23,21 +23,17 @@
     </resultMap>
 
     <!-- 단어를 추가하는 INSERT 문 -->
-    <insert id="save"
-            parameterType="com.adam9e96.wordlol.entity.Word"
-            useGeneratedKeys="true"
-            keyProperty="id">
-        INSERT INTO word(vocabulary, meaning, hint, difficulty, created_at, updated_at)
-        VALUES (#{vocabulary}, #{meaning}, #{hint}, #{difficulty}, NOW(), NOW())
+    <insert id="save" parameterType="com.adam9e96.wordlol.entity.Word" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO word(vocabulary, meaning, hint, difficulty, created_at, updated_at, user_id)
+        VALUES (#{vocabulary}, #{meaning}, #{hint}, #{difficulty}, NOW(), NOW(), #{user.id})
     </insert>
     <insert id="batchSave" parameterType="java.util.List">
-        INSERT INTO word(vocabulary, meaning, hint, difficulty, created_at, updated_at)
+        INSERT INTO word(vocabulary, meaning, hint, difficulty, created_at, updated_at, user_id)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.vocabulary}, #{item.meaning}, #{item.hint}, #{item.difficulty}, NOW(), NOW())
+            (#{item.vocabulary}, #{item.meaning}, #{item.hint}, #{item.difficulty}, NOW(), NOW(), #{item.user.id})
         </foreach>
     </insert>
-
 
     <update id="update"
             parameterType="com.adam9e96.wordlol.entity.Word">

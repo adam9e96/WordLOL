@@ -42,7 +42,7 @@ public interface WordService {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    void createWord(@Parameter(description = "생성할 단어 정보", required = true) WordRequest request);
+    void createWord(@Parameter(description = "생성할 단어 정보", required = true) WordRequest request, String email);
 
     /**
      * 여러 단어를 일괄 생성합니다.
@@ -58,7 +58,7 @@ public interface WordService {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    int createWords(@Parameter(description = "생성할 단어 정보 목록", required = true) List<WordRequest> requests);
+    int createWords(@Parameter(description = "생성할 단어 정보 목록", required = true) List<WordRequest> requests,String email);
 
     /**
      * ID로 단어를 조회합니다.

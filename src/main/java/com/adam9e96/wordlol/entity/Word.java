@@ -95,13 +95,14 @@ public class Word {
      * @param wordBook   해당 단어가 속하는 단어장(WordBook)
      */
     @Builder
-    public Word(Long id, String vocabulary, String meaning, String hint, Integer difficulty, WordBook wordBook) {
+    public Word(Long id, String vocabulary, String meaning, String hint, Integer difficulty, WordBook wordBook, User user) {
         this.id = id;
         this.vocabulary = vocabulary;
         this.meaning = meaning;
         this.hint = hint;
         this.difficulty = difficulty;
         this.wordBook = wordBook;
+        this.user = user;
     }
 
 

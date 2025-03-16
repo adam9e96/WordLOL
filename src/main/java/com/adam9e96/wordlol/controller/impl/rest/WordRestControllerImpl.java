@@ -3,6 +3,7 @@ package com.adam9e96.wordlol.controller.impl.rest;
 import com.adam9e96.wordlol.common.constants.Constants;
 import com.adam9e96.wordlol.controller.interfaces.rest.WordRestController;
 import com.adam9e96.wordlol.dto.common.PageResponse;
+import com.adam9e96.wordlol.dto.common.SessionUser;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.dto.request.AnswerRequest;
 import com.adam9e96.wordlol.dto.request.WordRequest;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,18 +35,31 @@ public class WordRestControllerImpl implements WordRestController {
 
     private final WordService wordService;
     private final StudyProgressService studyProgressService;
+    private final HttpSession httpSession;
 
     @Override
     @PostMapping
     public ResponseEntity<Map<String, Object>> createWord(@Valid @RequestBody WordRequest request) {
-        wordService.createWord(request);
+        SessionUser sessionUser = (SessionUser) httpSession.getAttribute("user");
+        if (sessionUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "로그인이 필요합니다"));
+        }
+
+        // 이메일을 추가 인자로 전달
+        wordService.createWord(request, sessionUser.getEmail());
         return ResponseEntity.ok(Map.of("message", "success"));
     }
+
 
     @Override
     @PostMapping("/batch")
     public ResponseEntity<Map<String, Object>> createWords(@RequestBody List<WordRequest> requests) {
-        int successCount = wordService.createWords(requests);
+
+        SessionUser sessionUser = (SessionUser) httpSession.getAttribute("user");
+        if (sessionUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "로그인이 필요합니다"));
+        }
+        int successCount = wordService.createWords(requests, sessionUser.getEmail());
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "success");
