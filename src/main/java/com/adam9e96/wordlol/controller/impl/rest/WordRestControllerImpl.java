@@ -205,6 +205,17 @@ public class WordRestControllerImpl implements WordRestController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/check-session")
+    public String checkSession(HttpSession session) {
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        if (user != null) {
+            log.info("현재 로그인한 사용자: {}, 프로필 이미지: {}", user.getName(), user.getPicture());
+        } else {
+            log.info("로그인된 사용자 없음");
+        }
+        return "redirect:/";
+    }
+
     private WordResponse toWordResponse(Word word) {
         return new WordResponse(
                 word.getId(),

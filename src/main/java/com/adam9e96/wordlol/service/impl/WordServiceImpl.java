@@ -1,6 +1,7 @@
 package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.common.constants.Constants;
+import com.adam9e96.wordlol.dto.common.SessionUser;
 import com.adam9e96.wordlol.dto.response.DailyWordResponse;
 import com.adam9e96.wordlol.dto.request.WordRequest;
 import com.adam9e96.wordlol.dto.response.WordResponse;
@@ -19,9 +20,11 @@ import com.adam9e96.wordlol.mapper.entity.WordEntityMapper;
 import com.adam9e96.wordlol.repository.jpa.WordRepository;
 import com.adam9e96.wordlol.service.interfaces.WordService;
 import com.adam9e96.wordlol.validator.WordValidator;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +43,7 @@ public class WordServiceImpl implements WordService {
     private final WordValidator wordValidator;
     private final WordEntityMapper wordEntityMapper;
     private final UserRepository userRepository;
+    private final HttpSession httpSession;
 
     /**
      * @todo 유효성 검사로직에서 다중처리가 안됨 가장 먼저 실패한것만 리턴됨 그거 빼면 OK
@@ -47,6 +51,10 @@ public class WordServiceImpl implements WordService {
      */
     @Override
     public void createWord(WordRequest request, String email) {
+        // 1. 세션에서 사용자 정보 가져오기
+        // 세션에서 사용자 정보를 가져옵니다.
+        // 세션이 만료되었거나 사용자가 존재하지 않는 경우 예외를 발생시킵니다.
+        User user2 = getUserFromSession();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
         try {
@@ -75,7 +83,7 @@ public class WordServiceImpl implements WordService {
 
     @Transactional
     @Override
-    public int createWords(List<WordRequest> requests,String email) {
+    public int createWords(List<WordRequest> requests, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
 
@@ -334,5 +342,15 @@ public class WordServiceImpl implements WordService {
         return Arrays.stream(correctMeaning.split(","))
                 .map(String::trim)
                 .anyMatch(answer -> answer.equalsIgnoreCase(userAnswer.trim()));
+    }
+
+    private User getUserFromSession() {
+        SessionUser session = (SessionUser) httpSession.getAttribute("user");
+        log.info("세션 정보: {}", session);
+        if (session == null) {
+            throw new IllegalArgumentException("세션이 만료되었습니다. 다시 로그인 해주세요.");
+        }
+        return userRepository.findByEmail(session.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
     }
 }
