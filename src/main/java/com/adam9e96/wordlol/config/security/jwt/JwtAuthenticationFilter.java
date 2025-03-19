@@ -12,6 +12,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * JWT 토큰 기반 인증을 처리하는 필터
+ * HTTP 요청이 들어올 때마다 JWT 토큰을 검사하고, 유효한 경우 인증 정보를 SecurityContext에 저장
+ * 모든 API 요청에 대해 토큰 유효성을 검사하고 인증 정보를 설정합니다.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -22,19 +27,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Request Header에서 JWT 토큰 추출
+        // HTTP 요청 헤더에서 토큰 추출
         String token = jwtTokenProvider.resolveToken(request);
+        log.info("추출된 토큰: {}", token != null ? "토큰 있음" : "토큰 없음");
 
-        // 토큰 유효성 검사
+        // 토큰이 유효한 경우 인증 정보 설정
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            // 토큰이 유효하면 토큰으로부터 유저 정보를 받아와서 SecurityContext에 저장
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("Security Context에 '{}' 인증 정보를 저장했습니다.", authentication.getName());
-        } else {
-            log.debug("유효한 JWT 토큰이 없습니다.");
+            try {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                // SecurityContext 에 인증 정보 저장
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("Security Context 에 '{}' 인증 정보를 저장했습니다.", authentication.getName());
+            } catch (Exception e) {
+                log.error("인증 처리 중 오류 발생: {}", e.getMessage());
+            }
+        } else if (token != null) {
+            log.warn("유효하지 않은 토큰: {}", token);
         }
 
+        // 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
     }
 }

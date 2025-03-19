@@ -1,79 +1,85 @@
 package com.adam9e96.wordlol.controller.impl.rest;
 
 import com.adam9e96.wordlol.config.security.jwt.JwtTokenProvider;
+import com.adam9e96.wordlol.controller.interfaces.rest.AuthController;
 import com.adam9e96.wordlol.dto.common.TokenInfo;
-import com.adam9e96.wordlol.entity.User;
-import com.adam9e96.wordlol.repository.jpa.UserRepository;
+import com.adam9e96.wordlol.dto.request.TokenRefreshRequest;
+import com.adam9e96.wordlol.dto.response.TokenResponse;
+import com.adam9e96.wordlol.service.interfaces.JwtAuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class AuthControllerImpl {
+public class AuthControllerImpl implements AuthController {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
+    private final JwtAuthService jwtAuthService;
 
+
+    /**
+     * OAuth2 로그인 성공 후 JWT 토큰 발급
+     *
+     * @return JWT 토큰 정보
+     */
     @GetMapping("/login/oauth2/success")
-    public ResponseEntity<Map<String, Object>> oauthLoginSuccess() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            log.error("인증 정보가 없습니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "인증 실패"));
+    @Override
+    public ResponseEntity<TokenResponse> oAuth2LoginSuccess(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.badRequest().build();
         }
 
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. email: " + email));
+        // 사용자 정보로 토큰 생성
+        TokenInfo tokenInfo = jwtAuthService.createTokenForOAuthUser(authentication.getName());
 
-        // JWT 토큰 생성
-        TokenInfo tokenInfo = jwtTokenProvider.createTokenFromEmail(email, user.getRole());
+        // 토큰 응답 생성
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("accessToken", tokenInfo.getAccessToken());
-        response.put("refreshToken", tokenInfo.getRefreshToken());
-        response.put("user", Map.of(
-                "email", user.getEmail(),
-                "name", user.getName(),
-                "picture", user.getPicture()
-        ));
+        TokenResponse response = new TokenResponse(tokenInfo.getGrantType(), tokenInfo.getAccessToken(), tokenInfo.getRefreshToken());
 
         return ResponseEntity.ok(response);
     }
 
+
     @PostMapping("/refresh")
-    public ResponseEntity<Map<String, String>> refreshToken(String refreshToken) {
-        // 리프레시 토큰 검증
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "유효하지 않은 토큰"));
+    @Override
+    public ResponseEntity<TokenResponse> refreshToken(@RequestBody TokenRefreshRequest request) {
+        try {
+            TokenInfo tokenInfo = jwtAuthService.refreshToken(request.refreshToken());
+
+            // 토큰 응답 생성
+            TokenResponse response = new TokenResponse(tokenInfo.getGrantType(), tokenInfo.getAccessToken(), tokenInfo.getRefreshToken());
+
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
+    /**
+     * 현재 인증된 사용자 정보 조회
+     *
+     * @param request HTTP 요청
+     * @return 인증된 사용자 이메일
+     */
+    @GetMapping("/me")
+    @Override
+    public ResponseEntity<String> getCurrentUser(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            String email = jwtTokenProvider.getEmailFromToken(token);
+            return ResponseEntity.ok(email);
         }
 
-        // 리프레시 토큰에서 사용자 이메일 추출
-        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        // 새로운 액세스 토큰 발급
-        TokenInfo newTokenInfo = jwtTokenProvider.createTokenFromEmail(email, user.getRole());
-
-        return ResponseEntity.ok(Map.of(
-                "accessToken", newTokenInfo.getAccessToken(),
-                "refreshToken", newTokenInfo.getRefreshToken()
-        ));
+        return ResponseEntity.badRequest().build();
     }
+
 }

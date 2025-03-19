@@ -27,22 +27,28 @@
                 </form>
             </div>
 
-            <!-- 로그인 -->
-            <div class="header-auth-section" th:if="${session.user == null}">
-                <a class="auth-link" href="/oauth2/authorization/google">
-                    <i class="bi bi-google"></i>
-                    <span>Google 로그인</span>
-                </a>
-            </div>
-            <div class="header-auth-section" th:if="${session.user != null}">
-                <div class="user-info">
-                    <img th:src="${session.user.picture}" alt="프로필 이미지" class="profile-img"/>
-                    <span th:text="${session.user.name}">사용자</span>
-                    <a href="/logout" class="logout-link">
-                        <i class="bi bi-box-arrow-right"></i>
+            <!-- 로그인/프로필 섹션 -->
+            <div class="header-auth-section">
+                <!-- 비로그인 상태 -->
+                <div id="loggedOutView" class="auth-link-container">
+                    <a class="auth-link login-button" href="#">
+                        <i class="bi bi-google"></i>
+                        <span>Google 로그인</span>
                     </a>
                 </div>
+
+                <!-- 로그인 상태 -->
+                <div id="loggedInView" class="user-info-container" style="display: none;">
+                    <div class="user-info">
+                        <img id="profileImage" src="/images/default-profile.png" alt="프로필 이미지" class="profile-img"/>
+                        <span id="userName">사용자</span>
+                        <a href="#" class="logout-link">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
+
 
             <!-- 다크모드 -->
             <div class="theme-toggle-container">

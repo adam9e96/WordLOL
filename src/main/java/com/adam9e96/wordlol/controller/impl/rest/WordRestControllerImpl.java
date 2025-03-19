@@ -3,12 +3,14 @@ package com.adam9e96.wordlol.controller.impl.rest;
 import com.adam9e96.wordlol.common.constants.Constants;
 import com.adam9e96.wordlol.controller.interfaces.rest.WordRestController;
 import com.adam9e96.wordlol.dto.common.PageResponse;
-import com.adam9e96.wordlol.dto.common.SessionUser;
-import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.dto.request.AnswerRequest;
 import com.adam9e96.wordlol.dto.request.WordRequest;
 import com.adam9e96.wordlol.dto.request.WordSearchRequest;
-import com.adam9e96.wordlol.dto.response.*;
+import com.adam9e96.wordlol.dto.response.AnswerResponse;
+import com.adam9e96.wordlol.dto.response.DailyWordResponse;
+import com.adam9e96.wordlol.dto.response.WordResponse;
+import com.adam9e96.wordlol.dto.response.WordStudyResponse;
+import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.service.interfaces.StudyProgressService;
 import com.adam9e96.wordlol.service.interfaces.WordService;
 import jakarta.servlet.http.HttpSession;
@@ -19,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,13 +41,8 @@ public class WordRestControllerImpl implements WordRestController {
     @Override
     @PostMapping
     public ResponseEntity<Map<String, Object>> createWord(@Valid @RequestBody WordRequest request) {
-        SessionUser sessionUser = (SessionUser) httpSession.getAttribute("user");
-        if (sessionUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "로그인이 필요합니다"));
-        }
 
-        // 이메일을 추가 인자로 전달
-        wordService.createWord(request, sessionUser.getEmail());
+        wordService.createWord(request);
         return ResponseEntity.ok(Map.of("message", "success"));
     }
 
@@ -55,11 +51,7 @@ public class WordRestControllerImpl implements WordRestController {
     @PostMapping("/batch")
     public ResponseEntity<Map<String, Object>> createWords(@RequestBody List<WordRequest> requests) {
 
-        SessionUser sessionUser = (SessionUser) httpSession.getAttribute("user");
-        if (sessionUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "로그인이 필요합니다"));
-        }
-        int successCount = wordService.createWords(requests, sessionUser.getEmail());
+        int successCount = wordService.createWords(requests);
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "success");
@@ -205,16 +197,6 @@ public class WordRestControllerImpl implements WordRestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/check-session")
-    public String checkSession(HttpSession session) {
-        SessionUser user = (SessionUser) session.getAttribute("user");
-        if (user != null) {
-            log.info("현재 로그인한 사용자: {}, 프로필 이미지: {}", user.getName(), user.getPicture());
-        } else {
-            log.info("로그인된 사용자 없음");
-        }
-        return "redirect:/";
-    }
 
     private WordResponse toWordResponse(Word word) {
         return new WordResponse(

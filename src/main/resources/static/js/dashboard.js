@@ -1,30 +1,48 @@
 document.addEventListener('DOMContentLoaded', async function () {
+    console.group('대시보드 로딩');
+    console.time('대시보드 로딩 시간');
+
     try {
-        // 대시보드 데이터와 단어장 데이터 병렬로 가져오기
+        console.log('대시보드 로딩');
+
+        // 로딩 상태를 명시적으로 시작
+        window.showLoading(true);
+
         const [dashboardResponse, wordBooksResponse] = await Promise.all([
             fetch('/api/v1/dashboard'),
             fetch('/api/v1/wordbooks')
         ]);
 
         if (!dashboardResponse.ok || !wordBooksResponse.ok) {
+            console.error('응답 상태:', {
+                dashboard: dashboardResponse.status,
+                wordBooks: wordBooksResponse.status
+            });
             throw new Error('API 응답 오류');
         }
 
         const dashboardData = await dashboardResponse.json();
         const wordBooksData = await wordBooksResponse.json();
 
-        // 통계 카드 업데이트
+        console.log('대시보드 데이터:', dashboardData);
+        console.log('단어장 데이터:', wordBooksData);
+
         updateStatistics(dashboardData);
-
-        // 최근 단어 목록 업데이트
         updateRecentWords(dashboardData.recentWords);
-
-        // 카테고리별 통계 업데이트
         updateCategoryStats(wordBooksData);
 
+        console.log('대시보드 로딩 완료');
     } catch (error) {
-        console.error('데이터 로딩 중 오류 발생:', error);
+        console.error('데이터 로딩 중 오류:', error);
         showError('데이터를 불러오는 중 오류가 발생했습니다.');
+    } finally {
+        // 명시적으로 로딩 상태 종료
+        setTimeout(() => {
+            window.showLoading(false);
+        }, 0);
+
+        console.timeEnd('대시보드 로딩 시간');
+        console.groupEnd();
     }
 });
 

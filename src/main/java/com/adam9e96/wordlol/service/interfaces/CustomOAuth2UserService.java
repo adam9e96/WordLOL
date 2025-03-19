@@ -1,11 +1,10 @@
 package com.adam9e96.wordlol.service.interfaces;
 
 import com.adam9e96.wordlol.dto.common.OAuthAttributes;
-import com.adam9e96.wordlol.dto.common.SessionUser;
 import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.repository.jpa.UserRepository;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -21,11 +20,11 @@ import java.util.Collections;
  * OAuth2 인증 후 사용자 정보를 처리하는 서비스 클래스
  * Google 등의 소셜 로그인을 통해 얻은 사용자 정보를 가공하고 저장하는 역할을 합니다.
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final UserRepository userRepository;
-    private final HttpSession httpSession;
 
     /**
      * OAuth2 로그인 사용자 정보를 로드하는 메소드
@@ -50,9 +49,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // 사용자 정보 저장 또는 업데이트
         User user = saveOrUpdate(attributes);
-
-        // 세션에 사용자 정보 저장 (직렬화된 dto 사용)
-        httpSession.setAttribute("user", new SessionUser(user));
+        log.info("OAuth2 로그인 성공: {}", user.getEmail());
 
         // Spring Security의 OAuth2User 객체 생성하여 반환
         return new DefaultOAuth2User(

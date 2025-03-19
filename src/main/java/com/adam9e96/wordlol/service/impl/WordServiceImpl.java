@@ -1,30 +1,27 @@
 package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.common.constants.Constants;
-import com.adam9e96.wordlol.dto.common.SessionUser;
-import com.adam9e96.wordlol.dto.response.DailyWordResponse;
 import com.adam9e96.wordlol.dto.request.WordRequest;
-import com.adam9e96.wordlol.dto.response.WordResponse;
 import com.adam9e96.wordlol.dto.request.WordSearchRequest;
-import com.adam9e96.wordlol.entity.User;
+import com.adam9e96.wordlol.dto.response.DailyWordResponse;
+import com.adam9e96.wordlol.dto.response.WordResponse;
+import com.adam9e96.wordlol.dto.response.WordStudyResponse;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
 import com.adam9e96.wordlol.exception.word.WordDeletionException;
 import com.adam9e96.wordlol.exception.word.WordNotFoundException;
 import com.adam9e96.wordlol.exception.word.WordUpdateException;
-import com.adam9e96.wordlol.dto.response.WordStudyResponse;
-import com.adam9e96.wordlol.repository.jpa.UserRepository;
-import com.adam9e96.wordlol.repository.mybatis.WordMapper;
 import com.adam9e96.wordlol.mapper.entity.WordEntityMapper;
+import com.adam9e96.wordlol.repository.jpa.UserRepository;
 import com.adam9e96.wordlol.repository.jpa.WordRepository;
+import com.adam9e96.wordlol.repository.mybatis.WordMapper;
 import com.adam9e96.wordlol.service.interfaces.WordService;
 import com.adam9e96.wordlol.validator.WordValidator;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -50,13 +47,11 @@ public class WordServiceImpl implements WordService {
      * [OPTIMIZED] - 2025.03.05 완료
      */
     @Override
-    public void createWord(WordRequest request, String email) {
+    public void createWord(WordRequest request) {
         // 1. 세션에서 사용자 정보 가져오기
         // 세션에서 사용자 정보를 가져옵니다.
         // 세션이 만료되었거나 사용자가 존재하지 않는 경우 예외를 발생시킵니다.
-        User user2 = getUserFromSession();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+
         try {
             // 1. 입력값 검증 (단어, 뜻, 힌트, 난이도)
             wordValidator.validate(request);
@@ -70,7 +65,6 @@ public class WordServiceImpl implements WordService {
                     .meaning(request.meaning())
                     .hint(request.hint())
                     .difficulty(request.difficulty())
-                    .user(user)
                     .build();
             // 4. DB에 저장
             wordMapper.save(word);
@@ -83,10 +77,7 @@ public class WordServiceImpl implements WordService {
 
     @Transactional
     @Override
-    public int createWords(List<WordRequest> requests, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
-
+    public int createWords(List<WordRequest> requests) {
         // 1. 요청이 없으면 0 반환
         if (requests == null || requests.isEmpty()) {
             return 0;
@@ -112,7 +103,6 @@ public class WordServiceImpl implements WordService {
                         .meaning(request.meaning())
                         .hint(request.hint())
                         .difficulty(request.difficulty())
-                        .user(user)
                         .build();
 
                 wordsToSave.add(word);
@@ -344,13 +334,4 @@ public class WordServiceImpl implements WordService {
                 .anyMatch(answer -> answer.equalsIgnoreCase(userAnswer.trim()));
     }
 
-    private User getUserFromSession() {
-        SessionUser session = (SessionUser) httpSession.getAttribute("user");
-        log.info("세션 정보: {}", session);
-        if (session == null) {
-            throw new IllegalArgumentException("세션이 만료되었습니다. 다시 로그인 해주세요.");
-        }
-        return userRepository.findByEmail(session.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
-    }
 }

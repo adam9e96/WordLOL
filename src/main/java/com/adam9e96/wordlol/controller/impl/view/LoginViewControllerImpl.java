@@ -12,11 +12,17 @@ public class LoginViewControllerImpl implements LoginViewController {
         return "login"; // src/main/resources/templates/login.html을 찾음
     }
 
+    // OAuth 로그인으로 리다이렉트하는 경로 추가
+    @GetMapping("/auth/google")
+    public String googleLogin() {
+        return "redirect:/oauth2/authorization/google";
+    }
+
     // 루트 페이지로 리다이렉트
     @Override
     @GetMapping("/")
     public String home() {
-        return "redirect:/word/dashboard";
+        return "redirect:/word/list";
     }
 
 }

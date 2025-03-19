@@ -5,14 +5,16 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
+
 @Component
 @ConfigurationProperties(prefix = "jwt")
 @Getter
 @Setter
 public class JwtProperties {
-    private String secretKey = "default_jwt_secret_key_must_be_changed_in_production_environment_with_minimum_512_bits";
+    // 더 강력한 키 (최소 256비트 = 32바이트)
+    private String secretKey = Base64.getEncoder().encodeToString(
+            "ThisIsASecureSecretKeyForJwtAuthenticationRequiredMinimum32BytesFor256Bits".getBytes());
     private long accessTokenValidityInMs = 3600000; // 1시간
     private long refreshTokenValidityInMs = 2592000000L; // 30일
-
-
 }
