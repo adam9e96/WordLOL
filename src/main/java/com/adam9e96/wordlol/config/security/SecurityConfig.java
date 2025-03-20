@@ -49,11 +49,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-
-                // CORS 설정 추가
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // CSRF 보호 비활성화 (REST API이므로 토큰 기반 인증을 사용하기 때문에 불필요)
                 .csrf(AbstractHttpConfigurer::disable)
+                // CORS 설정 추가
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // 세션 관리 정책 설정 (세션을 생성하지 않고 상태를 유지하지 않음)
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -85,8 +84,8 @@ public class SecurityConfig {
      * @param auth AuthorizeHttpRequestsConfigurer 객체
      */
     private void customAuthorizeRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
-        // 공개 접근 가능한 리소스 설정
         auth.requestMatchers(
+                        // 공개 접근 가능한 정적 리소스 및 인증 관련 경로
                         "/",
                         "/login",
                         "/logout",
@@ -96,8 +95,17 @@ public class SecurityConfig {
                         "/css/**",
                         "/images/**",
                         "/h2-console/**",
-                        "/api/v1/auth/**"
+                        "/api/v1/auth/**",
+                        "/word/daily",
+                        "/word/list",
+                        "/word/**"
                 ).permitAll()
+                .requestMatchers(
+                        // 뷰 페이지 경로들은 모두 인증 필요
+                        "/word/**",
+                        "/wordbook/**",
+                        "/dashboard"
+                ).authenticated()
                 .anyRequest().authenticated(); // 그 외 모든 요청은 인증 필요
     }
 

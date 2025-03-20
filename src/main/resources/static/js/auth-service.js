@@ -67,11 +67,13 @@ class AuthService {
                         this.loadUserInfo();
                     } else {
                         this.notifyAuthStateChanged(false);
+                        this.handleLogout(true, '/login');
                     }
                 })
                 .catch(err => {
                     console.error('토큰 검증 오류:', err);
                     this.notifyAuthStateChanged(false);
+                    this.handleLogout(true, '/login');
                 });
         } else {
             // URL에서 토큰 파라미터 확인 (OAuth 리다이렉션)

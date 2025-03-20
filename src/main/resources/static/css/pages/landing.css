@@ -1,0 +1,470 @@
+/* landing.css - WordLOL 랜딩 페이지 스타일 */
+
+/* 기본 레이아웃 */
+.landing-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+    max-width: 100%;
+    overflow-x: hidden;
+    padding-bottom: var(--spacing-8);
+}
+
+section {
+    padding: var(--spacing-4) var(--spacing-2);
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+}
+
+.section-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--on-surface);
+    margin-bottom: var(--spacing-2);
+}
+
+.section-subtitle {
+    font-size: 1.125rem;
+    color: var(--on-surface-variant);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* 히어로 섹션 */
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: calc(100vh - 200px);
+    padding: var(--spacing-8) var(--spacing-4);
+    gap: var(--spacing-4);
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 600px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-4);
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--on-surface-variant);
+    margin-bottom: var(--spacing-5);
+    line-height: 1.6;
+}
+
+.hero-actions {
+    display: flex;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+}
+
+.hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* 기능 섹션 */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-4);
+}
+
+.feature-card {
+    background-color: var(--surface-container);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-4);
+    box-shadow: var(--shadow-1);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-2);
+}
+
+.feature-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: var(--border-radius);
+    background: linear-gradient(45deg, var(--primary-container), var(--primary));
+    margin-bottom: var(--spacing-4);
+}
+
+.feature-icon i {
+    font-size: 2rem;
+    color: var(--on-primary);
+}
+
+.feature-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-2);
+    color: var(--on-surface);
+}
+
+.feature-description {
+    color: var(--on-surface-variant);
+    line-height: 1.6;
+}
+
+/* 학습 방법 섹션 */
+.how-section {
+    background-color: var(--surface-container-low);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-6) var(--spacing-4);
+    box-shadow: var(--shadow-1);
+}
+
+.steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.step-item {
+    display: flex;
+    gap: var(--spacing-4);
+    align-items: flex-start;
+}
+
+.step-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    color: var(--on-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step-content {
+    flex-grow: 1;
+}
+
+.step-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-1);
+    color: var(--on-surface);
+}
+
+.step-description {
+    color: var(--on-surface-variant);
+    line-height: 1.6;
+}
+
+/* 샘플 단어 카드 섹션 */
+.sample-section {
+    background-color: var(--surface-container);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-6) var(--spacing-4);
+    box-shadow: var(--shadow-2);
+}
+
+.sample-cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+    margin: var(--spacing-6) 0;
+}
+
+.sample-card {
+    width: 300px;
+    height: 200px;
+    perspective: 1000px;
+    cursor: pointer;
+    position: relative;
+}
+
+.sample-card .card-front,
+.sample-card .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    transition: transform 0.6s;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: var(--shadow-1);
+}
+
+.sample-card .card-front {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    z-index: 2;
+}
+
+.sample-card .card-back {
+    background-color: var(--surface-container-high);
+    color: var(--on-surface);
+    transform: rotateY(180deg);
+    z-index: 1;
+}
+
+.sample-card.flipped .card-front {
+    transform: rotateY(180deg);
+}
+
+.sample-card.flipped .card-back {
+    transform: rotateY(0);
+}
+
+.card-word {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-2);
+    text-align: center;
+}
+
+.card-meaning {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-1);
+    text-align: center;
+}
+
+.card-hint {
+    font-size: 0.875rem;
+    color: var(--on-surface-variant);
+    text-align: center;
+    font-style: italic;
+}
+
+.btn-speak {
+    position: absolute;
+    bottom: var(--spacing-2);
+    right: var(--spacing-2);
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+}
+
+.btn-speak:hover {
+    transform: scale(1.2);
+}
+
+.sample-action {
+    text-align: center;
+    margin-top: var(--spacing-4);
+}
+
+/* CTA 섹션 */
+.cta-section {
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    border-radius: var(--border-radius);
+    padding: var(--spacing-8) var(--spacing-4);
+    color: var(--on-primary);
+    text-align: center;
+    box-shadow: var(--shadow-2);
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-2);
+}
+
+.cta-text {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-4);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-section .btn {
+    background-color: white;
+    color: var(--primary);
+}
+
+.cta-section .btn:hover {
+    background-color: var(--surface-bright);
+}
+
+/* 버튼 스타일 */
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: all var(--transition-normal);
+    cursor: pointer;
+}
+
+.btn-outline:hover {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+.scroll-btn {
+    margin-left: var(--spacing-2);
+}
+
+/* 학습 카드 뒤집기 효과를 위한 클래스 */
+.flipped .card-front {
+    transform: rotateY(180deg);
+}
+
+.flipped .card-back {
+    transform: rotateY(0deg);
+}
+
+/* 반응형 스타일 */
+@media (max-width: 968px) {
+    .hero-section {
+        flex-direction: column;
+        text-align: center;
+        padding: var(--spacing-6) var(--spacing-2);
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .hero-image {
+        order: -1;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .section-title {
+        font-size: 1.875rem;
+    }
+
+    .feature-card {
+        text-align: center;
+    }
+
+    .step-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .landing-grid {
+        gap: var(--spacing-6);
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .section-subtitle {
+        font-size: 1rem;
+    }
+
+    .feature-title {
+        font-size: 1.25rem;
+    }
+
+    .sample-card {
+        width: 280px;
+        height: 180px;
+    }
+
+    .card-word {
+        font-size: 1.5rem;
+    }
+
+    .cta-title {
+        font-size: 1.875rem;
+    }
+
+    .cta-text {
+        font-size: 1rem;
+    }
+}
+
+/* 다크모드 호환성 */
+[data-theme="dark"] .feature-card {
+    background-color: var(--surface-container);
+}
+
+[data-theme="dark"] .sample-section {
+    background-color: var(--surface-container);
+}
+
+[data-theme="dark"] .sample-card .card-back {
+    background-color: var(--surface-container-high);
+}
+
+[data-theme="dark"] .sample-card .card-front {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+[data-theme="dark"] .how-section {
+    background-color: var(--surface-container);
+}

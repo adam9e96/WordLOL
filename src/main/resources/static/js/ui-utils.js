@@ -2,7 +2,6 @@
  * ui-utils.js
  * UI 관련 유틸리티 함수 모음
  */
-
 class UiUtils {
     constructor() {
         this.setupEventListeners();

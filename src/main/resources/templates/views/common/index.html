@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>WordLOL - 효과적인 단어 학습</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/pages/landing.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content" class="landing-grid">
+    <!-- 히어로 섹션 -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">단어 학습의 새로운 방법</h1>
+            <p class="hero-subtitle">WordLOL과 함께 효과적으로 단어를 학습하고 기억하세요</p>
+            <div class="hero-actions">
+                <a href="/auth/google" class="btn btn-check-answer login-button">
+                    <i class="bi bi-google"></i>
+                    Google로 로그인하기
+                </a>
+                <a href="#features" class="btn btn-outline scroll-btn">
+                    <i class="bi bi-arrow-down"></i>
+                    더 알아보기
+                </a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="/images/study-exam.png" alt="단어 학습 이미지">
+        </div>
+    </section>
+
+    <!-- 주요 기능 소개 섹션 -->
+    <section id="features" class="features-section">
+        <div class="section-header">
+            <h2 class="section-title">WordLOL의 특별한 기능</h2>
+            <p class="section-subtitle">효과적인 단어 학습을 위한 다양한 기능을 제공합니다</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+                <h3 class="feature-title">맞춤형 단어장</h3>
+                <p class="feature-description">
+                    토익, 토플, 수능 등 목적에 맞는 단어장을 직접 생성하고 관리할 수 있습니다.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-lightning-charge"></i>
+                </div>
+                <h3 class="feature-title">스피드 학습</h3>
+                <p class="feature-description">
+                    특별한 알고리즘으로 효율적인 학습 순서를 제공하여 학습 시간을 단축합니다.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h3 class="feature-title">진행 상황 추적</h3>
+                <p class="feature-description">
+                    학습 데이터를 분석하여 개인별 학습 패턴과 향상도를 시각화합니다.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <h3 class="feature-title">일일 학습</h3>
+                <p class="feature-description">
+                    매일 새로운 단어를 추천하여 꾸준한 학습 습관을 형성합니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 학습 방법 섹션 -->
+    <section class="how-section">
+        <div class="section-header">
+            <h2 class="section-title">어떻게 학습하나요?</h2>
+            <p class="section-subtitle">간단한 3단계로 효과적인 단어 학습을 시작하세요</p>
+        </div>
+
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3 class="step-title">단어장 선택</h3>
+                    <p class="step-description">
+                        목적에 맞는 단어장을 선택하거나 직접 만들어보세요.
+                    </p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3 class="step-title">학습 시작</h3>
+                    <p class="step-description">
+                        플래시카드 방식으로 단어를 학습하고 정답을 입력하세요.
+                    </p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3 class="step-title">진행 확인</h3>
+                    <p class="step-description">
+                        대시보드에서 학습 진행 상황과 성과를 확인하세요.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 샘플 단어 카드 섹션 -->
+    <section class="sample-section">
+        <div class="section-header">
+            <h2 class="section-title">오늘의 추천 단어</h2>
+            <p class="section-subtitle">로그인하지 않아도 매일 새로운 단어를 학습할 수 있습니다</p>
+        </div>
+
+        <div class="sample-cards">
+            <div class="sample-card">
+                <div class="card-front">
+                    <p class="card-word">serendipity</p>
+                    <button class="btn-speak">
+                        <i class="bi bi-volume-up"></i>
+                    </button>
+                </div>
+                <div class="card-back">
+                    <p class="card-meaning">우연한 행운, 뜻밖의 발견</p>
+                    <p class="card-hint">unexpected fortune or discovery</p>
+                </div>
+            </div>
+
+            <div class="sample-card">
+                <div class="card-front">
+                    <p class="card-word">ephemeral</p>
+                    <button class="btn-speak">
+                        <i class="bi bi-volume-up"></i>
+                    </button>
+                </div>
+                <div class="card-back">
+                    <p class="card-meaning">덧없는, 일시적인</p>
+                    <p class="card-hint">lasting for a very short time</p>
+                </div>
+            </div>
+
+            <div class="sample-card">
+                <div class="card-front">
+                    <p class="card-word">ubiquitous</p>
+                    <button class="btn-speak">
+                        <i class="bi bi-volume-up"></i>
+                    </button>
+                </div>
+                <div class="card-back">
+                    <p class="card-meaning">어디에나 있는, 편재하는</p>
+                    <p class="card-hint">present everywhere at the same time</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sample-action">
+            <a href="/word/daily" class="btn btn-outline">
+                <i class="bi bi-book"></i>
+                더 많은 단어 보기
+            </a>
+        </div>
+    </section>
+
+    <!-- CTA 섹션 -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">지금 바로 시작하세요</h2>
+            <p class="cta-text">WordLOL과 함께 효과적인 단어 학습을 경험해보세요.</p>
+            <a href="/auth/google" class="btn btn-check-answer login-button">
+                <i class="bi bi-google"></i>
+                Google로 로그인하기
+            </a>
+        </div>
+    </section>
+</main>
+
+<th:block layout:fragment="script">
+    <script th:src="@{/js/landing.js}"></script>
+    <script>
+        // 샘플 카드 클릭 시 뒤집기 기능
+        document.addEventListener('DOMContentLoaded', function() {
+            const sampleCards = document.querySelectorAll('.sample-card');
+
+            sampleCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.classList.toggle('flipped');
+                });
+            });
+
+            // 스크롤 버튼 기능
+            const scrollBtn = document.querySelector('.scroll-btn');
+            if (scrollBtn) {
+                scrollBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>

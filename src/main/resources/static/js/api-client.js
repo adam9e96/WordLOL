@@ -21,17 +21,13 @@ class ApiClient {
             }
 
             try {
-                // options에 headers가 없으면 초기화
                 options.headers = options.headers || {};
-
-                // addAuthHeaders 메서드 사용
                 options = this.addAuthHeaders(options);
 
-                // 기존 로직 유지
                 this.startLoading();
                 let response = await originalFetch(url, options);
 
-                // 401 에러 처리 로직
+                // 401 에러 처리 로직 개선
                 if (response.status === 401 && window.AuthService) {
                     const refreshed = await window.AuthService.refreshToken();
                     if (refreshed) {
@@ -40,11 +36,11 @@ class ApiClient {
                         response = await originalFetch(url, options);
                     } else {
                         this.handleUnauthorized();
+                        throw new Error('인증 갱신 실패');
                     }
                 }
 
-                response = await this.handleResponse(response);
-                return response;
+                return await this.handleResponse(response);
             } catch (error) {
                 console.error(`요청 오류: ${url}`, error);
                 this.showErrorMessage(error.message);
@@ -54,6 +50,7 @@ class ApiClient {
             }
         };
     }
+
     /**
      * 요청에 인증 헤더 추가
      */
