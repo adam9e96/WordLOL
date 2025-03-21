@@ -88,7 +88,6 @@ public class SecurityConfig {
                 // 공개 접근 가능한 정적 리소스 및 인증 관련 경로
                 .requestMatchers(
                         "/",
-                        "/login",
                         "/logout",
                         "/oauth2/**",
                         "/auth/**",

@@ -3,10 +3,9 @@ package com.adam9e96.wordlol.controller.impl.rest;
 import com.adam9e96.wordlol.config.security.jwt.JwtTokenProvider;
 import com.adam9e96.wordlol.controller.interfaces.rest.AuthController;
 import com.adam9e96.wordlol.dto.common.TokenInfo;
-import com.adam9e96.wordlol.dto.request.TokenRefreshRequest;
 import com.adam9e96.wordlol.dto.response.TokenResponse;
+import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.repository.jpa.UserRepository;
-import com.adam9e96.wordlol.service.interfaces.JwtAuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,10 +13,11 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-import com.adam9e96.wordlol.entity.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -32,31 +32,9 @@ import java.util.Map;
 public class AuthControllerImpl implements AuthController {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final JwtAuthService jwtAuthService;
     private final UserRepository userRepository;
 
-
-    /**
-     * OAuth2 로그인 성공 후 JWT 토큰 발급
-     *
-     * @return JWT 토큰 정보
-     */
-    @GetMapping("/login/oauth2/success")
-    @Override
-    public ResponseEntity<TokenResponse> oAuth2LoginSuccess(Authentication authentication) {
-        if (authentication == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        // 사용자 정보로 토큰 생성
-        TokenInfo tokenInfo = jwtAuthService.createTokenForOAuthUser(authentication.getName());
-
-        // 토큰 응답 생성
-
-        TokenResponse response = new TokenResponse(tokenInfo.getGrantType(), tokenInfo.getAccessToken(), tokenInfo.getRefreshToken());
-
-        return ResponseEntity.ok(response);
-    }
+    // 로그인 성공 후 jwt 발급은 성공핸들러에서 처리
 
     /**
      * 리프레시 토큰을 이용해 새로운 액세스 토큰 발급
@@ -84,7 +62,7 @@ public class AuthControllerImpl implements AuthController {
         }
 
         try {
-            TokenInfo tokenInfo = jwtAuthService.refreshToken(refreshToken);
+            TokenInfo tokenInfo = jwtTokenProvider.refreshToken(refreshToken);
 
             // 새로운 토큰을 쿠키로 설정
             Cookie accessTokenCookie = new Cookie("access_token", tokenInfo.getAccessToken());
@@ -138,6 +116,7 @@ public class AuthControllerImpl implements AuthController {
      * @return 인증 상태와 사용자 정보
      */
     @GetMapping("/status")
+    @Override
     public ResponseEntity<Map<String, Object>> getAuthStatus(HttpSession session) {
         Map<String, Object> response = new HashMap<>();
 
@@ -171,6 +150,7 @@ public class AuthControllerImpl implements AuthController {
      * 로그아웃 처리
      */
     @PostMapping("/logout")
+    @Override
     public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
         // 액세스 토큰 쿠키 삭제
         Cookie accessTokenCookie = new Cookie("access_token", "");
@@ -194,6 +174,5 @@ public class AuthControllerImpl implements AuthController {
 
         return ResponseEntity.ok(responseData);
     }
-
 
 }

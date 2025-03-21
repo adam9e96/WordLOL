@@ -2,6 +2,7 @@ package com.adam9e96.wordlol.config.security.jwt;
 
 import com.adam9e96.wordlol.dto.common.TokenInfo;
 import com.adam9e96.wordlol.enums.Role;
+import com.adam9e96.wordlol.repository.jpa.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -32,9 +33,12 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
     private final Key key;
     private final JwtProperties jwtProperties;
+    private final UserRepository userRepository;
 
-    public JwtTokenProvider(JwtProperties jwtProperties) {
+
+    public JwtTokenProvider(JwtProperties jwtProperties, UserRepository userRepository) {
         this.jwtProperties = jwtProperties;
+        this.userRepository = userRepository;
         try {
             // secretKey는 이미 Base64로 인코딩된 값이어야 함
             byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecretKey());
@@ -258,5 +262,22 @@ public class JwtTokenProvider {
     // 토큰에서 이메일 추출
     public String getEmailFromToken(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    public TokenInfo refreshToken(String refreshToken) {
+        // 리프레시 토큰 유효성 검사
+        if (!validateToken(refreshToken)) {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        }
+
+        // 토큰에서 이메일 추출
+        String email = getEmailFromToken(refreshToken);
+
+        // 사용자 정보 조회
+        com.adam9e96.wordlol.entity.User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다: " + email));
+
+        // 새로운 액세스 토큰 생성( 리프레시 토큰도 갱신됨)
+        return createTokenFromEmail(email, user.getRole());
     }
 }

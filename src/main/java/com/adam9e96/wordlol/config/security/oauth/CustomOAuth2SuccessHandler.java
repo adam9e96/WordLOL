@@ -28,7 +28,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
-    // 로그인 성공 후 리다이렉션할 기본 URL
+    // 로그인 성공 후 리다이렉션할 기본 URL @todo 상수클래스에서 불러와야됨
     private static final String DEFAULT_SUCCESS_URL = "/word/dashboard";
 
     @Override
@@ -50,7 +50,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다: " + email));
 
-            // JWT 토큰 생성
+            // JWT 토큰 생성 (이메일과 사용자 역할을 기반으로 생성)
             TokenInfo tokenInfo = jwtTokenProvider.createTokenFromEmail(email, user.getRole());
 
             // JWT 토큰을 HttpOnly 쿠키로 설정
@@ -67,13 +67,32 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     }
 
     // 토큰을 쿠키로 설정하는 메서드
+
+    /**
+     * 인증 토큰을 HTTP 응답에 쿠키로 설정하는 메서드
+     *
+     * @param response  HTTP 응답 객체
+     * @param tokenInfo 액세스 토큰과 리프레시 토큰을 포함하는 객체
+     *                  <p>
+     *                  설정되는 쿠키:
+     *                  1. access_token: 모든 API 요청 인증에 사용되는 단기 토큰 (1시간 유효)
+     *                  - HttpOnly: true (JavaScript에서 접근 불가)
+     *                  - Path: / (모든 경로에서 사용 가능)
+     *                  - SameSite: Lax (크로스 사이트 요청 제한)
+     *                  <p>
+     *                  2. refresh_token: 액세스 토큰 갱신에 사용되는 장기 토큰 (30일 유효)
+     *                  - HttpOnly: true (JavaScript에서 접근 불가)
+     *                  - Path: /api/v1/auth/refresh (토큰 갱신 경로에서만 사용 가능)
+     *                  - SameSite: Lax (크로스 사이트 요청 제한)
+     */
     private void addTokenCookies(HttpServletResponse response, TokenInfo tokenInfo) {
+
         // Access Token 쿠키 설정
         Cookie accessTokenCookie = new Cookie("access_token", tokenInfo.getAccessToken());
         accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setPath("/");
+        accessTokenCookie.setPath("/"); // 모든 경로에서 접근 가능
         // HTTPS 환경에서만 secure=true 설정
-        accessTokenCookie.setSecure(false); // 개발 환경에서는 false, 운영 환경에서는 true로 변경
+        accessTokenCookie.setSecure(false); // 개발 환경에서는 false, 운영 환경에서는 true 로 변경(http -> https)
         // XSS 방어를 위한 SameSite 설정
         accessTokenCookie.setAttribute("SameSite", "Lax");
         // 액세스 토큰 만료 시간 설정 (초 단위)
@@ -83,8 +102,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         // Refresh Token 쿠키 설정
         Cookie refreshTokenCookie = new Cookie("refresh_token", tokenInfo.getRefreshToken());
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/api/v1/auth/refresh");
-        refreshTokenCookie.setSecure(false); // 개발 환경에서는 false, 운영 환경에서는 true로 변경
+        refreshTokenCookie.setPath("/api/v1/auth/refresh"); // 리프레시 토큰은 특정 경로에서만 접근 가능
+        refreshTokenCookie.setSecure(false);
         refreshTokenCookie.setAttribute("SameSite", "Lax");
         // 리프레시 토큰 만료 시간 설정 (초 단위)
         refreshTokenCookie.setMaxAge(2592000); // 30일

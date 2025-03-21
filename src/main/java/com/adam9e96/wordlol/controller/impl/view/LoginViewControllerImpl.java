@@ -12,12 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class LoginViewControllerImpl implements LoginViewController {
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Override
-    @GetMapping("/login")
-    public String login() {
-        return "login"; // src/main/resources/templates/login.html을 찾음
-    }
-
     // OAuth 로그인으로 리다이렉트하는 경로 추가
     @GetMapping("/auth/google")
     public String googleLogin() {
@@ -33,7 +27,7 @@ public class LoginViewControllerImpl implements LoginViewController {
         if (token != null && jwtTokenProvider.validateToken(token)) {
             return "redirect:/word/dashboard";  // 로그인한 경우 대시보드로
         } else {
-            return "views/common/index";  // 로그인하지 않은 경우 랜딩 페이지로
+            return "views/common/welcome";  // 로그인하지 않은 경우 소개 페이지로
         }
     }
 
