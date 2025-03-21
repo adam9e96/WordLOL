@@ -413,10 +413,12 @@ class AuthService {
         }
     }
 
-
-    // 로그인 시 호출되는 메서드 개선
+    /**
+     * 1. 로그인 시작 점
+     * 구글 로그인 처리
+     * @param redirectUri
+     */
     handleGoogleLogin(redirectUri) {
-        // 기존 리다이렉트 로직 유지
         if (redirectUri) {
             localStorage.setItem('auth_redirect_uri', redirectUri);
         }
