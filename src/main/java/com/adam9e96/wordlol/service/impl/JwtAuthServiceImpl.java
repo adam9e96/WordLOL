@@ -43,7 +43,7 @@ public class JwtAuthServiceImpl implements JwtAuthService {
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다: " + email));
 
-            // 새로운 액세스 토큰 생성 (리프레시 토큰은 갱신하지 않음)
+            // 새로운 액세스 토큰 생성( 리프레시 토큰도 갱신됨)
             return jwtTokenProvider.createTokenFromEmail(email, user.getRole());
         } catch (Exception e) {
             log.error("토큰 리프레시 중 오류 발생", e);

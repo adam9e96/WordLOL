@@ -46,17 +46,22 @@ public class AuthControllerImpl implements AuthController {
         return ResponseEntity.ok(response);
     }
 
-
+    /**
+     * 리프레시 토큰을 이용해 새로운 액세스 토큰 발급
+     *
+     * @param request 리프레시 토큰 요청
+     * @return 새로운 JWT 토큰 정보
+     */
     @PostMapping("/refresh")
     @Override
     public ResponseEntity<TokenResponse> refreshToken(@RequestBody TokenRefreshRequest request) {
         try {
             TokenInfo tokenInfo = jwtAuthService.refreshToken(request.refreshToken());
 
-            // 토큰 응답 생성
+            // 토큰 응답 생성 (인증 타입, 액세스 토큰, 리프레시 토큰 포함)
             TokenResponse response = new TokenResponse(tokenInfo.getGrantType(), tokenInfo.getAccessToken(), tokenInfo.getRefreshToken());
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response); // 200 OK 와 함께 새 토큰 정보 반환
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }

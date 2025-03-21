@@ -29,7 +29,7 @@ class ApiClient {
 
                 // 401 에러 처리 로직 개선
                 if (response.status === 401 && window.AuthService) {
-                    const refreshed = await window.AuthService.refreshToken();
+                    const refreshed = await window.AuthService.refreshTokens();
                     if (refreshed) {
                         // 갱신된 토큰으로 다시 헤더 추가
                         options = this.addAuthHeaders(options);
