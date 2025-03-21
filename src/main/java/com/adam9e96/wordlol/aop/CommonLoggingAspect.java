@@ -12,33 +12,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * 통합 로깅을 위한 AOP(Aspect-Oriented Programming) 컴포넌트입니다.
  * Controller 와 Service 계층의 메서드 실행을 로깅합니다.
- *
- * <p>
- * 이 Aspect 는 Controller 와 Service 계층의 메서드 실행을 가로채서 일관된 형식으로 정보를 로깅합니다.
- * </p>
- * <ul>
- *     <li>메서드 실행 시작 시 - 메서드 메타데이터, 입력 파라미터</li>
- *     <li>메서드 실행 조료 시 - 실행 시간, 반환값</li>
- * </ul>
- * <p>
- *     모든 객체 파라미터와 반환값은 JSON 형식으로 변환되어 로깅됩니다.
- * </p>
- * <p>
- *     로그 메시지 출력 예시
- * </p>
- * <pre>
- * [계층 Layer] ▶️ 메서드 시작 ====================
- * >> 위치: 클래스명.메서드명
- * >> 파라미터: 파라미터값(JSON)
- *
- * [계층 Layer] ⬅️ 메서드 종료 ====================
- * >> 위치: 클래스명.메서드명
- * >> 실행시간: 밀리초
- * >> 반환값: 결과값(JSON)
- * </pre>
  */
 @Slf4j
 @Aspect
@@ -94,20 +73,44 @@ public class CommonLoggingAspect {
 
     /**
      * JSON 변환 함수 - 변환 실패 시 기본 toString() 사용
-     * 단, HttpSession 및 HttpServletRequest 객체는 변환하지 않음
-     * 이유) HttpSession 및 HttpServletRequest 객체는 JSON으로 변환할 수 없거나, 변환 시 무한 루프에 빠질 수 있음
+     * HttpSession과 HttpServletRequest 같은 직렬화하기 어려운 객체는 특별히 처리
      */
     private String convertToJson(Object object) {
+        if (object == null) {
+            return "null";
+        }
+
+        // HttpSession이나 HttpServletRequest 객체 처리
         if (object instanceof HttpSession || object instanceof HttpServletRequest) {
-            return "[HttpSession/Request - JSON 변환 건너뜀]";
+            return "[HTTP 세션/요청 객체 - JSON 변환 생략]";
+        }
+
+        // 배열이나 컬렉션 객체를 감지하고 내부 요소가 복잡한 객체면 특별 처리
+        if (object.getClass().isArray()) {
+            Object[] array = (Object[]) object;
+
+            // 배열 내 요소가 HttpSession이나 HttpServletRequest인지 확인
+            boolean hasComplexObjects = Arrays.stream(array)
+                    .anyMatch(item -> item instanceof HttpSession || item instanceof HttpServletRequest);
+
+            if (hasComplexObjects) {
+                return "[HTTP 세션/요청 객체를 포함한 배열 - JSON 변환 생략]";
+            }
         }
 
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             log.warn("JSON 변환 실패: {}", e.getMessage());
-            return object != null ? object.toString() : "null";
+
+            // 배열인 경우 각 요소의 toString()을 사용하여 문자열로 변환
+            if (object.getClass().isArray()) {
+                return Arrays.stream((Object[]) object)
+                        .map(item -> item != null ? item.toString() : "null")
+                        .collect(Collectors.joining(", ", "[", "]"));
+            }
+
+            return object.toString();
         }
     }
-
 }

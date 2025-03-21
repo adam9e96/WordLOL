@@ -7,7 +7,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,6 +48,7 @@ public class JwtTokenProvider {
 
 
     // 사용자 인증 정보를 바탕으로 액세스 토큰과 리프레시 토큰을 생성합니다
+    // 추후 id, password 기반 로그인 시 사용할 메서드
     public TokenInfo createToken(Authentication authentication) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
@@ -222,8 +222,6 @@ public class JwtTokenProvider {
     // 이메일과 역할(ROLE)을 기반으로 JWT 토큰을 생성하는 메서드
     // 이 메서드는 OAuth 로그인을 통해 사용자의 이메일과 역할을 기반으로 JWT 토큰을 생성합니다
     // 주요 기능:
-    //
-    //
     //OAuth 로그인 후 사용자 이메일과 역할 정보를 받아 JWT 토큰을 생성합니다.
     //액세스 토큰과 리프레시 토큰 두 가지를 생성합니다:
     //액세스 토큰: 사용자 인증에 사용 (만료 기간: 1시간)
@@ -249,6 +247,7 @@ public class JwtTokenProvider {
                 .signWith(key)
                 .compact();
 
+        // TokenInfo 객체에 액세스 토큰과 리프레시 토큰, 타입을 설정하여 반환
         return TokenInfo.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)

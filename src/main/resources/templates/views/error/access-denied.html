@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>접근 권한 없음</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/pages/error/error.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content" class="access-denied-grid">
+    <div class="access-denied-container">
+        <div class="access-denied-icon">🔒</div>
+        <h1 class="access-denied-title">접근 권한 없음</h1>
+        <p class="access-denied-description">
+            해당 페이지에 접근할 권한이 없습니다.<br>
+            관리자에게 문의하거나 로그인 상태를 확인해주세요.
+        </p>
+        <a href="/" class="btn-back">
+            <i class="bi bi-arrow-left"></i>
+            메인 페이지로 돌아가기
+        </a>
+    </div>
+</main>
+</body>
+</html>

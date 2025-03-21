@@ -99,7 +99,8 @@ public class SecurityConfig {
                         "/h2-console/**",
                         "/api/v1/auth/**",
                         "/word/daily",
-                        "/word/list"
+                        "/word/list",
+                        "/access-denied"
                 ).permitAll()
                 // API 요청에 대한 세밀한 권한 설정
                 .requestMatchers(HttpMethod.GET, "/api/v1/words/public/**").permitAll()

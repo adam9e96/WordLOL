@@ -5,17 +5,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 인증되지 않은 사용자가 보안이 필요한 리소스에 접근할 때 처리하는 클래스
+ * 인증되지 않은 사용자가 요청을 보낼 때 401 Unauthorized 응답을 반환합니다.
  */
 @Component
 @RequiredArgsConstructor
@@ -24,18 +22,16 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException) throws IOException, ServletException {
 
-        Map<String, Object> errorDetails = new HashMap<>();
-        errorDetails.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-        errorDetails.put("message", "인증이 필요합니다. 로그인 후 이용해주세요.");
-        errorDetails.put("error", "Unauthorized");
-        errorDetails.put("path", request.getServletPath());
+        // 접근 불가 페이지로 리다이렉트
+        response.sendRedirect("/access-denied"); // access-denied 페이지로 리다이렉트
 
-        objectMapper.writeValue(response.getOutputStream(), errorDetails);
-
+        // 또는 특정 상태 코드와 함께 리다이렉트
+        // response.setStatus(HttpServletResponse.SC_FOUND); // 302 상태 코드
+        // response.setHeader("Location", "/access-denied");
+        // response.flushBuffer();
     }
 }
