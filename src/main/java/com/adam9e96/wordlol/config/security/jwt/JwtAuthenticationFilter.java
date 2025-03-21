@@ -2,8 +2,10 @@ package com.adam9e96.wordlol.config.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -27,17 +29,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // HTTP 요청 헤더에서 토큰 추출
-        String token = jwtTokenProvider.resolveToken(request);
+        // 쿠키에서 액세스 토큰 추출
+        String token = extractTokenFromCookie(request);
+
+        // 쿠키에 토큰이 없으면 헤더에서 추출 시도 (기존 로직 유지)
+        if (token == null) {
+            token = jwtTokenProvider.resolveToken(request);
+        }
+
         log.info("추출된 토큰: {}", token != null ? "토큰 있음" : "토큰 없음");
 
         // 토큰이 유효한 경우 인증 정보 설정
         if (token != null && jwtTokenProvider.validateToken(token)) {
             try {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                // SecurityContext 에 인증 정보 저장
+                // SecurityContext에 인증 정보 저장
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.info("Security Context 에 '{}' 인증 정보를 저장했습니다.", authentication.getName());
+                log.info("Security Context에 '{}' 인증 정보를 저장했습니다.", authentication.getName());
             } catch (Exception e) {
                 log.error("인증 처리 중 오류 발생: {}", e.getMessage());
             }
@@ -48,4 +56,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
     }
+
+    // 쿠키에서 액세스 토큰 추출
+    private String extractTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("access_token".equals(cookie.getName())) {
+                    log.info("쿠키에서 토큰 추출: 토큰 있음");
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
+    }
+
 }

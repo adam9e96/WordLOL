@@ -9,7 +9,9 @@ class ApiClient {
         this.setupFetchInterceptor();
     }
 
-// setupFetchInterceptor 메서드 내에서 addAuthHeaders 사용
+    /**
+     * fetch API를 가로채서 요청 전/후 처리를 추가하는 인터셉터 설정
+     */
     setupFetchInterceptor() {
         const originalFetch = window.fetch;
 
@@ -27,19 +29,7 @@ class ApiClient {
                 this.startLoading();
                 let response = await originalFetch(url, options);
 
-                // 401 에러 처리 로직 개선
-                if (response.status === 401 && window.AuthService) {
-                    const refreshed = await window.AuthService.refreshTokens();
-                    if (refreshed) {
-                        // 갱신된 토큰으로 다시 헤더 추가
-                        options = this.addAuthHeaders(options);
-                        response = await originalFetch(url, options);
-                    } else {
-                        this.handleUnauthorized();
-                        throw new Error('인증 갱신 실패');
-                    }
-                }
-
+                // 응답 처리 - 401 오류 발생 시 인증 필요 알림
                 return await this.handleResponse(response);
             } catch (error) {
                 console.error(`요청 오류: ${url}`, error);
@@ -52,43 +42,27 @@ class ApiClient {
     }
 
     /**
-     * 요청에 인증 헤더 추가
+     * 요청에 인증 관련 설정 추가
+     * 세션 쿠키를 자동으로 전송하도록 credentials 옵션 설정
      */
     addAuthHeaders(options) {
-        console.log('현재 요청 옵션:', options);
-
-        const hasAuthHeader = options.headers &&
-            (options.headers.Authorization || options.headers['Authorization']);
-
-        console.log('기존 인증 헤더 존재 여부:', hasAuthHeader);
-
-        if (!hasAuthHeader && window.AuthService && window.AuthService.isAuthenticated()) {
-            const authHeader = window.AuthService.getAuthHeader();
-            console.log('생성된 인증 헤더:', authHeader);
-
-            if (authHeader) {
-                options.headers = {
-                    ...options.headers || {},
-                    ...authHeader
-                };
-            }
-        }
-
+        // 세션 기반 인증을 위해 모든 요청에 credentials: 'include' 추가
+        options.credentials = 'include';
         return options;
     }
 
 
     /**
      * API 응답 처리
+     * 401 Unauthorized 등 특별한 응답 상태에 대한 처리
      */
     async handleResponse(response) {
         // 401 Unauthorized 처리
         if (response.status === 401) {
             console.warn('Unauthorized 에러 발생');
 
-            // 토큰 제거 및 로그인 페이지로 리다이렉트
+            // 인증 필요 이벤트 발송
             if (window.AuthService) {
-                window.AuthService.clearTokens();
                 window.AuthService.notifyAuthRequired();
             }
 
@@ -112,21 +86,6 @@ class ApiClient {
     }
 
     /**
-     * 401 인증 실패 처리
-     */
-    handleUnauthorized() {
-        if (window.AuthService) {
-            // 로컬 토큰 삭제
-            window.AuthService.clearTokens();
-
-            // 인증 필요 이벤트 발생
-            window.AuthService.notifyAuthRequired();
-        }
-
-        this.showErrorMessage('인증이 필요합니다. 로그인 후 이용해주세요.');
-    }
-
-    /**
      * 오류 메시지 표시
      */
     showErrorMessage(message) {
@@ -137,6 +96,9 @@ class ApiClient {
         }
     }
 
+    /**
+     * API 요청 시작 시 로딩 상태 표시
+     */
     startLoading() {
         this.pendingRequests++;
         console.log('로딩 요청 시작:', this.pendingRequests);
@@ -151,6 +113,9 @@ class ApiClient {
         }
     }
 
+    /**
+     * API 요청 종료 시 로딩 상태 해제
+     */
     endLoading() {
         this.pendingRequests = Math.max(0, this.pendingRequests - 1);
         console.log('로딩 요청 종료:', this.pendingRequests);

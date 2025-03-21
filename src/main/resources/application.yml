@@ -1,0 +1,74 @@
+# \uC560\uD50C\uB9AC\uCF00\uC774\uC158 \uC124\uC815
+spring:
+  application:
+    name: WordLOL
+
+  # \uB370\uC774\uD130\uBCA0\uC774\uC2A4 \uC124\uC815
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/wordlol
+    username: root
+    password: 3033
+    # HikariCP \uCEE4\uB125\uC158 \uD480 \uC124\uC815
+    hikari:
+      maximum-pool-size: 20      # \uCD5C\uB300 \uC5F0\uACB0 \uD480 \uD06C\uAE30
+      minimum-idle: 5            # \uCD5C\uC18C \uC720\uD734 \uC5F0\uACB0 \uC218
+      idle-timeout: 30000        # \uC5F0\uACB0 \uC720\uD734 \uC0C1\uD0DC \uC2DC\uAC04(ms)
+      connection-timeout: 30000  # \uC5F0\uACB0 \uD0C0\uC784\uC544\uC6C3(ms)
+
+  # JPA \uC124\uC815
+  jpa:
+    hibernate:
+      ddl-auto: update           # \uC2A4\uD0A4\uB9C8 \uC790\uB3D9 \uC5C5\uB370\uC774\uD2B8
+    show-sql: true               # SQL \uCFFC\uB9AC \uCD9C\uB825
+    properties:
+      hibernate:
+        format_sql: true         # SQL \uCFFC\uB9AC \uD3EC\uB9F7\uD305
+        highlight_sql: true      # SQL \uCFFC\uB9AC \uD558\uC774\uB77C\uC774\uD2B8
+    open-in-view: true           # OSIV \uD328\uD134 \uD65C\uC131\uD654
+  # OAuth2 \uC124\uC815
+  profiles:
+    include: oauth               # OAuth \uD504\uB85C\uD544 \uD3EC\uD568
+
+# MyBatis \uC124\uC815
+mybatis:
+  # MyBatis XML \uB9E4\uD37C \uD30C\uC77C\uC758 \uC704\uCE58\uB97C \uC9C0\uC815 classpath \uC758 mapper \uB514\uB809\uD1A0\uB9AC\uC5D0 \uC788\uB294 \uBAA8\uB4E0 XML \uD30C\uC77C\uC744 \uC77D\uC5B4\uB4E4\uC784
+  mapper-locations: classpath:mapper/*.xml  # XML \uB9E4\uD37C \uC704\uCE58
+  configuration:
+    # \uB370\uC774\uD130\uBCA0\uC774\uC2A4 \uCEEC\uB7FC\uBA85\uC758 \uC5B8\uB354\uC2A4\uCF54\uC5B4(_)\uB97C \uC790\uBC14\uC758 \uCE74\uBA5C\uCF00\uC774\uC2A4\uB85C \uBCC0\uD658
+    # ex) user_name -> userName
+    map-underscore-to-camel-case: true      # \uC2A4\uB124\uC774\uD06C \uCF00\uC774\uC2A4\uB97C \uCE74\uBA5C \uCF00\uC774\uC2A4\uB85C \uBCC0\uD658
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # \uB85C\uAE45 \uAD6C\uD604\uCCB4
+  # MyBatis \uC5D0\uC11C \uC0AC\uC6A9\uD560 DTO \uC758 \uD328\uD0A4\uC9C0\uB97C \uC9C0\uC815
+  type-aliases-package: com.adam9e96.WordLOL.dto  # DTO \uD328\uD0A4\uC9C0 \uC9C0\uC815
+
+# \uC11C\uBC84 \uC124\uC815
+server:
+  # \uCFE0\uD0A4 \uC124\uC815 (JWT \uB97C \uC704\uD55C HttpOnly \uCFE0\uD0A4)
+  servlet:
+    context-path: /              # \uCEE8\uD14D\uC2A4\uD2B8 \uACBD\uB85C
+    # \uC138\uC158 \uC124\uC815\uC740 \uC81C\uAC70 (JWT \uC0AC\uC6A9\uC73C\uB85C \uC138\uC158 \uBD88\uD544\uC694)
+
+# JWT \uC124\uC815
+jwt:
+  # \uC11C\uBA85\uD0A4\uB294 \uCD94\uCD94 \uC11C\uBC84\uC5D0\uC11C\uB9CC \uC54C\uACE0 \uC788\uC5B4\uC57C \uD558\uBA70, \uC678\uBD80\uC5D0 \uB178\uCD9C\uB418\uBA74 \uC548\uB428(\uC228\uACA8\uC57C\uD568)
+  secret-key: "ThisIsASecureSecretKeyForJwtAuthenticationRequiredMinimum32BytesFor256Bits"  # JWT \uC11C\uBA85 \uD0A4
+  access-token-validity-in-ms: 3600000   # \uC561\uC138\uC2A4 \uD1A0\uD070 \uC720\uD6A8 \uC2DC\uAC04(1\uC2DC\uAC04)
+  refresh-token-validity-in-ms: 2592000000  # \uB9AC\uD504\uB808\uC2DC \uD1A0\uD070 \uC720\uD6A8 \uC2DC\uAC04(30\uC77C)
+
+# \uB85C\uAE45 \uC124\uC815
+logging:
+  level:
+    root: info                   # \uB8E8\uD2B8 \uB85C\uAC70 \uB808\uBCA8
+    # com.adam9e96.wordlol.mapper: DEBUG  # \uB9E4\uD37C \uB85C\uAE45(\uD544\uC694\uC2DC \uC8FC\uC11D \uD574\uC81C)
+
+# Swagger/OpenAPI \uBB38\uC11C \uC124\uC815
+springdoc:
+  api-docs:
+    path: /api-docs             # API \uBB38\uC11C \uACBD\uB85C
+  swagger-ui:
+    path: /swagger-ui.html      # Swagger UI \uACBD\uB85C
+    tags-sorter: alpha          # \uD0DC\uADF8 \uC815\uB82C \uC54C\uD30C\uBCB3\uC21C
+    operations-sorter: alpha    # \uC791\uC5C5 \uC815\uB82C \uC54C\uD30C\uBCB3\uC21C
+  default-consumes-media-type: application/json  # \uAE30\uBCF8 \uC18C\uBE44 \uBBF8\uB514\uC5B4 \uD0C0\uC785
+  default-produces-media-type: application/json  # \uAE30\uBCF8 \uC0DD\uC131 \uBBF8\uB514\uC5B4 \uD0C0\uC785

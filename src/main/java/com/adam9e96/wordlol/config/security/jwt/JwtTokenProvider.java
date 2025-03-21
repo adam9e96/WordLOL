@@ -5,7 +5,9 @@ import com.adam9e96.wordlol.enums.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -173,12 +175,23 @@ public class JwtTokenProvider {
             return bearerToken.substring(7);
         }
 
-        // 2. 쿼리 파라미터에서 토큰 추출 시도 (OAuth 리다이렉트 처리용)
+        // 2. 쿼리 파라미터에서 토큰 추출 시도
         String queryToken = request.getParameter("accessToken");
         log.info("쿼리 파라미터 토큰: {}", queryToken);
 
         if (StringUtils.hasText(queryToken)) {
             return queryToken;
+        }
+
+        // 3. 쿠키에서 토큰 추출 시도
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("access_token".equals(cookie.getName())) {
+                    log.info("쿠키에서 토큰 추출: 토큰 있음");
+                    return cookie.getValue();
+                }
+            }
         }
 
         return null;

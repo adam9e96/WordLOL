@@ -2,6 +2,8 @@ package com.adam9e96.wordlol.aop;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -92,8 +94,14 @@ public class CommonLoggingAspect {
 
     /**
      * JSON 변환 함수 - 변환 실패 시 기본 toString() 사용
+     * 단, HttpSession 및 HttpServletRequest 객체는 변환하지 않음
+     * 이유) HttpSession 및 HttpServletRequest 객체는 JSON으로 변환할 수 없거나, 변환 시 무한 루프에 빠질 수 있음
      */
     private String convertToJson(Object object) {
+        if (object instanceof HttpSession || object instanceof HttpServletRequest) {
+            return "[HttpSession/Request - JSON 변환 건너뜀]";
+        }
+
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
@@ -101,4 +109,5 @@ public class CommonLoggingAspect {
             return object != null ? object.toString() : "null";
         }
     }
+
 }

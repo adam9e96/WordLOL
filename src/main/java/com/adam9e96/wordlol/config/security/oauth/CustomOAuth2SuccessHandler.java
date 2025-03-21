@@ -4,8 +4,8 @@ import com.adam9e96.wordlol.config.security.jwt.JwtTokenProvider;
 import com.adam9e96.wordlol.dto.common.TokenInfo;
 import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.repository.jpa.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,14 +14,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * OAuth2 로그인 성공 시 JWT 토큰을 발급하고 프론트엔드로 리다이렉션하는 핸들러
+ * OAuth2 로그인 성공 시 JWT 토큰을 발급하고 세션에 저장한 후 프론트엔드로 리다이렉션하는 핸들러
  */
 @Slf4j
 @Component
@@ -30,7 +27,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
-    private final ObjectMapper objectMapper;
 
     // 로그인 성공 후 리다이렉션할 기본 URL
     private static final String DEFAULT_SUCCESS_URL = "/word/dashboard";
@@ -43,8 +39,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         if (email == null) {
             log.error("OAuth 로그인 성공했지만 이메일 정보를 찾을 수 없습니다.");
-
-            // 오류 페이지 또는 로그인 페이지로 리다이렉션
             response.sendRedirect("/login?error=no_email");
             return;
         }
@@ -59,52 +53,41 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             // JWT 토큰 생성
             TokenInfo tokenInfo = jwtTokenProvider.createTokenFromEmail(email, user.getRole());
 
-            // 리다이렉션 URL 구성 (쿼리 파라미터로 토큰 정보 포함)
-            String targetUrl = UriComponentsBuilder.fromUriString(DEFAULT_SUCCESS_URL)
-                    .queryParam("accessToken", tokenInfo.getAccessToken())
-                    .queryParam("refreshToken", tokenInfo.getRefreshToken())
-                    .queryParam("tokenType", tokenInfo.getGrantType())
-                    .build().toUriString();
+            // JWT 토큰을 HttpOnly 쿠키로 설정
+            addTokenCookies(response, tokenInfo);
 
-            log.info("리다이렉션 URL: {}", targetUrl);
+            log.info("JWT 토큰을 HttpOnly 쿠키로 설정 완료");
 
-            // 구성된 URL로 리다이렉션
-            response.sendRedirect(targetUrl);
-
+            // 홈페이지로 리다이렉트
+            response.sendRedirect(DEFAULT_SUCCESS_URL);
         } catch (Exception e) {
             log.error("OAuth2 인증 성공 후 처리 중 오류 발생", e);
-
-            // 오류 메시지와 함께 로그인 페이지로 리다이렉션
             response.sendRedirect("/login?error=login_failed&message=" + e.getMessage());
         }
     }
 
-    /**
-     * 오류 응답을 JSON 형태로 전송 (필요 시 사용)
-     */
-    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
-        response.setStatus(status);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+    // 토큰을 쿠키로 설정하는 메서드
+    private void addTokenCookies(HttpServletResponse response, TokenInfo tokenInfo) {
+        // Access Token 쿠키 설정
+        Cookie accessTokenCookie = new Cookie("access_token", tokenInfo.getAccessToken());
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setPath("/");
+        // HTTPS 환경에서만 secure=true 설정
+        accessTokenCookie.setSecure(false); // 개발 환경에서는 false, 운영 환경에서는 true로 변경
+        // XSS 방어를 위한 SameSite 설정
+        accessTokenCookie.setAttribute("SameSite", "Lax");
+        // 액세스 토큰 만료 시간 설정 (초 단위)
+        accessTokenCookie.setMaxAge(3600); // 1시간
+        response.addCookie(accessTokenCookie);
 
-        Map<String, String> error = new HashMap<>();
-        error.put("error", message);
-
-        response.getWriter().write(objectMapper.writeValueAsString(error));
-    }
-
-    /**
-     * 토큰 정보를 JSON 형태로 전송 (필요 시 사용)
-     */
-    private void sendTokenResponse(HttpServletResponse response, TokenInfo tokenInfo) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("tokenType", tokenInfo.getGrantType());
-        tokens.put("accessToken", tokenInfo.getAccessToken());
-        tokens.put("refreshToken", tokenInfo.getRefreshToken());
-
-        response.getWriter().write(objectMapper.writeValueAsString(tokens));
+        // Refresh Token 쿠키 설정
+        Cookie refreshTokenCookie = new Cookie("refresh_token", tokenInfo.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/api/v1/auth/refresh");
+        refreshTokenCookie.setSecure(false); // 개발 환경에서는 false, 운영 환경에서는 true로 변경
+        refreshTokenCookie.setAttribute("SameSite", "Lax");
+        // 리프레시 토큰 만료 시간 설정 (초 단위)
+        refreshTokenCookie.setMaxAge(2592000); // 30일
+        response.addCookie(refreshTokenCookie);
     }
 }
