@@ -179,15 +179,7 @@ public class JwtTokenProvider {
             return bearerToken.substring(7);
         }
 
-        // 2. 쿼리 파라미터에서 토큰 추출 시도
-        String queryToken = request.getParameter("accessToken");
-        log.info("쿼리 파라미터 토큰: {}", queryToken);
-
-        if (StringUtils.hasText(queryToken)) {
-            return queryToken;
-        }
-
-        // 3. 쿠키에서 토큰 추출 시도
+        // 2. 쿠키에서 토큰 추출 시도
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -200,7 +192,6 @@ public class JwtTokenProvider {
 
         return null;
     }
-
 
     // 클레임 추출 : JWT 토큰을 디코딩하여 그 안에 포함된 클레임(사용자 역할, 만료 시간 등)을 추출합니다
     // 예시
