@@ -3,29 +3,18 @@ package com.adam9e96.wordlol.dto.common;
 import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.enums.Role;
 import lombok.Builder;
-import lombok.Getter;
 
 import java.util.Map;
 
-@Getter
-public class OAuthAttributes {
-    private final Map<String, Object> attributes;
-    private final String nameAttributeKey;
-    private final String name;
-    private final String email;
-    private final String picture;
-
+public record OAuthAttributes(
+        Map<String, Object> attributes,
+        String nameAttributeKey,
+        String name,
+        String email,
+        String picture) {
     @Builder
-    public OAuthAttributes(Map<String, Object> attributes,
-                           String nameAttributeKey,
-                           String name,
-                           String email,
-                           String picture) {
-        this.attributes = attributes;
-        this.nameAttributeKey = nameAttributeKey;
-        this.name = name;
-        this.email = email;
-        this.picture = picture;
+    public OAuthAttributes {
+
     }
 
     public static OAuthAttributes of(String registrationId,

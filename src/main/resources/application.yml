@@ -48,6 +48,8 @@ server:
   servlet:
     context-path: /              # \uCEE8\uD14D\uC2A4\uD2B8 \uACBD\uB85C
     # \uC138\uC158 \uC124\uC815\uC740 \uC81C\uAC70 (JWT \uC0AC\uC6A9\uC73C\uB85C \uC138\uC158 \uBD88\uD544\uC694)
+    encoding:
+      force-response: true
 
 # JWT \uC124\uC815
 jwt:

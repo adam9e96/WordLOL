@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
+// @todo ADMIN 권한은 현재 쓰이고 있지 않음
 @Slf4j
 @Service
 @RequiredArgsConstructor

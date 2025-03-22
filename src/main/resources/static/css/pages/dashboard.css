@@ -1,5 +1,114 @@
 /* Dashboard CSS with explicit Material You variables */
 
+/* 페이지 헤더 스타일 */
+.page-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--outline-variant);
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--on-surface);
+    margin-bottom: 0.25rem;
+}
+
+.page-title i {
+    color: var(--primary);
+    font-size: 1.75rem;
+}
+
+.page-subtitle {
+    color: var(--on-surface-variant);
+    font-size: 1rem;
+    margin-top: 0.25rem;
+}
+
+/* 추천 메뉴 섹션 */
+.quick-actions-section {
+    margin-top: 1rem;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.action-card {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--outline-variant);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--on-surface);
+    transition: all 0.2s ease;
+}
+
+.action-card:hover {
+    background: var(--surface-container-high);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+.action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.action-content {
+    flex: 1;
+}
+
+.action-content h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    color: var(--on-surface);
+}
+
+.action-content p {
+    font-size: 0.875rem;
+    color: var(--on-surface-variant);
+    margin: 0;
+}
+
+.action-arrow {
+    color: var(--primary);
+    font-size: 1.25rem;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.2s ease;
+}
+
+.action-card:hover .action-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* 카드 푸터 스타일 */
+.card-footer {
+    padding: 1rem 1.25rem;
+    background: var(--surface-container-low);
+    border-top: 1px solid var(--outline-variant);
+    display: flex;
+    justify-content: flex-end;
+}
+
 /* Layout structure */
 .dashboard-grid {
     display: grid;
@@ -13,6 +122,7 @@
     width: min(100%, 1400px);
     display: grid;
     gap: 1.5rem;
+    padding: 1rem;
 }
 
 /* Stats Cards Section */
@@ -25,18 +135,16 @@
 .stat-card {
     background: var(--surface);
     border-radius: 28px; /* var(--border-radius-xl) */
-    padding: 1rem;
-    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15),
-    0px 1px 2px 0px rgba(0, 0, 0, 0.30); /* var(--shadow-1) */
+    padding: 1.25rem;
+    box-shadow: var(--shadow-1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: none !important;
+    border: 1px solid var(--outline-variant);
     height: 100%;
 }
 
 .stat-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.15),
-    0px 1px 2px 0px rgba(0, 0, 0, 0.30); /* var(--shadow-2) */
+    box-shadow: var(--shadow-2);
 }
 
 .stat-content {
@@ -46,8 +154,8 @@
 }
 
 .stat-icon-container {
-    width: 56px;
-    height: 56px;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,18 +166,18 @@
 .stat-info {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.5rem;
 }
 
 .stat-label {
-    color: #49454F; /* var(--on-surface-variant) */
+    color: var(--on-surface-variant);
     font-size: 0.875rem;
     font-weight: 500;
     margin: 0;
 }
 
 .stat-value {
-    color: #1D1B20; /* var(--on-surface) */
+    color: var(--on-surface);
     font-size: 1.75rem;
     font-weight: 600;
     margin: 0;
@@ -77,48 +185,47 @@
 
 /* Icon colors - with fallbacks */
 .stat-icon-total {
-    background-color: #EADDFF; /* var(--primary-container) */
-    color: #21005E; /* var(--on-primary-container) */
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
 }
 
 .stat-icon-today {
-    background-color: #E8DEF8; /* var(--secondary-container) */
-    color: #1E192B; /* var(--on-secondary-container) */
+    background-color: var(--secondary-container);
+    color: var(--on-secondary-container);
 }
 
 .stat-icon-streak {
-    background-color: #FFF3E0; /* Fallback color */
-    color: #F57C00; /* Fallback color */
+    background-color: #FFF3E0; /* 커스텀 색상 */
+    color: #F57C00; /* 커스텀 색상 */
 }
 
 .stat-icon-rate {
-    background-color: #E6E0E9; /* var(--surface-container-highest) */
-    color: #6750A4; /* var(--primary) */
+    background-color: #E6F4EA; /* 커스텀 색상 */
+    color: #137333; /* 커스텀 색상 */
 }
 
 /* Info Cards */
 .info-section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .info-card {
-    background: var(--surface, #FEF7FF);
+    background: var(--surface);
     border-radius: 28px; /* var(--border-radius-xl) */
     overflow: hidden;
-    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15),
-    0px 1px 2px 0px rgba(0, 0, 0, 0.30); /* var(--shadow-1) */
-    border: none !important;
+    box-shadow: var(--shadow-1);
+    border: 1px solid var(--outline-variant);
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
 .info-card .card-header {
-    background-color: var(--surface-container, #F3EDF7);
-    border-bottom: 1px solid var(--outline-variant, #CAC4D0);
-    padding: 1rem;
+    background-color: var(--surface-container);
+    border-bottom: 1px solid var(--outline-variant);
+    padding: 1.25rem;
 }
 
 .card-name {
@@ -128,16 +235,16 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--on-surface, #1D1B20);
+    color: var(--on-surface);
 }
 
 .card-name i {
-    color: var(--primary, #6750A4);
+    color: var(--primary);
     font-size: 1.5rem;
 }
 
 .info-card .card-body {
-    padding: 1rem;
+    padding: 1.25rem;
     flex: 1;
 }
 
@@ -151,14 +258,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--surface-container, #F3EDF7);
+    background: var(--surface-container);
     border-radius: 16px; /* var(--border-radius) */
     padding: 0.75rem 1rem;
     transition: background-color 0.2s ease;
 }
 
 .category-item:hover {
-    background: var(--surface-container-high, #ECE6F0);
+    background: var(--surface-container-high);
 }
 
 .category-badge {
@@ -166,21 +273,46 @@
     border-radius: 16px; /* var(--border-radius) */
     font-weight: 500;
     font-size: 0.875rem;
+    color: white; /* 기본 글자색을 흰색으로 설정 */
+}
+
+/* 카테고리 뱃지 색상 */
+.bg-primary {
+    background-color: var(--primary);
+}
+
+.bg-success {
+    background-color: #137333;
+}
+
+.bg-warning {
+    background-color: #F57C00;
+}
+
+.bg-info {
+    background-color: #0288D1;
+}
+
+.bg-secondary {
+    background-color: var(--secondary);
 }
 
 .category-count {
-    background: var(--primary, #6750A4);
-    color: var(--on-primary, #FFFFFF);
+    background: var(--primary);
+    color: var(--on-primary);
     border-radius: 20px;
     padding: 0.25rem 0.75rem;
     font-weight: 500;
+    min-width: 32px;
+    text-align: center;
 }
 
 /* Table Styles */
 .table-container {
-    background: var(--surface-container, #F3EDF7);
+    background: var(--surface-container);
     border-radius: 16px; /* var(--border-radius) */
     overflow: hidden;
+    border: 1px solid var(--outline-variant);
 }
 
 .table-custom {
@@ -191,29 +323,150 @@
 }
 
 .table-custom thead {
-    background: var(--surface-container-high, #ECE6F0);
+    background: var(--surface-container-high);
 }
 
 .table-custom th {
-    color: var(--on-surface-variant, #49454F);
+    color: var(--on-surface-variant);
     font-weight: 600;
     text-align: left;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--outline-variant, #CAC4D0);
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--outline-variant);
 }
 
 .table-custom td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--outline-variant, #CAC4D0);
-    color: var(--on-surface, #1D1B20);
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--outline-variant);
+    color: var(--on-surface);
+}
+
+.table-custom td:first-child {
+    font-weight: 500;
 }
 
 .table-custom tbody tr:hover td {
-    background: var(--surface-container-high, #ECE6F0);
+    background: var(--surface-container-high);
 }
 
 .table-custom tbody tr:last-child td {
     border-bottom: none;
+}
+
+/* Alert for errors */
+.alert {
+    padding: 1rem;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+}
+
+.alert-danger {
+    background-color: var(--error-container);
+    color: var(--on-error-container);
+    border-color: var(--error);
+}
+
+/* Empty state styles */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: var(--surface-container);
+    border-radius: 16px;
+    border: 1px dashed var(--outline-variant);
+    color: var(--on-surface-variant);
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--outline);
+}
+
+/* Dark mode specific fixes */
+[data-theme="dark"] .category-badge {
+    border: 1px solid var(--outline-variant);
+}
+
+[data-theme="dark"] .stat-card {
+    border-color: var(--outline-variant);
+}
+
+[data-theme="dark"] .stat-label {
+    color: var(--on-surface); /* 어두운 테마에서는 더 밝은 색상으로 레이블 표시 */
+}
+
+[data-theme="dark"] .stat-value {
+    color: var(--primary); /* 다크모드에서 값을 강조하기 위해 primary 색상으로 */
+}
+
+[data-theme="dark"] .stat-icon-streak {
+    background-color: rgba(245, 124, 0, 0.2); /* 다크모드에서는 반투명하게 */
+    color: #FFB74D; /* 다크모드에서는 더 밝은 색상으로 */
+}
+
+[data-theme="dark"] .stat-icon-rate {
+    background-color: rgba(19, 115, 51, 0.2); /* 다크모드에서는 반투명하게 */
+    color: #81C995; /* 다크모드에서는 더 밝은 색상으로 */
+}
+
+[data-theme="dark"] .card-name {
+    color: var(--on-surface); /* 다크모드에서 카드 제목 색상 명확히 */
+}
+
+[data-theme="dark"] .table-custom th {
+    background-color: var(--surface-container-highest);
+    color: var(--primary); /* 헤더를 강조 */
+}
+
+/* 다크모드에서 테이블 셀 내부의 텍스트 가시성 향상 */
+[data-theme="dark"] .table-custom td {
+    color: var(--on-surface);
+}
+
+/* 다크모드에서 페이지 헤더 및 추천 메뉴 스타일 조정 */
+[data-theme="dark"] .page-title {
+    color: var(--on-surface);
+}
+
+[data-theme="dark"] .page-subtitle {
+    color: var(--on-surface-variant);
+}
+
+[data-theme="dark"] .action-card {
+    background-color: var(--surface-container);
+    border-color: var(--outline-variant);
+}
+
+[data-theme="dark"] .action-card:hover {
+    background-color: var(--surface-container-high);
+}
+
+[data-theme="dark"] .action-content h4 {
+    color: var(--on-surface);
+}
+
+[data-theme="dark"] .action-content p {
+    color: var(--on-surface-variant);
+}
+
+[data-theme="dark"] .card-footer {
+    background-color: var(--surface-container-lowest);
+    border-color: var(--outline-variant);
+}
+
+/* 비어있는 상태 표시 스타일 다크모드 */
+[data-theme="dark"] .empty-state {
+    background-color: var(--surface-container);
+    border-color: var(--outline-variant);
+    color: var(--on-surface-variant);
+}
+
+[data-theme="dark"] .empty-state i {
+    color: var(--outline);
 }
 
 /* Responsive Adjustments */
@@ -222,22 +475,29 @@
         padding: 0.5rem;
     }
 
+    .dashboard-container {
+        padding: 0.75rem;
+    }
+
     .info-section {
         grid-template-columns: 1fr;
     }
 
     .stats-section {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
 
     .stat-content {
         gap: 0.75rem;
+        flex-direction: column;
+        text-align: center;
     }
 
     .stat-icon-container {
         width: 48px;
         height: 48px;
         font-size: 1.25rem;
+        margin: 0 auto;
     }
 
     .stat-value {
@@ -250,7 +510,40 @@
 
     .table-custom th,
     .table-custom td {
-        padding: 0.5rem 0.75rem;
+        padding: 0.75rem;
         font-size: 0.875rem;
     }
+}
+
+/* 애니메이션 효과 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stats-section .stat-card {
+    animation: fadeIn 0.3s ease-out forwards;
+    animation-delay: calc(var(--i, 0) * 0.1s);
+}
+
+.stats-section .stat-card:nth-child(1) {
+    --i: 1;
+}
+
+.stats-section .stat-card:nth-child(2) {
+    --i: 2;
+}
+
+.stats-section .stat-card:nth-child(3) {
+    --i: 3;
+}
+
+.stats-section .stat-card:nth-child(4) {
+    --i: 4;
 }

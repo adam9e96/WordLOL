@@ -87,6 +87,7 @@ section {
     height: auto;
     object-fit: contain;
     animation: float 6s ease-in-out infinite;
+    border-radius: var(--border-radius-xxl);
 }
 
 @keyframes float {
@@ -290,6 +291,22 @@ section {
     font-size: 1.25rem;
     cursor: pointer;
     transition: transform var(--transition-fast);
+}
+
+.btn-check-answer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+    border-radius: var(--border-radius);
+}
+
+.btn-check-answer:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
 }
 
 .btn-speak:hover {

@@ -4,7 +4,7 @@ import com.adam9e96.wordlol.config.security.jwt.JwtAuthenticationEntryPoint;
 import com.adam9e96.wordlol.config.security.jwt.JwtAuthenticationFilter;
 import com.adam9e96.wordlol.config.security.jwt.JwtTokenProvider;
 import com.adam9e96.wordlol.config.security.oauth.CustomOAuth2SuccessHandler;
-import com.adam9e96.wordlol.service.interfaces.CustomOAuth2UserService;
+import com.adam9e96.wordlol.service.impl.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

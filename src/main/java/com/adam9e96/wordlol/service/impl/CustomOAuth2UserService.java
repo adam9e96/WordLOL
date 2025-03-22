@@ -1,4 +1,4 @@
-package com.adam9e96.wordlol.service.interfaces;
+package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.dto.common.OAuthAttributes;
 import com.adam9e96.wordlol.entity.User;
@@ -28,17 +28,21 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     /**
      * OAuth2 로그인 사용자 정보를 로드하는 메소드
+     *
      * @param userRequest OAuth2 사용자 요청 객체
      * @return OAuth2User 인증된 사용자 정보
      * @throws OAuth2AuthenticationException 인증 오류 발생 시
      */
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        // OAuth2UserService를 통해 OAuth2 제공자로부터 사용자 정보를 가져옴
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
+        // 서비스 제공자 식별
         // 현재 로그인 진행 중인 서비스를 구분하는 코드 (구글, 네이버 등)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        log.info("OAuth2 로그인 서비스 제공자: {}", registrationId);
 
         // OAuth2 로그인 진행 시 키가 되는 필드값 (PK) (구글의 경우 'sub')
         String userNameAttributeName = userRequest.getClientRegistration()
@@ -54,8 +58,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // Spring Security의 OAuth2User 객체 생성하여 반환
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRole().getKey())),
-                attributes.getAttributes(),
-                attributes.getNameAttributeKey());
+                attributes.attributes(),
+                attributes.nameAttributeKey());
     }
 
     /**
@@ -66,8 +70,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
      * @return 저장 또는 업데이트된 사용자 엔티티
      */
     private User saveOrUpdate(OAuthAttributes attributes) {
-        User user = userRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
+        User user = userRepository.findByEmail(attributes.email())
+                .map(entity -> entity.update(attributes.name(), attributes.picture()))
                 .orElse(attributes.toEntity());
 
         return userRepository.save(user);
