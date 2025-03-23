@@ -490,38 +490,3 @@
 .shake {
     animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .content-container {
-        gap: var(--spacing-4);
-        width: 100%;
-    }
-
-    .status-section {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-3);
-    }
-
-    .input-group {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-2);
-    }
-
-    .control-section {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-2);
-    }
-
-    #vocabulary {
-        font-size: 2.5rem;
-    }
-
-    .meaning {
-        font-size: 2rem;
-    }
-
-    .card-side {
-        padding: var(--spacing-3);
-    }
-}

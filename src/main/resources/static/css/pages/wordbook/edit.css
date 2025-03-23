@@ -254,38 +254,3 @@ textarea.form-control {
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-3);
 }
-
-/* Responsive */
-@media (max-width: 768px) {
-    .content-container {
-        gap: var(--spacing-4);
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-
-    .word-row {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-2);
-    }
-
-    .word-list-header {
-        display: none;
-    }
-
-    .control-section {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-3);
-    }
-
-    .btn {
-        justify-content: center;
-    }
-
-    .features-header {
-        flex-direction: column;
-        gap: var(--spacing-3);
-        text-align: center;
-    }
-}

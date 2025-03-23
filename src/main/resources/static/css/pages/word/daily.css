@@ -173,26 +173,3 @@
     transform: translateY(0);
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
-
-/* 반응형 설정 */
-@media (max-width: 768px) {
-    .daily-content-grid {
-        padding: 1rem;
-    }
-
-    .word-cards-wrapper {
-        padding: 1rem;
-    }
-
-    .word-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .vocabulary {
-        font-size: 1.75rem;
-    }
-
-    .meaning {
-        font-size: 1.1rem;
-    }
-}

@@ -307,60 +307,6 @@ textarea.form-control {
     display: block;
 }
 
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .content-container {
-        padding: var(--spacing-4);
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .word-row {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-2);
-    }
-
-    .word-list-header {
-        display: none;
-    }
-
-    .word-row {
-        border-radius: var(--border-radius);
-        padding: var(--spacing-4);
-    }
-
-    .word-row > * {
-        margin-bottom: var(--spacing-2);
-    }
-
-    .col::before {
-        content: attr(data-label);
-        font-weight: 600;
-        display: block;
-        margin-bottom: var(--spacing-2);
-        color: var(--on-surface-variant);
-    }
-
-    .control-section {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-3);
-    }
-
-    .bulk-actions {
-        flex-direction: column;
-        gap: var(--spacing-2);
-    }
-
-    .btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-/* Form Validation Styles */
 .was-validated .form-control:invalid,
 .form-control.is-invalid {
     border-color: var(--error);

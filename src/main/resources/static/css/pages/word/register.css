@@ -142,7 +142,7 @@
     border: none;
 }
 
-.btn-register-word:hover {
+.btn-register-word:hover{
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
     background: var(--primary-container);

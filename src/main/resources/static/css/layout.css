@@ -287,27 +287,3 @@ header 에 대한 스타일을 정의
     background: var(--primary-container); /* 활성 상태 배경색 */
     color: var(--on-primary-container); /* 활성 상태 글자색 */
 }
-
-/* 모바일 반응형 스타일 - 화면 너비가 768px 이하일 때 적용 */
-@media (max-width: 768px) {
-    .header-top {
-        justify-content: space-between; /* 양쪽 끝에 요소 배치 */
-    }
-
-    .header-search-section {
-        display: none; /* 모바일에서는 검색창 숨기기 */
-    }
-
-    .header-brand-section,
-    .header-auth-section {
-        width: auto; /* 너비 자동 조정 */
-    }
-
-    .header-nav-section {
-        overflow-x: auto; /* 가로 스크롤 허용 */
-    }
-
-    .navbar-nav {
-        padding-bottom: 0.25rem; /* 스크롤바 공간 확보 */
-    }
-}
