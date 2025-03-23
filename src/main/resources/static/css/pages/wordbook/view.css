@@ -70,7 +70,7 @@
     padding: var(--spacing-4);
 }
 
-.section-title {
+.features-title {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: var(--spacing-3);
@@ -80,7 +80,7 @@
     gap: var(--spacing-2);
 }
 
-.section-title i {
+.features-title i {
     color: var(--primary);
 }
 
@@ -122,7 +122,7 @@
 }
 
 /* 3.1 단어 목록 헤더 */
-.section-header {
+.features-header {
     display: flex;
     justify-content: space-between;
     align-items: center;

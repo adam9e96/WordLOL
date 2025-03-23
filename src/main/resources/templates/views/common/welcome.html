@@ -4,39 +4,38 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/default}">
 <head>
-    <title>WordLOL - 효과적인 단어 학습</title>
+    <title>WordLOL 소개</title>
     <th:block layout:fragment="css">
         <link rel="stylesheet" th:href="@{/css/pages/welcome.css}">
     </th:block>
 </head>
 <body>
-<main layout:fragment="content" class="landing-grid">
-    <!-- 히어로 섹션 -->
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-title">단어 학습의 새로운 방법</h1>
-            <p class="hero-subtitle">WordLOL과 함께 효과적으로 단어를 학습하고 기억하세요</p>
-            <div class="hero-actions">
-                <a href="/auth/google" class="btn btn-check-answer login-button">
+<main layout:fragment="content" class="welcome-container">
+    <section class="intro-section">
+        <div class="intro-content">
+            <h1 class="intro-title">단어 학습의 새로운 방법</h1>
+            <p class="intro-subtitle">WordLOL과 함께 효과적으로 단어를 학습하고 기억하세요</p>
+            <div class="intro-googleLogin">
+                <a href="/auth/google" class="btn btn-google login-button">
                     <i class="bi bi-google"></i>
                     Google로 로그인하기
                 </a>
-                <a href="#features" class="btn btn-outline scroll-btn">
+                <a href="#features" class="btn btn-outline scroll-btn" Id="scroll-btn">
                     <i class="bi bi-arrow-down"></i>
                     더 알아보기
                 </a>
             </div>
         </div>
-        <div class="hero-image">
+        <div class="intro-image">
             <img src="/images/study-exam.png" alt="단어 학습 이미지">
         </div>
     </section>
 
     <!-- 주요 기능 소개 섹션 -->
     <section id="features" class="features-section">
-        <div class="section-header">
-            <h2 class="section-title">WordLOL의 특별한 기능</h2>
-            <p class="section-subtitle">효과적인 단어 학습을 위한 다양한 기능을 제공합니다</p>
+        <div class="features-header">
+            <h2 class="features-title">WordLOL의 특별한 기능</h2>
+            <p class="features-subtitle">효과적인 단어 학습을 위한 다양한 기능을 제공합니다</p>
         </div>
 
         <div class="features-grid">
@@ -84,9 +83,9 @@
 
     <!-- 학습 방법 섹션 -->
     <section class="how-section">
-        <div class="section-header">
-            <h2 class="section-title">어떻게 학습하나요?</h2>
-            <p class="section-subtitle">간단한 3단계로 효과적인 단어 학습을 시작하세요</p>
+        <div class="features-header">
+            <h2 class="features-title">어떻게 학습하나요?</h2>
+            <p class="features-subtitle">간단한 3단계로 효과적인 단어 학습을 시작하세요</p>
         </div>
 
         <div class="steps-container">
@@ -122,11 +121,10 @@
         </div>
     </section>
 
-    <!-- 샘플 단어 카드 섹션 -->
     <section class="sample-section">
-        <div class="section-header">
-            <h2 class="section-title">오늘의 추천 단어</h2>
-            <p class="section-subtitle">로그인하지 않아도 매일 새로운 단어를 학습할 수 있습니다</p>
+        <div class="features-header">
+            <h2 class="features-title">오늘의 추천 단어</h2>
+            <p class="features-subtitle">로그인하지 않아도 매일 새로운 단어를 학습할 수 있습니다</p>
         </div>
 
         <div class="sample-cards">
@@ -171,7 +169,7 @@
         </div>
 
         <div class="sample-action">
-            <a href="/word/daily" class="btn btn-outline">
+            <a href="/word/daily" class="btn btn-outline" id="more-words">
                 <i class="bi bi-book"></i>
                 더 많은 단어 보기
             </a>
@@ -183,8 +181,8 @@
         <div class="cta-content">
             <h2 class="cta-title">지금 바로 시작하세요</h2>
             <p class="cta-text">WordLOL과 함께 효과적인 단어 학습을 경험해보세요.</p>
-            <a href="/auth/google" class="btn btn-check-answer login-button">
-                <i class="bi bi-google"></i>
+            <a href="/auth/google" class="btn btn-google-cta login-button">
+                <i class="bi bi-google" id="cta-btn"></i>
                 Google로 로그인하기
             </a>
         </div>

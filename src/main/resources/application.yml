@@ -2,6 +2,14 @@
 spring:
   application:
     name: WordLOL
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+  thymeleaf:
+    cache: false
+
 
   # \uB370\uC774\uD130\uBCA0\uC774\uC2A4 \uC124\uC815
   datasource:

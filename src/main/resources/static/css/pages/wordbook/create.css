@@ -44,7 +44,7 @@
     border-radius: var(--border-radius);
 }
 
-.section-title {
+.features-title {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
@@ -54,7 +54,7 @@
     margin-bottom: var(--spacing-4);
 }
 
-.section-title i {
+.features-title i {
     color: var(--primary);
     font-size: 1.5rem;
 }
@@ -124,7 +124,7 @@ textarea.form-control {
 }
 
 /* Section Header */
-.section-header {
+.features-header {
     display: flex;
     justify-content: space-between;
     align-items: center;

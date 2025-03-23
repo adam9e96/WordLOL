@@ -1,7 +1,4 @@
-/* welcome.css - WordLOL 랜딩 페이지 스타일 */
-
-/* 기본 레이아웃 */
-.landing-grid {
+.welcome-container {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-8);
@@ -10,48 +7,25 @@
     padding-bottom: var(--spacing-8);
 }
 
-section {
-    padding: var(--spacing-4) var(--spacing-2);
-    width: 100%;
-    max-width: var(--max-width);
-    margin: 0 auto;
-}
-
-.section-header {
-    text-align: center;
-    margin-bottom: var(--spacing-6);
-}
-
-.section-title {
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: var(--on-surface);
-    margin-bottom: var(--spacing-2);
-}
-
-.section-subtitle {
-    font-size: 1.125rem;
-    color: var(--on-surface-variant);
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* 히어로 섹션 */
-.hero-section {
+.intro-section {
     display: flex;
     align-items: center;
     justify-content: space-between;
     min-height: calc(100vh - 200px);
     padding: var(--spacing-8) var(--spacing-4);
     gap: var(--spacing-4);
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+
 }
 
-.hero-content {
+.intro-content {
     flex: 1;
     max-width: 600px;
 }
 
-.hero-title {
+.intro-title {
     font-size: 3.5rem;
     font-weight: 800;
     line-height: 1.2;
@@ -61,20 +35,20 @@ section {
     color: transparent;
 }
 
-.hero-subtitle {
+.intro-subtitle {
     font-size: 1.25rem;
     color: var(--on-surface-variant);
     margin-bottom: var(--spacing-5);
     line-height: 1.6;
 }
 
-.hero-actions {
+.intro-googleLogin {
     display: flex;
     gap: var(--spacing-2);
     flex-wrap: wrap;
 }
 
-.hero-image {
+.intro-image {
     flex: 1;
     display: flex;
     justify-content: center;
@@ -82,7 +56,7 @@ section {
     position: relative;
 }
 
-.hero-image img {
+.intro-image img {
     max-width: 100%;
     height: auto;
     object-fit: contain;
@@ -90,16 +64,32 @@ section {
     border-radius: var(--border-radius-xxl);
 }
 
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-20px);
-    }
+.features-section {
+    padding: var(--spacing-4) var(--spacing-2);
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
 }
 
-/* 기능 섹션 */
+.features-header {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+}
+
+.features-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--on-surface);
+    margin-bottom: var(--spacing-2);
+}
+
+.features-subtitle {
+    font-size: 1.125rem;
+    color: var(--on-surface-variant);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -147,12 +137,14 @@ section {
     line-height: 1.6;
 }
 
-/* 학습 방법 섹션 */
 .how-section {
     background-color: var(--surface-container-low);
     border-radius: var(--border-radius);
     padding: var(--spacing-6) var(--spacing-4);
     box-shadow: var(--shadow-1);
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
 }
 
 .steps-container {
@@ -199,12 +191,14 @@ section {
     line-height: 1.6;
 }
 
-/* 샘플 단어 카드 섹션 */
 .sample-section {
     background-color: var(--surface-container);
     border-radius: var(--border-radius);
     padding: var(--spacing-6) var(--spacing-4);
     box-shadow: var(--shadow-2);
+    max-width: var(--max-width);
+    margin: 0 auto;
+    width: 100%;
 }
 
 .sample-cards {
@@ -293,7 +287,7 @@ section {
     transition: transform var(--transition-fast);
 }
 
-.btn-check-answer {
+.btn-google {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -302,11 +296,6 @@ section {
     color: var(--on-primary);
     border: none;
     border-radius: var(--border-radius);
-}
-
-.btn-check-answer:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-2);
 }
 
 .btn-speak:hover {
@@ -318,7 +307,6 @@ section {
     margin-top: var(--spacing-4);
 }
 
-/* CTA 섹션 */
 .cta-section {
     background: linear-gradient(45deg, var(--primary), var(--secondary));
     border-radius: var(--border-radius);
@@ -326,6 +314,9 @@ section {
     color: var(--on-primary);
     text-align: center;
     box-shadow: var(--shadow-2);
+    max-width: var(--max-width);
+    margin: 0 auto;
+    width: 100%;
 }
 
 .cta-title {
@@ -345,14 +336,33 @@ section {
 .cta-section .btn {
     background-color: white;
     color: var(--primary);
+    margin: 0 auto;
+    width: 200px;
 }
 
 .cta-section .btn:hover {
     background-color: var(--surface-bright);
 }
 
-/* 버튼 스타일 */
-.btn-outline {
+.btn-google-cta {
+    background: var(--primary);
+    color: var(--on-primary);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-normal);
+}
+
+.btn-google-cta:hover {
+    background: var(--hover-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+}
+
+/* 더알아보기, 더 많은 단어 보기 버튼 */
+#scroll-btn, #more-words {
     background-color: transparent;
     border: 2px solid var(--primary);
     color: var(--primary);
@@ -365,15 +375,25 @@ section {
     text-decoration: none;
     transition: all var(--transition-normal);
     cursor: pointer;
+
+    margin-left: var(--spacing-2);
 }
 
-.btn-outline:hover {
+#scroll-btn:hover, #more-words:hover, .btn-google:hover {
     background-color: var(--primary);
     color: var(--on-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
 }
 
-.scroll-btn {
-    margin-left: var(--spacing-2);
+/* intro-image 에서 사용 */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
 }
 
 /* 학습 카드 뒤집기 효과를 위한 클래스 */
@@ -383,85 +403,6 @@ section {
 
 .flipped .card-back {
     transform: rotateY(0deg);
-}
-
-/* 반응형 스타일 */
-@media (max-width: 968px) {
-    .hero-section {
-        flex-direction: column;
-        text-align: center;
-        padding: var(--spacing-6) var(--spacing-2);
-    }
-
-    .hero-title {
-        font-size: 2.5rem;
-    }
-
-    .hero-actions {
-        justify-content: center;
-    }
-
-    .hero-image {
-        order: -1;
-        margin-bottom: var(--spacing-4);
-    }
-
-    .section-title {
-        font-size: 1.875rem;
-    }
-
-    .feature-card {
-        text-align: center;
-    }
-
-    .step-item {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-}
-
-@media (max-width: 576px) {
-    .landing-grid {
-        gap: var(--spacing-6);
-    }
-
-    .hero-title {
-        font-size: 2rem;
-    }
-
-    .hero-subtitle {
-        font-size: 1rem;
-    }
-
-    .section-title {
-        font-size: 1.5rem;
-    }
-
-    .section-subtitle {
-        font-size: 1rem;
-    }
-
-    .feature-title {
-        font-size: 1.25rem;
-    }
-
-    .sample-card {
-        width: 280px;
-        height: 180px;
-    }
-
-    .card-word {
-        font-size: 1.5rem;
-    }
-
-    .cta-title {
-        font-size: 1.875rem;
-    }
-
-    .cta-text {
-        font-size: 1rem;
-    }
 }
 
 /* 다크모드 호환성 */
@@ -484,4 +425,39 @@ section {
 
 [data-theme="dark"] .how-section {
     background-color: var(--surface-container);
+}
+
+[data-theme="dark"] .cta-section {
+    background: linear-gradient(45deg, var(--primary-container), var(--secondary-container));
+    color: var(--on-primary-container);
+    box-shadow: var(--shadow-2);
+}
+
+[data-theme="dark"] .cta-title {
+    color: var(--on-primary-container);
+}
+
+[data-theme="dark"] .cta-text {
+    color: var(--on-secondary-container);
+}
+
+[data-theme="dark"] .cta-section .btn-google {
+    background-color: var(--surface-bright);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+[data-theme="dark"] .cta-section .btn-google:hover {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+[data-theme="dark"] .btn-google-cta {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+[data-theme="dark"] .btn-google-cta:hover {
+    background: var(--primary);
+    color: var(--on-primary);
 }
