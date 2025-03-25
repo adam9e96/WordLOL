@@ -1,14 +1,3 @@
-const toast = new bootstrap.Toast(document.getElementById('toast'));
-
-function showToast(message, type = 'success') {
-    const toastElement = document.getElementById('toast');
-    const toastBody = toastElement.querySelector('.toast-body');
-    toastBody.textContent = message;
-    toastElement.classList.remove('bg-success', 'bg-danger');
-    toastElement.classList.add(`bg-${type}`);
-    toast.show();
-}
-
 function addWordRow() {
     const row = document.createElement('div');
     row.className = 'word-row';
@@ -63,7 +52,7 @@ function removeRow(element) {
     if (document.querySelectorAll('.word-row').length > 1) {
         row.remove();
     } else {
-        showToast('최소 1개의 단어가 필요합니다.', 'danger');
+        window.showErrorToast('최소 1개의 단어가 필요합니다.');
     }
 }
 
@@ -74,7 +63,7 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
     if (!e.target.checkValidity()) {
         e.stopPropagation();
         e.target.classList.add('was-validated');
-        showToast('필수 항목을 모두 입력해주세요.', 'danger');
+        window.showErrorToast('필수 항목을 모두 입력해주세요.');
         return;
     }
 
@@ -103,17 +92,16 @@ document.getElementById('wordBookForm').addEventListener('submit', async (e) => 
         });
 
         if (response.ok) {
-            showToast('단어장이 성공적으로 생성되었습니다.');
+            window.showSuccessToast('단어장이 성공적으로 생성되었습니다.');
             setTimeout(() => {
-                window.location.href = '/wordbook/list';  // 컨트롤러의 매핑과 일치하는 URL로 수정
+                window.location.href = '/wordbook/list';
             }, 1500);
         } else {
-            const error = await response.json();
-            showToast(error.message || '단어장 생성 중 오류가 발생했습니다.', 'danger');
+            window.showErrorToast('단어장 생성 중 오류가 발생했습니다.');
         }
     } catch (error) {
         console.error('Error creating wordbook:', error);
-        showToast('서버와의 통신 중 오류가 발생했습니다.', 'danger');
+        window.showErrorToast('서버와의 통신 중 오류가 발생했습니다.');
     }
 });
 

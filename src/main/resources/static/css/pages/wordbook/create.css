@@ -269,23 +269,6 @@ textarea.form-control {
     border-top: 1px solid var(--outline-variant);
 }
 
-/* Toast */
-.toast-container {
-    position: fixed;
-    top: var(--spacing-4);
-    right: var(--spacing-4);
-    z-index: 1056;
-}
-
-.toast {
-    min-width: 300px;
-    background: var(--surface-container-highest);
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-3);
-}
-
-/* Invalid Feedback */
 .invalid-feedback {
     color: var(--error);
     font-size: 0.875rem;
@@ -386,17 +369,6 @@ textarea.form-control {
 .word-row.removing {
     transform: translateX(100%);
     opacity: 0;
-}
-
-/* 토스트 변형 */
-.toast.success {
-    background: var(--primary-container);
-    color: var(--on-primary-container);
-}
-
-.toast.error {
-    background: var(--error-container);
-    color: var(--on-error-container);
 }
 
 /* Star Rating */
