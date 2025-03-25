@@ -1,13 +1,5 @@
-/**
- * 단어 검색 애플리케이션
- * 클래스 기반 구조로 유지보수성 개선
- */
 class SearchApp {
-    /**
-     * 생성자
-     */
     constructor() {
-        // 상태 관리
         this.state = {
             currentPage: initialPage || 0,
             pageSize: 20,
@@ -15,25 +7,17 @@ class SearchApp {
             isProcessing: false,
             API_BASE_URL: '/api/v1/words'
         };
-
-        // DOM 요소 캐싱
         this.elements = {
             pagination: document.getElementById('pagination'),
             wordList: document.getElementById('wordList'),
-            toast: document.getElementById('toast'),
             resultCount: document.getElementById('resultCount')
         };
-
-        // 매니저 초기화
         this.uiManager = new UIManager(this.elements);
         this.apiService = new ApiService(this.state.API_BASE_URL);
         this.paginationManager = new PaginationManager(this.state, this.uiManager);
         this.wordManager = new WordManager(this.state, this.apiService, this.uiManager);
     }
 
-    /**
-     * 애플리케이션 초기화
-     */
     initialize() {
         console.log('검색 페이지 초기화 시작');
         console.log('검색 키워드:', this.state.keyword);
@@ -141,7 +125,7 @@ class SearchApp {
             return data;
         } catch (error) {
             console.error('검색 결과 로드 오류:', error);
-            this.uiManager.showToast(error.message, false);
+            window.showErrorToast('검색 결과를 불러오는데 실패했습니다.');
             throw error;
         }
     }
@@ -192,29 +176,6 @@ class UIManager {
             hour: '2-digit',
             minute: '2-digit'
         });
-    }
-
-    /**
-     * 토스트 메시지 표시
-     * @param {string} message - 표시할 메시지
-     * @param {boolean} isSuccess - 성공 여부
-     */
-    showToast(message, isSuccess = true) {
-        const toastElement = this.elements.toast;
-        const toastBody = toastElement.querySelector('.toast-body');
-        const existingToast = bootstrap.Toast.getInstance(toastElement);
-
-        if (existingToast) {
-            existingToast.dispose();
-        }
-
-        toastElement.className = `toast align-items-center text-white bg-${isSuccess ? 'success' : 'danger'}`;
-        toastBody.textContent = message;
-
-        new bootstrap.Toast(toastElement, {
-            delay: 2000,
-            autohide: true
-        }).show();
     }
 
     /**
@@ -563,7 +524,7 @@ class WordManager {
             this.uiManager.showEditModal(word, () => this.handleEditSave());
         } catch (error) {
             console.error('단어 조회 오류:', error);
-            this.uiManager.showToast(error.message, false);
+            window.showErrorToast('단어 정보를 불러오는데 실패했습니다.');
             this.state.isProcessing = false;
         }
     }
@@ -580,11 +541,11 @@ class WordManager {
 
         try {
             await this.apiService.deleteWord(id);
-            this.uiManager.showToast('단어가 삭제되었습니다.', true);
+            window.showSuccessToast('단어가 삭제되었습니다.');
             return true;
         } catch (error) {
             console.error('단어 삭제 오류:', error);
-            this.uiManager.showToast(error.message, false);
+            window.showErrorToast('단어 삭제에 실패했습니다.');
             this.state.isProcessing = false;
             return false;
         }
@@ -605,20 +566,19 @@ class WordManager {
         try {
             await this.apiService.updateWord(id, data);
             bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-            this.uiManager.showToast('단어가 수정되었습니다.', true);
+            window.showSuccessToast('단어가 수정되었습니다.');
 
             // 검색 결과 다시 로드 이벤트 발생
             const customEvent = new CustomEvent('wordUpdated', {detail: {id}});
             document.dispatchEvent(customEvent);
         } catch (error) {
             console.error('단어 수정 오류:', error);
-            this.uiManager.showToast(error.message, false);
+            window.showErrorToast('단어 수정에 실패했습니다.');
         } finally {
             this.state.isProcessing = false;
         }
     }
 }
-
 
 
 // 애플리케이션 인스턴스 생성 및 초기화
