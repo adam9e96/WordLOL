@@ -580,13 +580,10 @@ class WordManager {
     }
 }
 
-
-// 애플리케이션 인스턴스 생성 및 초기화
 document.addEventListener('DOMContentLoaded', function () {
     const app = new SearchApp();
     app.initialize();
 
-    // 단어 수정 완료 이벤트 리스너
     document.addEventListener('wordUpdated', () => {
         app.loadSearchResults(app.state.currentPage);
     });

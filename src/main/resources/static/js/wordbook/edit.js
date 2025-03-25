@@ -1,24 +1,14 @@
 /**
  * 단어장 수정 애플리케이션
- * 클래스 기반 구조로 단어장 수정 기능을 관리합니다.
  */
 class WordBookEditApp {
-    /**
-     * 생성자
-     * 애플리케이션 초기화 및 상태 설정
-     */
     constructor() {
-        // API 엔드포인트
         this.API_BASE_URL = '/api/v1/wordbooks';
         this.API_BASE_URL_WORD = '/api/v1/words';
 
         // URL에서 ID 파라미터 추출
         this.wordBookId = this.getWordBookIdFromUrl();
-
-        // 처리 상태 플래그
         this.isProcessing = false;
-
-        // 모듈 초기화
         this.uiManager = new UIManager();
         this.apiService = new ApiService(this.API_BASE_URL, this.API_BASE_URL_WORD);
         this.animationManager = new AnimationManager();
@@ -96,7 +86,7 @@ class WordBookEditApp {
             this.animationManager.finishLoadingAnimation();
         } catch (error) {
             console.error('Error:', error);
-            this.uiManager.showToast('단어장 로딩 중 오류가 발생했습니다.', 'danger');
+            window.showErrorToast('단어장 로딩 중 오류가 발생했습니다.');
             this.animationManager.finishLoadingAnimation();
         }
     }
@@ -114,7 +104,7 @@ class WordBookEditApp {
         if (!e.target.checkValidity()) {
             e.stopPropagation();
             e.target.classList.add('was-validated');
-            this.uiManager.showToast('필수 항목을 모두 입력해주세요.', 'danger');
+            window.showErrorToast('필수 항목을 모두 입력해주세요.');
             return;
         }
 
@@ -129,7 +119,7 @@ class WordBookEditApp {
             await this.apiService.updateWordBook(this.wordBookId, wordBookData);
 
             // 성공 알림 및 애니메이션
-            this.uiManager.showToast('단어장이 성공적으로 수정되었습니다.');
+            window.showSuccessToast('단어장이 성공적으로 수정되었습니다.');
 
             // 페이지 이동 애니메이션
             this.animationManager.animateNavigation(() => {
@@ -137,7 +127,7 @@ class WordBookEditApp {
             });
         } catch (error) {
             console.error('Error:', error);
-            this.uiManager.showToast(error.message || '단어장 수정 중 오류가 발생했습니다.', 'danger');
+            window.showErrorToast('단어장 수정 중 오류가 발생했습니다.');
             this.animationManager.stopSubmitAnimation();
             this.isProcessing = false;
         }
@@ -189,7 +179,7 @@ class WordBookEditApp {
         const rowCount = wordList.querySelectorAll('.word-row').length;
 
         if (rowCount <= 1) {
-            this.uiManager.showToast('최소 1개의 단어가 필요합니다.', 'danger');
+            window.showErrorToast('최소 1개의 단어가 필요합니다.');
 
             // 행 흔들림 애니메이션 (애니메이션 매니저 없이도 작동하도록)
             row.style.transition = 'transform 0.1s ease-in-out';
@@ -226,24 +216,6 @@ class WordBookEditApp {
  * 사용자 인터페이스 업데이트 및 관리
  */
 class UIManager {
-    constructor() {
-        this.toast = new bootstrap.Toast(document.getElementById('toast'));
-    }
-
-    /**
-     * 토스트 메시지 표시
-     * @param {string} message - 표시할 메시지
-     * @param {string} type - 메시지 유형 (기본: 'success')
-     */
-    showToast(message, type = 'success') {
-        const toastElement = document.getElementById('toast');
-        const toastBody = toastElement.querySelector('.toast-body');
-        toastBody.textContent = message;
-        toastElement.classList.remove('bg-success', 'bg-danger');
-        toastElement.classList.add(`bg-${type}`);
-        this.toast.show();
-    }
-
     /**
      * 단어장 폼 업데이트
      * @param {Object} wordBook - 단어장 정보
