@@ -72,7 +72,7 @@ class SidebarManager {
         const savedState = localStorage.getItem(this.STORAGE_KEY);
 
         if (savedState) {
-            const { isCollapsed } = JSON.parse(savedState);
+            const {isCollapsed} = JSON.parse(savedState);
 
             // 모바일에서는 기본적으로 닫힌 상태로 시작
             if (this.isMobile) {
@@ -114,6 +114,10 @@ class SidebarManager {
      * 사이드바 토글 (모바일과 데스크톱에서 다르게 동작)
      */
     toggleSidebar() {
+        // 모달이 열려있으면 사이드바 토글 동작 무시
+        if (document.body.hasAttribute('data-modal-open')) {
+            return;
+        }
         if (this.isMobile) {
             // 모바일에서는 열기/닫기 토글
             if (this.sidebar.classList.contains('open')) {
@@ -260,5 +264,18 @@ class SidebarManager {
 
 // DOM 로드 완료 후 실행
 document.addEventListener('DOMContentLoaded', () => {
+
     window.sidebarManager = new SidebarManager();
+    // 모달 표시 감지
+    document.body.addEventListener('show.bs.modal', function () {
+        // 모달이 열릴 때 사이드바 오버레이 숨기기
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        if (sidebarOverlay) {
+            sidebarOverlay.style.visibility = 'hidden';
+        }
+
+        // 모달 열림 상태 표시
+        document.body.setAttribute('data-modal-open', 'true');
+    });
+
 });

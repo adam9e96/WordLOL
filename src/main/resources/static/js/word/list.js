@@ -1,8 +1,5 @@
-// 단어 목록 페이지 애플리케이션
 class WordListApp {
-    // 생성자
     constructor() {
-        // 상태 설정
         this.state = {
             currentPage: 0,
             pageSize: 20,
@@ -24,7 +21,6 @@ class WordListApp {
                 hint: document.getElementById('editHint'),
                 difficulty: document.getElementById('editDifficulty')
             },
-            toast: document.getElementById('toast'),
             addWordButton: document.getElementById('AddWordButton'),
             saveEditButton: document.getElementById('saveEdit')
         };
@@ -377,37 +373,6 @@ class UIManager {
     }
 
 
-    // 토스트 메시지 표시
-    showToast(message, isSuccess = true) {
-        const toastBody = this.elements.toast.querySelector('.toast-body');
-        const existingToast = bootstrap.Toast.getInstance(this.elements.toast);
-
-        if (existingToast) {
-            existingToast.dispose();
-        }
-
-        this.elements.toast.className = `toast align-items-center text-white bg-${isSuccess ? 'success' : 'danger'}`;
-        toastBody.textContent = message;
-
-        const toast = new bootstrap.Toast(this.elements.toast, {
-            delay: 2000,
-            autohide: true
-        });
-
-        toast.show();
-
-        // 토스트 표시 애니메이션
-        if (typeof anime !== 'undefined') {
-            anime({
-                targets: this.elements.toast,
-                translateX: [20, 0],
-                opacity: [0, 1],
-                duration: 400,
-                easing: 'easeOutQuad'
-            });
-        }
-    }
-
     // 단어 행 HTML 생성
     createWordRow(word, index) {
         const row = document.createElement('tr');
@@ -469,6 +434,8 @@ class UIManager {
         this.elements.editForm.hint.value = word.hint || '';
         this.elements.editForm.difficulty.value = word.difficulty || '3';
 
+        // z-index 값을 명시적으로 설정하여 사이드바보다 높게 하기
+        this.elements.editModal.style.zIndex = '2000';
         // 새 모달 인스턴스 생성 및 표시
         this.modalInstance = new bootstrap.Modal(this.elements.editModal);
         this.modalInstance.show();
@@ -673,7 +640,7 @@ class WordManager {
             return data;
         } catch (error) {
             console.error('Error:', error);
-            this.uiManager.showToast(error.message, false);
+            window.showErrorToast('단어 목록을 불러오는데 실패했습니다.');
             throw error;
         }
     }
@@ -685,7 +652,7 @@ class WordManager {
             this.uiManager.showEditModal(word, this.animationManager);
         } catch (error) {
             console.error('Error:', error);
-            this.uiManager.showToast(error.message, false);
+            window.showErrorToast('단어 정보를 불러오는데 실패했습니다.');
         }
     }
 
@@ -702,17 +669,17 @@ class WordManager {
             // 애니메이션과 함께 행 제거
             if (row && this.animationManager.canAnimate()) {
                 this.animationManager.animateRowRemoval(row, () => {
-                    this.uiManager.showToast('단어가 삭제되었습니다.', true);
+                    window.showSuccessToast('단어가 삭제되었습니다.');
                     this.loadWords(this.state.currentPage);
                 });
             } else {
                 // 애니메이션 없이 처리
-                this.uiManager.showToast('단어가 삭제되었습니다.', true);
+                window.showSuccessToast('단어가 삭제되었습니다.');
                 await this.loadWords(this.state.currentPage);
             }
         } catch (error) {
             console.error('Error:', error);
-            this.uiManager.showToast(error.message, false);
+            window.showErrorToast('단어 삭제에 실패했습니다.');
         }
     }
 
@@ -732,7 +699,7 @@ class WordManager {
 
             // 입력값 검증
             if (!data.vocabulary || !data.meaning) {
-                this.uiManager.showToast('단어와 의미는 필수 입력값입니다.', false);
+                window.showErrorToast('단어와 의미는 필수 입력값입니다.');
                 this.state.isProcessing = false;
                 return;
             }
@@ -741,7 +708,7 @@ class WordManager {
             /** @type {{exists: boolean}} 단어 중복 검사 결과 */
             const duplicateCheck = await this.apiService.checkVocabularyDuplicate(data.vocabulary, id);
             if (duplicateCheck.exists) {
-                this.uiManager.showToast(`'${data.vocabulary}'는 이미 존재하는 단어입니다.`, false);
+                window.showErrorToast(`${data.vocabulary}는 이미 존재하는 단어입니다.`);
                 this.state.isProcessing = false;
                 return;
             }
@@ -753,7 +720,7 @@ class WordManager {
                 this.uiManager.modalInstance.hide();
             }
 
-            this.uiManager.showToast('단어가 수정되었습니다.', true);
+            window.showSuccessToast('단어가 수정되었습니다.');
 
             // 부드러운 목록 새로고침
             this.animationManager.animatePageTransition(
@@ -763,7 +730,7 @@ class WordManager {
 
         } catch (error) {
             console.error('Error:', error);
-            this.uiManager.showToast(error.message, false);
+            window.showErrorToast('단어 수정에 실패했습니다.');
         } finally {
             this.state.isProcessing = false;
         }

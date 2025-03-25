@@ -272,6 +272,43 @@
 }
 
 /* 페이지 네이션 END */
+.modal {
+    z-index: 2000 !important; /* 사이드바의 z-index(1060)보다 높게 설정 */
+}
+
+.modal-backdrop {
+    z-index: 1999 !important; /* 모달보다 1 낮게, 사이드바보다는 높게 설정 */
+}
+
+.modal-backdrop + .modal-backdrop {
+    display: none; /* 여러 개의 modal-backdrop 이 쌓이는 것을 방지 */
+}
+
+body.modal-open {
+    overflow: hidden;
+    padding-right: 0 !important; /* 스크롤바 너비 보정 비활성화 */
+}
+
+/* 모달 열릴 때 트랜지션 효과 */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translateY(-50px);
+}
+
+.modal.show .modal-dialog {
+    transform: translateY(0);
+}
+
+/* 모달창 포커스 시 외곽선 제거 */
+.modal-content:focus {
+    outline: none;
+}
+
+/* 모달 버튼에 더 강한 스타일 적용 */
+.modal-footer .btn {
+    position: relative;
+    z-index: 2002; /* 버튼이 항상 클릭 가능하도록 */
+}
 
 /* 모달 관련 스타일 */
 .modal-content {
@@ -280,6 +317,9 @@
     border-radius: var(--border-radius-xl);
     transition: all 0.3s ease;
     min-width: 400px;
+    position: relative;
+    z-index: 2001; /* 모달보다 높게 설정하여 내용이 항상 보이도록 */
+    box-shadow: var(--shadow-3);
 }
 
 /* 모달 헤더 섹션 */
@@ -371,20 +411,4 @@
 .modal-footer .btn-modal-cancel:hover {
     background-color: var(--surface-container-high);
     border-color: var(--outline);
-}
-
-/* 수정 모달 END */
-
-/* 토스트 메시지 */
-.toast {
-    background: var(--surface-container-high);
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-2);
-    z-index: 1060; /* 모달보다 위에 표시 */
-}
-
-/* 여러 개의 modal-backdrop 이 쌓이는 것을 방지 */
-.modal-backdrop + .modal-backdrop {
-    display: none;
 }
