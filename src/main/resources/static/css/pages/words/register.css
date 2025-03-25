@@ -297,33 +297,8 @@
     cursor: not-allowed;
 }
 
-/* ======= 8. 토스트 메시지 ======= */
 
-.toast-container {
-    position: fixed;
-    top: var(--spacing-4);
-    right: var(--spacing-4);
-    z-index: 1056;
-}
-
-.toast {
-    min-width: 300px;
-    background: var(--surface-container-highest);
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-3);
-    color: white;
-}
-
-.toast.bg-success {
-    background-color: var(--success, #198754) !important;
-}
-
-.toast.bg-danger {
-    background-color: var(--error) !important;
-}
-
-/* ======= 9. 애니메이션 효과 ======= */
+/* ======= 8. 애니메이션 효과 ======= */
 
 /* 페이드 인 애니메이션 */
 .fade-in {

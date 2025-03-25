@@ -11,7 +11,6 @@ class MultiWordRegistrationApp {
         this.isProcessing = false;
 
         // 모듈 초기화
-        this.uiManager = new UIManager();
         this.validationManager = new ValidationManager();
         this.apiService = new ApiService(this.API_BASE_URL);
         this.formManager = new FormManager(this);
@@ -159,7 +158,7 @@ class MultiWordRegistrationApp {
                 row.remove();
             }, 300);
         } else {
-            this.uiManager.showToast('최소 1개의 행이 필요합니다.', 'error');
+            window.showErrorToast('최소 1개의 행이 필요합니다.');
 
             // 오류 애니메이션
             row.style.transition = 'transform 0.1s ease';
@@ -193,7 +192,7 @@ class MultiWordRegistrationApp {
                 }
             });
 
-            this.uiManager.showToast('모든 필수 항목을 올바르게 입력해주세요.', 'error');
+            window.showErrorToast('모든 필수 항목을 올바르게 입력해주세요.');
 
             // 첫 번째 오류 입력 필드로 스크롤 및 포커스
             const firstInvalid = this.elements.form.querySelector('.is-invalid');
@@ -224,8 +223,7 @@ class MultiWordRegistrationApp {
             const result = await this.apiService.registerWords(wordsData);
 
             // 성공 알림 및 애니메이션
-            this.uiManager.showToast(`${result.count}개의 단어가 저장되었습니다.`, 'success');
-
+            window.showSuccessToast(`${result.count}개의 단어가 저장되었습니다.`);
             // 성공 애니메이션 및 리디렉션
             document.querySelector('.content-container').style.opacity = '0';
             document.querySelector('.content-container').style.transform = 'translateY(-20px)';
@@ -236,8 +234,7 @@ class MultiWordRegistrationApp {
 
         } catch (error) {
             console.error('Registration error:', error);
-            this.uiManager.showToast(error.message || '저장 중 오류가 발생했습니다.', 'error');
-
+            window.showErrorToast(error.message || '저장 중 오류가 발생했습니다.');
             // 저장 버튼 복원
             this.elements.saveBtn.disabled = false;
             this.elements.saveBtn.innerHTML = '<i class="bi bi-save"></i> 단어 등록';
@@ -313,34 +310,6 @@ class ApiService {
         }
 
         return data;
-    }
-}
-
-/**
- * UI 관리 클래스
- */
-class UIManager {
-    constructor() {
-        this.toastElement = document.getElementById('toast');
-        this.bsToast = new bootstrap.Toast(this.toastElement, {
-            delay: 3000,
-            autohide: true
-        });
-    }
-
-    /**
-     * 토스트 메시지 표시
-     * @param {string} message - 표시할 메시지
-     * @param {string} type - 메시지 유형 ('success' | 'error')
-     */
-    showToast(message, type = 'success') {
-        // Bootstrap 클래스 매핑
-        const bsClass = type === 'error' ? 'danger' : type;
-
-        this.toastElement.classList.remove('bg-success', 'bg-danger');
-        this.toastElement.classList.add(`bg-${bsClass}`);
-        this.toastElement.querySelector('.toast-body').textContent = message;
-        this.bsToast.show();
     }
 }
 
