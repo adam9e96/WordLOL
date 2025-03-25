@@ -6,11 +6,11 @@
 <head>
     <title>접근 권한 없음</title>
     <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/pages/error/error.css}">
+        <link rel="stylesheet" th:href="@{/css/pages/error/access-denied.css}">
     </th:block>
 </head>
 <body>
-<main layout:fragment="content" class="access-denied-grid">
+<main layout:fragment="content" class="access-denied-page">
     <div class="access-denied-container">
         <div class="access-denied-icon">🔒</div>
         <h1 class="access-denied-title">접근 권한 없음</h1>
@@ -22,7 +22,19 @@
             <i class="bi bi-arrow-left"></i>
             메인 페이지로 돌아가기
         </a>
+        <a href="/auth/google" class="btn-login">
+            <i class="bi bi-google"></i>
+            구글 계정으로 로그인
+        </a>
     </div>
 </main>
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.showErrorToast('접근 권한이 없습니다. 로그인이 필요합니다.');
+        });
+    </script>
+</th:block>
+
 </body>
 </html>

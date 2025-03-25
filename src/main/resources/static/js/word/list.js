@@ -376,6 +376,7 @@ class UIManager {
         });
     }
 
+
     // 토스트 메시지 표시
     showToast(message, isSuccess = true) {
         const toastBody = this.elements.toast.querySelector('.toast-body');

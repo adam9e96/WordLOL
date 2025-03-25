@@ -4,10 +4,16 @@ header 에 대한 스타일을 정의
 */
 /* 헤더 - 전체 헤더 컨테이너의 기본 스타일 설정 */
 .header {
-    width: 100%;
-    padding: 0.75rem;
-    background: var(--surface-container-low);
-    border-bottom: 1px solid var(--outline-variant);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-height, 75px);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    background-color: var(--surface);
     box-shadow: var(--shadow-1);
 }
 
@@ -15,11 +21,27 @@ header 에 대한 스타일을 정의
 로고, 검색창, 로그인 버튼이 이 안에 배치됨
 */
 .header-container {
-    max-width: var(--max-width);
-    margin: 0 auto; /* 가운데 정렬을 위한 마진 설정 */
+    width: 100%;
+    padding-left: 60px; /* 햄버거 버튼 공간 */
+    transition: padding-left var(--transition-normal);
     display: flex;
-    flex-direction: column; /* 요소들을 세로로 배치 */
-    gap: 1rem; /* 요소들 사이의 간격 */
+    align-items: center;
+}
+
+
+/* 사이드바 열렸을 때 헤더 패딩 조정 */
+body.sidebar-open .header-container {
+    padding-left: 250px;
+}
+
+/* 사이드바 접혔을 때 헤더 패딩 조정 */
+body.sidebar-collapsed .header-container {
+    padding-left: 60px;
+}
+
+/* 사이드바가 닫힌 경우 헤더 컨테이너 패딩 제거 */
+body.sidebar-closed .header-container {
+    padding-left: 0;
 }
 
 /* 헤더 1행 - 로고, 검색창, 로그인 버튼이 있는 행 */
@@ -31,11 +53,8 @@ header 에 대한 스타일을 정의
     gap: 1rem;
     /* 내부 여백을 0.5rem 으로 설정 */
     padding: 0.5rem;
-    /* 배경색을 var(--surface-container-lowest)로 설정 */
-    background: var(--surface-container-lowest);
-    /* 모서리를 var(--border-radius)로 둥글게 설정 */
+    background: var(--surface-container);
     border-radius: var(--border-radius);
-    /* 그림자 효과를 var(--shadow-1)로 설정 */
     box-shadow: var(--shadow-1);
 }
 
@@ -286,4 +305,11 @@ header 에 대한 스타일을 정의
 .nav-link.active {
     background: var(--primary-container); /* 활성 상태 배경색 */
     color: var(--on-primary-container); /* 활성 상태 글자색 */
+}
+
+/* 모바일 환경 (작은 화면)에서 헤더 컨테이너 스타일 변경 */
+@media (max-width: 991px) {
+    .header-container {
+        padding-left: 0; /* 모바일에서는 패딩 제거 */
+    }
 }

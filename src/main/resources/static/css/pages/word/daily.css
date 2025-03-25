@@ -1,4 +1,3 @@
-/* CSS 변수 추가 - 반복되는 값들 */
 :root {
     /* 애니메이션 관련 변수 */
     --transition-standard: all 0.3s ease;
@@ -149,17 +148,6 @@
     to {
         transform: rotate(360deg);
     }
-}
-
-/* 에러 메시지 */
-.error-message {
-    padding: 1rem;
-    margin: 1rem 0;
-    border-radius: var(--border-radius);
-    background: var(--card-bg-opacity);
-    color: var(--error);
-    text-align: center;
-    opacity: 0;
 }
 
 /* 애니메이션 관련 클래스 */

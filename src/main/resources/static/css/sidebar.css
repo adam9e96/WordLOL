@@ -1,0 +1,242 @@
+/* sidebar.css - 사이드바 및 햄버거 버튼 스타일 */
+
+/* 사이드바 기본 스타일 */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background: var(--surface-container);
+    box-shadow: var(--shadow-2);
+    z-index: 1000;
+    transition: transform var(--transition-normal), width var(--transition-normal);
+    overflow-y: auto;
+    padding-top: 0; /* 헤더 높이만큼 패딩 제거 */
+}
+
+/* 사이드바 접힌 상태 */
+.sidebar.collapsed {
+    width: 60px;
+}
+
+/* 사이드바 닫힌 상태 (모바일용) */
+.sidebar.closed {
+    transform: translateX(-100%);
+}
+
+/* 사이드바 헤더 */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid var(--outline-variant);
+    height: var(--header-height, 75px);
+    position: relative;
+    padding-left: 60px; /* 햄버거 버튼 공간 */
+}
+
+/* 사이드바 제목 */
+.sidebar-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 햄버거 버튼 */
+.sidebar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1051;
+}
+
+.sidebar-toggle:hover {
+    background: var(--surface-container-high);
+}
+
+.sidebar-toggle i {
+    font-size: 1.5rem;
+    color: var(--on-surface);
+}
+
+/* 사이드바 닫기 버튼 */
+.sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.sidebar-close:hover {
+    background: var(--surface-container-high);
+}
+
+.sidebar-close i {
+    font-size: 1.25rem;
+    color: var(--on-surface);
+}
+
+/* 사이드바 콘텐츠 영역 */
+.sidebar-content {
+    padding: 1rem 0;
+}
+
+/* 사이드바 메뉴 */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 사이드바 메뉴 아이템 */
+.sidebar-item {
+    margin-bottom: 0.25rem;
+}
+
+/* 사이드바 링크 */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--on-surface);
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+    white-space: nowrap;
+}
+
+.sidebar-link:hover {
+    background: var(--surface-container-high);
+}
+
+.sidebar-link.active {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+.sidebar-link i {
+    font-size: 1.25rem;
+    margin-right: 0.75rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* 사이드바 접힌 상태에서 텍스트 숨김 */
+.sidebar.collapsed .sidebar-text,
+.sidebar.collapsed .sidebar-title,
+.sidebar.collapsed .sidebar-close {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-link {
+    justify-content: center;
+    padding: 0.75rem 0;
+}
+
+.sidebar.collapsed .sidebar-link i {
+    margin-right: 0;
+}
+
+/* 오버레이 스타일 - 모바일에서만 사용 */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-normal), visibility var(--transition-normal);
+}
+
+.sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 모바일 환경 (작은 화면)에서 사이드바 동작 변경 */
+@media (max-width: 991px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 250px; /* 모바일에서도 너비 동일하게 */
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-overlay.open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* 모바일에서는 collapsed 상태 비활성화 */
+    .sidebar.collapsed {
+        width: 250px; /* 모바일에서는 축소 모드 비활성화 */
+    }
+
+    .sidebar.collapsed .sidebar-text,
+    .sidebar.collapsed .sidebar-title,
+    .sidebar.collapsed .sidebar-close {
+        display: block;
+    }
+
+    .sidebar.collapsed .sidebar-link {
+        justify-content: flex-start;
+        padding: 0.75rem 1rem;
+    }
+
+    .sidebar.collapsed .sidebar-link i {
+        margin-right: 0.75rem;
+    }
+}
+
+/* 다크 모드 스타일 */
+[data-theme="dark"] .sidebar {
+    background: var(--surface-container);
+}
+
+[data-theme="dark"] .sidebar-header {
+    border-color: var(--outline-variant);
+}
+
+[data-theme="dark"] .sidebar-link {
+    color: var(--on-surface);
+}
+
+[data-theme="dark"] .sidebar-link:hover {
+    background: var(--surface-container-high);
+}
+
+[data-theme="dark"] .sidebar-link.active {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+/* 사이드바 z-index 조정 - 헤더보다 높게 */
+.sidebar {
+    z-index: 1060;
+}

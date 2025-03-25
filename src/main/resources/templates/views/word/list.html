@@ -101,7 +101,9 @@
     </div>
 </main>
 <th:block layout:fragment="script">
-    <script th:src="@{/js/word/list.js}"></script>
+    <!-- 토스트 모듈 불러오기 (type="module" 중요) -->
+
+        <script th:src="@{/js/word/list.js}"></script>
 </th:block>
 </body>
 </html>

@@ -35,10 +35,12 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Word> words = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WordBook> wordBooks = new ArrayList<>();
+    @Builder.Default
+    private final List<WordBook> wordBooks = new ArrayList<>();
 
     public User update(String name, String picture) {
         this.name = name;

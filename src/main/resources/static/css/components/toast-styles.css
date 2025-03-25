@@ -1,0 +1,166 @@
+/**
+ * 토스트 메시지 스타일
+ * 애니메이션과 테마를 포함한 토스트 컴포넌트 스타일 정의
+ */
+
+/* 토스트 컨테이너 스타일 */
+.toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    max-width: 350px;
+    overflow: hidden;
+}
+
+/* 개별 토스트 스타일 */
+.toast {
+    margin-bottom: 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    opacity: 0; /* 초기 상태는 투명하게 */
+    overflow: hidden;
+}
+
+/* 토스트 헤더 스타일 */
+.toast-header {
+    padding: 0.75rem 1rem;
+    border-bottom: none;
+    align-items: center;
+}
+
+/* 클로즈 버튼 스타일 */
+.toast .btn-close {
+    opacity: 0.8;
+    font-size: 0.875rem;
+    transition: opacity 0.2s ease;
+}
+
+.toast .btn-close:hover {
+    opacity: 1;
+}
+
+/* 토스트 바디 스타일 */
+.toast-body {
+    padding: 0.75rem 1rem;
+    word-break: break-word;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* 토스트 타입별 스타일 */
+/* 성공 토스트 */
+.toast.bg-success {
+    border-left: 4px solid #198754;
+}
+
+/* 오류 토스트 */
+.toast.bg-danger {
+    border-left: 4px solid #dc3545;
+}
+
+/* 경고 토스트 */
+.toast.bg-warning {
+    border-left: 4px solid #fd7e14;
+    color: #212529 !important;
+}
+
+.toast.bg-warning .toast-header {
+    color: #212529 !important;
+}
+
+.toast.bg-warning .btn-close {
+    filter: none;
+}
+
+/* 정보 토스트 */
+.toast.bg-info {
+    border-left: 4px solid #0dcaf0;
+    color: #212529 !important;
+}
+
+.toast.bg-info .toast-header {
+    color: #212529 !important;
+}
+
+.toast.bg-info .btn-close {
+    filter: none;
+}
+
+/* 다크 모드 토스트 스타일 */
+[data-theme="dark"] .toast {
+    background-color: var(--surface-container-high, #1e1e1e) !important;
+    color: var(--on-surface, #e0e0e0) !important;
+}
+
+[data-theme="dark"] .toast-header {
+    background-color: var(--surface-container-highest, #272727) !important;
+    color: var(--on-surface, #e0e0e0) !important;
+    border-bottom: 1px solid var(--outline-variant, #444444);
+}
+
+[data-theme="dark"] .toast.bg-success {
+    border-left: 4px solid #2ebd85;
+}
+
+[data-theme="dark"] .toast.bg-danger {
+    border-left: 4px solid #e74c3c;
+}
+
+[data-theme="dark"] .toast.bg-warning {
+    border-left: 4px solid #f1c40f;
+}
+
+[data-theme="dark"] .toast.bg-info {
+    border-left: 4px solid #3498db;
+}
+
+/* 토스트 아이콘 스타일 */
+.toast-header i {
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+}
+
+/* 키프레임 애니메이션 (CSS 애니메이션 대안) */
+@keyframes toastFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastFadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+}
+
+/* anime.js가 없는 환경을 위한 폴백 애니메이션 */
+.toast-fallback-animation {
+    animation: toastFadeIn 0.4s ease-out forwards;
+}
+
+.toast-fallback-animation-hide {
+    animation: toastFadeOut 0.3s ease-in forwards;
+}
+
+/* 부트스트랩 토스트 표시 클래스 오버라이드 */
+.toast.show {
+    display: block;
+    opacity: 1;
+}
+
+/* 토스트 메시지 트랜지션 효과 */
+.toast {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}

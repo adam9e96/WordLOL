@@ -97,8 +97,6 @@ public class SecurityConfig {
                         "/favicon.ico",
                         "/h2-console/**",
                         "/api/v1/auth/**",
-                        "/word/daily",
-                        "/word/list",
                         "/access-denied"
                 ).permitAll()
                 // API 요청에 대한 세밀한 권한 설정

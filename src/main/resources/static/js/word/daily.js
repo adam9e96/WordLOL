@@ -9,7 +9,6 @@ class DailyWordsApp {
         // DOM 요소 캐싱
         this.elements = {
             loading: document.getElementById('loading'), // 로딩 스피너 요소
-            error: document.getElementById('error-message'), // 오류 메시지 요소
             wordCards: document.getElementById('word-cards'), // 단어 카드 컨테이너 요소
             container: document.querySelector('.word-cards-wrapper') // 단어 카드 래퍼 요소
         };
@@ -17,15 +16,11 @@ class DailyWordsApp {
         // 애니메이션 상태 관리
         this.animations = {}; // 애니메이션 상태를 저장할 객체
 
-        // 매니저 초기화
-        this.uiManager = new UIManager(this.elements); // UI 매니저 인스턴스 생성
-        this.animationManager = new AnimationManager(this.elements, this.animations); // 애니메이션 매니저 인스턴스 생성
-        this.apiService = new ApiService(this.API_URL); // API 서비스 인스턴스 생성
+        this.uiManager = new UIManager(this.elements);
+        this.animationManager = new AnimationManager(this.elements, this.animations);
+        this.apiService = new ApiService(this.API_URL);
     }
 
-    /**
-     * 애플리케이션 초기화
-     */
     initialize() {
         // anime.js 로드 확인
         if (typeof anime === 'undefined') {
@@ -33,7 +28,7 @@ class DailyWordsApp {
             // anime.js가 로드되지 않은 경우의 처리
         } else {
             console.log('anime.js가 로드되었습니다. 애니메이션 모드로 실행합니다.');
-            this.animationManager.init(); // 애니메이션 매니저 초기화
+            this.animationManager.init();
         }
 
         // 오늘의 단어 로드
@@ -54,11 +49,10 @@ class DailyWordsApp {
         try {
             this.uiManager.showLoading(); // 로딩 상태 표시
             this.animationManager.animateLoading(); // 로딩 애니메이션 실행
-
             const words = await this.apiService.fetchDailyWords(); // API 를 통해 오늘의 단어 데이터 가져오기
 
             if (words.length === 0) {
-                this.uiManager.showError('단어를 찾을 수 없습니다.'); // 단어가 없을 경우 오류 메시지 표시
+                window.showErrorToast('단어를 찾을 수 없습니다.');
                 return;
             }
 
@@ -70,9 +64,9 @@ class DailyWordsApp {
             this.animationManager.animateStars(); // 별 애니메이션
         } catch (error) {
             console.error('단어 로딩 실패:', error); // 단어 로딩 실패 시 콘솔에 오류 출력
-            this.uiManager.showError(`단어를 불러오는 중 오류가 발생했습니다: ${error.message}`); // 오류 메시지 표시
+            window.showErrorToast('단어를 불러오는 중 오류가 발생했습니다.');
         } finally {
-            this.uiManager.hideLoading(); // 로딩 상태 숨김
+            this.uiManager.hideLoading();
         }
     }
 }
@@ -83,11 +77,6 @@ class DailyWordsApp {
  * 이 클래스는 UI 요소의 상태를 관리하고, 로딩 상태, 오류 메시지, 단어 카드 렌더링 등의 기능을 제공합니다.
  */
 class UIManager {
-    /**
-     * 생성자
-     * @param {Object} elements - DOM 요소
-     * elements 객체는 UI 요소들을 포함하며, 로딩 스피너, 오류 메시지, 단어 카드 컨테이너 등을 포함합니다.
-     */
     constructor(elements) {
         this.elements = elements;
     }
@@ -101,7 +90,6 @@ class UIManager {
     showLoading() {
         this.elements.loading.classList.remove('d-none');
         this.elements.wordCards.innerHTML = '';
-        this.elements.error.classList.add('d-none');
     }
 
     /**
@@ -111,28 +99,6 @@ class UIManager {
     hideLoading() {
         this.elements.loading.classList.add('d-none');
     }
-
-    /**
-     * 오류 메시지 표시
-     * @param {string} message - 오류 메시지
-     * 오류 메시지를 표시하고, anime.js가 로드된 경우 애니메이션 효과를 적용합니다.
-     */
-    showError(message) {
-        this.elements.error.textContent = message;
-        this.elements.error.classList.remove('d-none');
-
-        // 오류 메시지 애니메이션 (anime.js가 있을 경우)
-        if (typeof anime !== 'undefined') {
-            anime({
-                targets: this.elements.error,
-                opacity: [0, 1],
-                translateY: [10, 0],
-                duration: 500,
-                easing: 'easeOutQuad'
-            });
-        }
-    }
-
     /**
      * 난이도에 따른 별표 HTML 반환
      * @param {number} level - 난이도 레벨
@@ -193,11 +159,8 @@ class AnimationManager {
         this.animations = animations;
     }
 
-    /**
-     * 애니메이션 초기화
-     */
+
     init() {
-        // 컨테이너 초기 설정
         if (this.elements.container) {
             // 컨테이너의 초기 상태를 설정
             anime.set(this.elements.container, {
@@ -363,7 +326,6 @@ class AnimationManager {
 
 /**
  * API 서비스 클래스
- * 주어진 API URL 을 사용하여 오늘의 단어 데이터를 가져오는 역할을 수행합니다
  */
 class ApiService {
     /**
@@ -388,7 +350,7 @@ class ApiService {
             throw new Error(`HTTP 오류! 상태: ${response.status}`);
         }
         console.log('API 응답 성공 반환된 데이터:', response);
-        return response.json(); // 응답 데이터를 JSON 형식으로 파싱하여 반환
+        return response.json();
     }
 }
 

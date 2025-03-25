@@ -1,10 +1,3 @@
-/*
- * base.css
- * 웹사이트의 기본 디자인 시스템 변수 및 기본 스타일을 정의
- * Material You 디자인 원칙을 따르는 변수들과 기본 레이아웃 구조 포함
- */
-
-/* Base Variables - 전체 사이트에서 사용되는 CSS 변수 정의 */
 :root {
     /* Typography - 사이트 전반에 사용되는 폰트 정의 */
     --font-family-base: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
@@ -15,7 +8,12 @@
     --primary: #6750A4; /* 주 색상 - 보라색 계열 */
     --on-primary: #FFFFFF; /* 주 색상 위에 표시되는 텍스트/아이콘 색상 */
     --primary-container: #EADDFF; /* 주 색상의 컨테이너 배경색 */
-    --on-primary-container: #e21212; /* 주 색상 컨테이너 위 텍스트/아이콘 색상 - 빨간색으로 설정됨(일반적이지 않은 설정) */
+    --on-primary-container: #21005E; /* 주 색상 컨테이너 위 텍스트/아이콘 색상 - 원래 값으로 수정 */
+
+    /* 색상 RGB 값 추가 (애니메이션 등에서 사용) */
+    --primary-rgb: 103, 80, 164;
+    --error-rgb: 179, 38, 30;
+    --success-rgb: 20, 151, 103;
 
     /* Secondary Colors - 보조 색상 및 관련 색상 */
     --secondary: #625B71; /* 보조 색상 */
@@ -24,7 +22,6 @@
     --on-secondary-container: #1E192B; /* 보조 색상 컨테이너 위 텍스트/아이콘 색상 */
     --on-surface-variant: #49454F; /* 표면 변형 위 텍스트/아이콘 색상 */
     --surface-variant: #E7E0EC; /* 표면 변형 색상 */
-
 
     /* Surface Colors - 표면 및 배경 색상 계열 */
     --surface: #FEF7FF; /* 기본 표면 색상 */
@@ -54,7 +51,6 @@
     --error-container: #F9DEDC; /* 오류 컨테이너 배경색 */
     --on-error-container: #410E0B; /* 오류 컨테이너 위 텍스트/아이콘 색상 */
 
-
     /* Spacing Variables - 일관된 여백 시스템을 위한 변수 */
     --spacing-1: calc(var(--spacing-unit) * 0.25); /* 4px - 최소 여백 */
     --spacing-2: calc(var(--spacing-unit) * 0.5); /* 8px - 작은 여백 */
@@ -64,7 +60,6 @@
     --spacing-6: calc(var(--spacing-unit) * 1.5); /* 24px - 중대 여백 */
     --spacing-7: calc(var(--spacing-unit) * 1.75); /* 28px - 큰 여백 */
     --spacing-8: calc(var(--spacing-unit) * 2); /* 32px - 최대 여백 */
-
 
     /* State Layer Colors - 상호작용 상태 표시용 색상 */
     --hover-primary: rgba(103, 80, 164, 0.08); /* 주 요소 호버 상태 배경색 */
@@ -96,8 +91,9 @@
     --border-radius-xxl: 32px; /* 매우 큰 모서리 둥글기 */
 
     /* Z-index - 요소 쌓임 순서 */
-    --z-header: 1000; /* 헤더의 z-index */
-    --z-header-toggle: 1001; /* 헤더 토글 버튼의 z-index */
+    --z-header: 1050; /* 헤더의 z-index */
+    --z-header-toggle: 1051; /* 헤더 토글 버튼의 z-index */
+    --z-sidebar: 1060; /* 사이드바의 z-index */
 
     /* Transitions - 애니메이션 효과 */
     --transition-fast: 0.2s ease; /* 빠른 전환 효과 */
@@ -119,26 +115,61 @@ body {
     min-height: 100vh; /* 최소 높이를 뷰포트 높이로 설정 */
     margin: 0; /* 마진 제거 */
     padding: 0; /* 패딩 제거 */
-    display: grid; /* 그리드 레이아웃 사용 */
-    grid-template-rows: auto 1fr; /* 행 구조: 헤더(자동 높이) + 메인(나머지 공간) */
-    grid-template-areas:
-        "header" /* 헤더 영역 */
-        "main"; /* 메인 콘텐츠 영역 */
+    /* 그리드 레이아웃 제거 - 충돌 방지 */
+    /* display: grid; */
+    /* grid-template-rows: auto 1fr; */
+    /* grid-template-areas:
+        "header"
+        "main"; */
+    position: relative; /* 상대적 포지셔닝 적용 */
     overflow-x: hidden; /* 가로 스크롤 방지 */
 }
 
-/* Grid Areas - 레이아웃 영역 정의 */
+/* 헤더 영역 - 전체 페이지 상단에 고정 */
 header {
-    grid-area: header; /* 헤더 영역으로 지정 */
-    position: relative; /* 상대 위치 지정 */
+    /* grid-area: header; */ /* 그리드 영역 지정 제거 */
+    position: fixed; /* 고정 위치 지정 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height); /* 헤더 높이 지정 */
     z-index: var(--z-header); /* z-index 설정 */
+    background-color: var(--surface); /* 배경색 설정 */
+    box-shadow: var(--shadow-1); /* 그림자 추가 */
 }
 
+/* 메인 콘텐츠 영역 */
 main {
-    grid-area: main; /* 메인 영역으로 지정 */
-    display: grid; /* 그리드 레이아웃 사용 */
-    place-items: center; /* 콘텐츠 중앙 정렬 */
+    /* grid-area: main; */ /* 그리드 영역 지정 제거 */
+    /* display: grid; */ /* 그리드 레이아웃 제거 */
+    /* place-items: center; */ /* 중앙 정렬 제거 */
     padding: var(--spacing-unit); /* 패딩 설정 */
+    margin-top: var(--header-height); /* 헤더 높이만큼 마진 추가 */
+    min-height: calc(100vh - var(--header-height)); /* 최소 높이 계산 */
+    width: calc(100% - 250px); /* 사이드바 너비 고려 */
+    margin-left: 250px; /* 사이드바 너비만큼 왼쪽 마진 */
+    position: relative; /* 상대적 포지셔닝 설정 */
+    transition: margin-left var(--transition-normal), width var(--transition-normal);
+}
+
+/* 사이드바 접힌 상태에서 메인 영역 조정 */
+body.sidebar-collapsed main {
+    margin-left: 60px;
+    width: calc(100% - 60px);
+}
+
+/* 사이드바 닫힌 상태에서 메인 영역 조정 */
+body.sidebar-closed main {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* 모바일 환경 (작은 화면)에서 메인 영역 조정 */
+@media (max-width: 991px) {
+    main {
+        margin-left: 0;
+        width: 100%;
+    }
 }
 
 /* Utility Classes - 유틸리티 클래스 정의 */

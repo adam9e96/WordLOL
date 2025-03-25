@@ -1,12 +1,4 @@
-/**
- * WordRegistration - 단어 등록 페이지 애플리케이션
- * 클래스 기반 구조로 구현되어 유지보수가 용이
- * anime.js를 활용한 애니메이션 효과 적용
- */
 class WordRegistrationApp {
-    /**
-     * 애플리케이션 초기화 및 상태 관리
-     */
     constructor() {
         // API 기본 URL
         this.API_BASE_URL = '/api/v1/words';
@@ -146,7 +138,7 @@ class WordRegistrationApp {
             await this.apiService.registerWord(wordData);
 
             // 성공 알림 및 애니메이션
-            this.uiManager.showToast('단어가 성공적으로 등록되었습니다.', 'success');
+            window.showSuccessToast('단어가 성공적으로 등록되었습니다.', {title: '등록 완료'});
             this.animationManager.animateSubmitEnd(true);
 
             // 성공 후 리디렉션
@@ -156,7 +148,11 @@ class WordRegistrationApp {
 
         } catch (error) {
             console.error('Registration error:', error);
-            this.uiManager.showToast(error.message, 'error');
+            // 에러 토스트 메시지 수정
+            window.showErrorToast(error.message || '단어 등록에 실패했습니다.', {
+                title: '등록 실패'
+            });
+
             this.animationManager.animateSubmitEnd(false);
             this.isProcessing = false;
         }
@@ -224,25 +220,6 @@ class ApiService {
  * UIManager - UI 관리 클래스
  */
 class UIManager {
-    constructor() {
-        this.toastElement = document.getElementById('toast');
-        this.bsToast = new bootstrap.Toast(this.toastElement, {
-            delay: 3000,
-            autohide: true
-        });
-    }
-
-    /**
-     * 토스트 메시지 표시
-     * @param {string} message - 표시할 메시지
-     * @param {string} type - 메시지 유형 ('success' | 'error')
-     */
-    showToast(message, type = 'success') {
-        this.toastElement.classList.remove('toast-success', 'toast-error');
-        this.toastElement.classList.add(`toast-${type}`);
-        this.toastElement.querySelector('.toast-body').textContent = message;
-        this.bsToast.show();
-    }
 
     /**
      * 입력 필드 상태 업데이트
@@ -339,7 +316,10 @@ class ValidationManager {
     validateVocabulary(value) {
         // 입력값이 없으면 초기 상태로 간주 (첫 로드 시 메시지 표시 안 함)
         if (value === '') {
-            return {isValid: null, message: ''};
+            return {
+                isValid: null,
+                message: ''
+            };
         }
 
         value = value.trim();
@@ -437,11 +417,40 @@ class FormManager {
         const meaningField = document.getElementById('meaning');
         const hintField = document.getElementById('hint');
 
+        // 폼 제출 시 빈 값 검사
+        if (!data.vocabulary.trim()) {
+            this.uiManager.updateFieldStatus(vocabularyField, false,
+                this.validationManager.ERROR_MESSAGES.vocabulary.required);
+
+            // 명시적으로 에러 토스트 표시
+            window.showErrorToast(this.validationManager.ERROR_MESSAGES.vocabulary.required, {
+                title: '입력 오류'
+            });
+            vocabularyField.focus();
+            return false;
+        }
+
+        if (!data.meaning.trim()) {
+            this.uiManager.updateFieldStatus(meaningField, false,  // 수정: meaningField 사용
+                this.validationManager.ERROR_MESSAGES.meaning.required);
+
+            window.showErrorToast(this.validationManager.ERROR_MESSAGES.meaning.required, {
+                title: '입력 오류'
+            });
+            meaningField.focus();
+            return false;
+        }
+
         // 영단어 유효성 검사
         const vocabularyValidation = this.validationManager.validateVocabulary(data.vocabulary);
         if (!vocabularyValidation.isValid) {
             this.uiManager.updateFieldStatus(vocabularyField, false, vocabularyValidation.message);
-            this.uiManager.showToast(vocabularyValidation.message, 'error');
+
+            // 에러 토스트 메시지 수정
+            window.showErrorToast(vocabularyValidation.message.toString(), {
+                title: '입력 오류'
+            });
+
             vocabularyField.focus();
             return false;
         } else {
@@ -452,7 +461,12 @@ class FormManager {
         const meaningValidation = this.validationManager.validateMeaning(data.meaning);
         if (!meaningValidation.isValid) {
             this.uiManager.updateFieldStatus(meaningField, false, meaningValidation.message);
-            this.uiManager.showToast(meaningValidation.message, 'error');
+
+            // 에러 토스트 메시지 수정
+            window.showErrorToast(meaningValidation.message.toString(), {
+                title: '입력 오류'
+            });
+
             meaningField.focus();
             return false;
         } else {
@@ -463,7 +477,12 @@ class FormManager {
         const hintValidation = this.validationManager.validateHint(data.hint);
         if (!hintValidation.isValid) {
             this.uiManager.updateFieldStatus(hintField, false, hintValidation.message);
-            this.uiManager.showToast(hintValidation.message, 'error');
+
+            // 에러 토스트 메시지 수정
+            window.showErrorToast(hintValidation.message, {
+                title: '입력 오류'
+            });
+
             hintField.focus();
             return false;
         } else {
@@ -475,24 +494,25 @@ class FormManager {
             const {exists} = await this.apiService.checkDuplicate(data.vocabulary);
             if (exists) {
                 this.uiManager.updateFieldStatus(vocabularyField, false, this.validationManager.ERROR_MESSAGES.vocabulary.duplicate);
-                this.uiManager.showToast(this.validationManager.ERROR_MESSAGES.vocabulary.duplicate, 'error');
+
+                // 에러 토스트 메시지 수정
+                window.showErrorToast(this.validationManager.ERROR_MESSAGES.vocabulary.duplicate, {
+                    title: '중복 단어'
+                });
+
                 vocabularyField.focus();
                 return false;
             }
         } catch (error) {
-            this.uiManager.showToast(error.message, 'error');
+            // 에러 토스트 메시지 수정
+            window.showErrorToast(error.message || '중복 검사 중 오류가 발생했습니다.', {
+                title: '서버 오류'
+            });
+
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * 폼 초기화
-     */
-    resetForm() {
-        document.getElementById('wordForm').reset();
-        this.inputs.vocabulary.focus();
     }
 }
 

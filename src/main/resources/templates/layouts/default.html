@@ -15,6 +15,8 @@
     <!-- layout.css : header 에대한 CSS 정의 -->
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/components/toast-styles.css}">
 
     <link href="data:;base64,ivborw0kggo=" rel="icon">
 
@@ -32,15 +34,89 @@
     <script th:src="@{/js/ui-utils.js}"></script>
 </head>
 <body>
+<!-- 사이드바 부분 -->
+<div id="sidebar" class="sidebar">
+    <!-- 사이드바 헤더 - 햄버거 버튼 추가 -->
+    <div class="sidebar-header">
+        <!-- 햄버거 버튼 이동 -->
+        <button id="sidebar-toggle" class="sidebar-toggle" aria-label="메뉴 토글">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <h3 class="sidebar-title">wordlol</h3>
+        <button id="sidebar-close" class="sidebar-close" title="사이드바 접기">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <nav class="sidebar-nav">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/word/dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        <span class="sidebar-text">대시보드</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/word/study">
+                        <i class="bi bi-book"></i>
+                        <span class="sidebar-text">학습</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/word/daily">
+                        <i class="bi bi-calendar-day"></i>
+                        <span class="sidebar-text">일일단어</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/word/list">
+                        <i class="bi bi-list-ul"></i>
+                        <span class="sidebar-text">단어관리</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/word/register">
+                        <i class="bi bi-plus-circle"></i>
+                        <span class="sidebar-text">단어등록</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/word/words/register">
+                        <i class="bi bi-files"></i>
+                        <span class="sidebar-text">n개등록</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/wordbook/create">
+                        <i class="bi bi-journal-plus"></i>
+                        <span class="sidebar-text">단어장 생성</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/wordbook/list">
+                        <i class="bi bi-journals"></i>
+                        <span class="sidebar-text">단어장 목록</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- 오버레이 추가 - 모바일에서 사이드바 외 영역 클릭시 닫기 위함 -->
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+
 <!-- 헤더 include -->
 <header th:replace="~{fragments/header :: header}"></header>
 
 <!-- 페이지 내용 -->
 <main layout:fragment="content">
-    <!-- 각 페이지의 내용이 여기에 들어갑니다 -->
+    <!-- 각 페이지의 내용 -->
 </main>
 
-<!-- 토스트 컴포넌트 (인증 관련 알림용) -->
+<!-- 토스트 컴포넌트 -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="authToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
@@ -62,7 +138,6 @@
         <span class="visually-hidden">로딩 중...</span>
     </div>
 </div>
-
 
 <!-- 인증 확인 모달 (토큰 만료 시) -->
 <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
@@ -88,6 +163,8 @@
 <!-- 테마 및 헤더 관련 스크립트 -->
 <script th:src="@{/js/header-search.js}"></script>
 <script th:src="@{/js/theme-toggle.js}"></script>
+<script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/components/toast-service.js}"></script>
 
 <!-- 페이지별 스크립트 -->
 <th:block layout:fragment="script"></th:block>

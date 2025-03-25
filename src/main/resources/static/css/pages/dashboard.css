@@ -1,10 +1,29 @@
-/* Dashboard CSS with explicit Material You variables */
+.dashboard-grid {
+    display: grid;
+    place-items: start center;
+    min-height: calc(100vh - var(--header-height));
+    padding: 1rem;
+    background: var(--surface-container-low);
+    overflow-x: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-container {
+    width: min(100%, 1400px);
+    display: grid;
+    gap: 1.5rem;
+    padding: 1rem;
+    overflow: visible; /* 내용이 넘치더라도 가려지지 않도록 */
+    margin-top: 20px; /* 헤더와의 간격을 위해 상단 마진 추가 */
+}
 
 /* 페이지 헤더 스타일 */
 .page-header {
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--outline-variant);
+    margin-top: 0.5rem; /* 상단 여백 추가 */
 }
 
 .page-title {
@@ -109,22 +128,6 @@
     justify-content: flex-end;
 }
 
-/* Layout structure */
-.dashboard-grid {
-    display: grid;
-    place-items: start center;
-    min-height: 100%;
-    padding: 1rem;
-    background: var(--surface-container-low);
-}
-
-.dashboard-container {
-    width: min(100%, 1400px);
-    display: grid;
-    gap: 1.5rem;
-    padding: 1rem;
-}
-
 /* Stats Cards Section */
 .stats-section {
     display: grid;
@@ -183,7 +186,6 @@
     margin: 0;
 }
 
-/* Icon colors - with fallbacks */
 .stat-icon-total {
     background-color: var(--primary-container);
     color: var(--on-primary-container);
@@ -500,4 +502,24 @@
 
 .stats-section .stat-card:nth-child(4) {
     --i: 4;
+}
+
+/* 모바일 반응형 조정 */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        padding-top: 0.5rem; /* 모바일에서는 패딩 줄임 */
+        margin-top: 60px; /* 모바일 헤더 높이로 조정 */
+    }
+
+    .dashboard-container {
+        padding: 0.5rem;
+    }
+
+    .stats-section {
+        grid-template-columns: 1fr; /* 모바일에서는 한 열로 표시 */
+    }
+
+    .info-section {
+        grid-template-columns: 1fr; /* 모바일에서는 한 열로 표시 */
+    }
 }

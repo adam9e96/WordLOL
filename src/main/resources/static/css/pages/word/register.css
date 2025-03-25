@@ -205,32 +205,6 @@
     font-weight: 600;
 }
 
-/* 알림 토스트 */
-.toast-container {
-    position: fixed;
-    top: var(--spacing-4);
-    right: var(--spacing-4);
-    z-index: 1056;
-}
-
-.toast {
-    background: var(--surface-container-highest);
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-3);
-    padding: var(--spacing-3);
-}
-
-.toast-success {
-    background: var(--primary-container);
-    color: var(--on-primary-container);
-}
-
-.toast-error {
-    background: var(--error-container);
-    color: var(--on-error-container);
-}
-
 /* 난이도 선택 포커스 상태 */
 .difficulty-input:focus + .difficulty-box {
     box-shadow: 0 0 0 2px var(--primary-container);
