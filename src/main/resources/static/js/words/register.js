@@ -1,8 +1,4 @@
-/**
- * 다중 단어 등록 애플리케이션 클래스
- */
 class MultiWordRegistrationApp {
-
     constructor() {
         // API 기본 URL
         this.API_BASE_URL = '/api/v1/words/batch';

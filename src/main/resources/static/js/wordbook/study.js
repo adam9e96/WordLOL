@@ -1,6 +1,5 @@
 /**
  * WordBookStudyApp - 단어장 학습 애플리케이션
- * 클래스 기반 구조로 구현된 단어장 학습 애플리케이션
  */
 class WordBookStudyApp {
     /**

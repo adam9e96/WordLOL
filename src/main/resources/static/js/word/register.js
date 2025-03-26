@@ -6,16 +6,24 @@ class WordRegistrationApp {
         // 처리 상태 플래그
         this.isProcessing = false;
 
+        // DOM 요소 캐싱
+        this.elements = {
+            form: document.getElementById('wordForm'),
+            vocabulary: document.getElementById('vocabulary'),
+            meaning: document.getElementById('meaning'),
+            hint: document.getElementById('hint'),
+            difficultyOptions: document.querySelectorAll('input[name="difficulty"]'),
+            submitBtn: document.querySelector('.btn-register-word')
+        };
+
         // 모듈 초기화
         this.uiManager = new UIManager();
-        this.validationManager = new ValidationManager();
         this.apiService = new ApiService(this.API_BASE_URL);
-        this.formManager = new FormManager();
         this.animationManager = new AnimationManager();
     }
 
     /**
-     * 애플리케이션 시작
+     * 애플리케이션 초기화
      */
     initialize() {
         // DOM이 완전히 로드된 후 초기 애니메이션 실행
@@ -25,7 +33,7 @@ class WordRegistrationApp {
         this.setupEventListeners();
 
         // 입력 필드에 초점 맞추기
-        document.getElementById('vocabulary').focus();
+        this.elements.vocabulary.focus();
     }
 
     /**
@@ -33,7 +41,7 @@ class WordRegistrationApp {
      */
     setupEventListeners() {
         // 단어 등록 폼 제출 이벤트
-        document.getElementById('wordForm').addEventListener('submit', (e) => this.handleSubmit(e));
+        this.elements.form.addEventListener('submit', (e) => this.handleSubmit(e));
 
         // 취소 버튼 클릭 이벤트
         document.getElementById('cancelBtn').addEventListener('click', () => this.handleCancel());
@@ -65,6 +73,7 @@ class WordRegistrationApp {
 
     /**
      * 실시간 유효성 검사 리스너 설정
+     * validation-s.js 모듈과 기존 updateFieldStatus 메서드 활용
      */
     setupValidationListeners() {
         // 초기 상태에서는 오류 메시지 숨기기
@@ -73,42 +82,66 @@ class WordRegistrationApp {
         });
 
         // 영단어 입력 필드 유효성 검사
-        const vocabularyField = document.getElementById('vocabulary');
-        vocabularyField.addEventListener('blur', (e) => {
-            const result = this.validationManager.validateVocabulary(e.target.value);
+        this.elements.vocabulary.addEventListener('blur', (e) => {
+            const result = window.ValidationService.validateVocabulary(e.target.value);
             this.uiManager.updateFieldStatus(e.target, result.isValid, result.message);
         });
-        vocabularyField.addEventListener('input', (e) => {
+
+        this.elements.vocabulary.addEventListener('input', (e) => {
             if (e.target.value.trim() !== '') {
-                const result = this.validationManager.validateVocabulary(e.target.value);
+                const result = window.ValidationService.validateVocabulary(e.target.value);
                 this.uiManager.updateFieldStatus(e.target, result.isValid, result.message);
+            } else {
+                this.uiManager.updateFieldStatus(e.target, null);
             }
         });
 
         // 의미 입력 필드 유효성 검사
-        const meaningField = document.getElementById('meaning');
-        meaningField.addEventListener('blur', (e) => {
-            const result = this.validationManager.validateMeaning(e.target.value);
+        this.elements.meaning.addEventListener('blur', (e) => {
+            const result = window.ValidationService.validateMeaning(e.target.value);
             this.uiManager.updateFieldStatus(e.target, result.isValid, result.message);
         });
-        meaningField.addEventListener('input', (e) => {
+
+        this.elements.meaning.addEventListener('input', (e) => {
             if (e.target.value.trim() !== '') {
-                const result = this.validationManager.validateMeaning(e.target.value);
+                const result = window.ValidationService.validateMeaning(e.target.value);
                 this.uiManager.updateFieldStatus(e.target, result.isValid, result.message);
+            } else {
+                this.uiManager.updateFieldStatus(e.target, null);
             }
         });
 
         // 힌트 입력 필드 유효성 검사
-        const hintField = document.getElementById('hint');
-        hintField.addEventListener('blur', (e) => {
-            const result = this.validationManager.validateHint(e.target.value);
+        this.elements.hint.addEventListener('blur', (e) => {
+            const result = window.ValidationService.validateHint(e.target.value);
             this.uiManager.updateFieldStatus(e.target, result.isValid, result.message);
         });
-        hintField.addEventListener('input', (e) => {
+
+        this.elements.hint.addEventListener('input', (e) => {
             if (e.target.value.trim() !== '') {
-                const result = this.validationManager.validateHint(e.target.value);
+                const result = window.ValidationService.validateHint(e.target.value);
                 this.uiManager.updateFieldStatus(e.target, result.isValid, result.message);
+            } else {
+                this.uiManager.updateFieldStatus(e.target, null);
             }
+        });
+
+        // 난이도 변경 시 유효성 검사
+        this.elements.difficultyOptions.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const result = window.ValidationService.validateDifficulty(e.target.value);
+                // 난이도는 라디오 버튼 그룹 전체가 컨테이너이므로 다르게 처리
+                const difficultyContainer = e.target.closest('.difficulty-options');
+                if (difficultyContainer) {
+                    difficultyContainer.classList.toggle('is-invalid', !result.isValid);
+
+                    const feedback = difficultyContainer.querySelector('.input-error-feedback');
+                    if (feedback) {
+                        feedback.textContent = result.message;
+                        feedback.style.display = !result.isValid ? 'block' : 'none';
+                    }
+                }
+            });
         });
     }
 
@@ -121,14 +154,30 @@ class WordRegistrationApp {
 
         if (this.isProcessing) return;
 
-        const wordData = this.formManager.getFormData();
+        // 폼 데이터 수집
+        const wordData = {
+            vocabulary: this.elements.vocabulary.value.trim(),
+            meaning: this.elements.meaning.value.trim(),
+            hint: this.elements.hint.value.trim(),
+            difficulty: parseInt(
+                document.querySelector('input[name="difficulty"]:checked')?.value || 3
+            )
+        };
 
         try {
             this.isProcessing = true;
             this.animationManager.animateSubmitStart();
 
-            // 폼 데이터 유효성 검사
-            if (!await this.formManager.validateFormData(wordData)) {
+            // 전체 폼 유효성 검사 (중복 포함)
+            const isValid = await window.validateWordForm(wordData, {
+                showToast: true,
+                checkDuplicate: async (vocabulary) => {
+                    return await this.apiService.checkDuplicate(vocabulary);
+                }
+            });
+
+            // 유효성 검사 실패 시 처리
+            if (!isValid) {
                 this.isProcessing = false;
                 this.animationManager.animateSubmitEnd(false);
                 return;
@@ -148,7 +197,7 @@ class WordRegistrationApp {
 
         } catch (error) {
             console.error('Registration error:', error);
-            // 에러 토스트 메시지 수정
+            // 에러 토스트 메시지 표시
             window.showErrorToast(error.message || '단어 등록에 실패했습니다.', {
                 title: '등록 실패'
             });
@@ -169,7 +218,7 @@ class WordRegistrationApp {
 }
 
 /**
- * API 통신 서비스
+ * API 서비스 클래스
  */
 class ApiService {
     /**
@@ -217,10 +266,9 @@ class ApiService {
 }
 
 /**
- * UIManager - UI 관리 클래스
+ * UI 관리 클래스
  */
 class UIManager {
-
     /**
      * 입력 필드 상태 업데이트
      * @param {HTMLElement} element - 입력 필드 요소
@@ -230,6 +278,7 @@ class UIManager {
     updateFieldStatus(element, isValid, message = '') {
         // 입력 필드 컨테이너 찾기
         const formGroup = element.closest('.form-group');
+        if (!formGroup) return;
 
         // 피드백 요소 찾기
         const feedback = formGroup.querySelector('.input-error-feedback');
@@ -238,21 +287,28 @@ class UIManager {
         let validIcon = formGroup.querySelector('.valid-feedback-icon');
         if (!validIcon) {
             validIcon = document.createElement('div');
-            validIcon.className = 'valid-feedback-icon position-absolute end-0 top-50 translate-middle-y me-3 d-none';
+            validIcon.className = 'valid-feedback-icon';
+            validIcon.style.position = 'absolute';
+            validIcon.style.right = '10px';
+            validIcon.style.top = '50%';
+            validIcon.style.transform = 'translateY(-50%)';
+            validIcon.style.display = 'none';
             validIcon.innerHTML = '<i class="bi bi-check-circle-fill text-success fs-5"></i>';
 
             // 입력 필드의 부모 요소에 position-relative 추가하고 아이콘 추가
             const inputWrapper = element.parentElement;
-            if (!inputWrapper.classList.contains('position-relative')) {
-                inputWrapper.classList.add('position-relative');
+            if (inputWrapper) {
+                if (!inputWrapper.classList.contains('position-relative')) {
+                    inputWrapper.style.position = 'relative';
+                }
+                inputWrapper.appendChild(validIcon);
             }
-            inputWrapper.appendChild(validIcon);
         }
 
         // 초기 상태(null)인 경우 모든 클래스 제거
         if (isValid === null) {
             element.classList.remove('is-valid', 'is-invalid');
-            validIcon.classList.add('d-none');
+            validIcon.style.display = 'none';
             if (feedback) {
                 feedback.style.display = 'none';
             }
@@ -264,255 +320,13 @@ class UIManager {
         element.classList.toggle('is-invalid', !isValid);
 
         // 유효성 아이콘 토글
-        if (isValid) {
-            validIcon.classList.remove('d-none');
-        } else {
-            validIcon.classList.add('d-none');
-        }
+        validIcon.style.display = isValid ? 'block' : 'none';
 
         // 피드백 메시지 업데이트
         if (feedback) {
             feedback.textContent = message;
             feedback.style.display = !isValid && message ? 'block' : 'none';
         }
-    }
-}
-
-/**
- * 유효성 검사 관리 클래스
- */
-class ValidationManager {
-    constructor() {
-        // 에러 메시지 상수
-        this.ERROR_MESSAGES = {
-            vocabulary: {
-                required: '영단어를 입력해주세요.',
-                pattern: '영단어는 영문자, 공백, 하이픈만 사용할 수 있습니다.',
-                length: '영단어는 2자 이상 100자 이하로 입력해주세요.',
-                duplicate: '이미 등록된 단어입니다.'
-            },
-            meaning: {
-                required: '뜻을 입력해주세요.',
-                length: '뜻은 1자 이상 100자 이하로 입력해주세요.',
-                pattern: '뜻은 한글, 영문, 공백, 쉼표만 사용할 수 있습니다.'
-            },
-            hint: {
-                length: '힌트는 100자 이하로 입력해주세요.'
-            }
-        };
-
-        // 정규식 패턴
-        this.PATTERNS = {
-            vocabulary: /^[a-zA-Z\s\-]+$/,
-            meaning: /^[가-힣a-zA-Z\s,\-~]+$/
-        };
-    }
-
-    /**
-     * 영단어 유효성 검사
-     * @param {string} value - 영단어
-     * @returns {{isValid: boolean, message: string}} 유효성 검사 결과
-     */
-    validateVocabulary(value) {
-        // 입력값이 없으면 초기 상태로 간주 (첫 로드 시 메시지 표시 안 함)
-        if (value === '') {
-            return {
-                isValid: null,
-                message: ''
-            };
-        }
-
-        value = value.trim();
-        if (!value) {
-            return {isValid: false, message: this.ERROR_MESSAGES.vocabulary.required};
-        }
-        if (!this.PATTERNS.vocabulary.test(value)) {
-            return {isValid: false, message: this.ERROR_MESSAGES.vocabulary.pattern};
-        }
-        if (value.length < 2 || value.length > 100) {
-            return {isValid: false, message: this.ERROR_MESSAGES.vocabulary.length};
-        }
-        return {isValid: true, message: ''};
-    }
-
-    /**
-     * 의미 유효성 검사
-     * @param {string} value - 의미
-     * @returns {{isValid: boolean, message: string}} 유효성 검사 결과
-     */
-    validateMeaning(value) {
-        // 입력값이 없으면 초기 상태로 간주 (첫 로드 시 메시지 표시 안 함)
-        if (value === '') {
-            return {isValid: null, message: ''};
-        }
-
-        value = value.trim();
-        if (!value) {
-            return {isValid: false, message: this.ERROR_MESSAGES.meaning.required};
-        }
-        if (!this.PATTERNS.meaning.test(value)) {
-            return {isValid: false, message: this.ERROR_MESSAGES.meaning.pattern};
-        }
-        if (value.length < 1 || value.length > 100) {
-            return {isValid: false, message: this.ERROR_MESSAGES.meaning.length};
-        }
-        return {isValid: true, message: ''};
-    }
-
-    /**
-     * 힌트 유효성 검사
-     * @param {string} value - 힌트
-     * @returns {{isValid: boolean, message: string}} 유효성 검사 결과
-     */
-    validateHint(value) {
-        if (value === '') {
-            return {isValid: null, message: ''};
-        }
-
-        if (value && value.length > 100) {
-            return {isValid: false, message: this.ERROR_MESSAGES.hint.length};
-        }
-        return {isValid: true, message: ''};
-    }
-}
-
-/**
- * 폼 관리 클래스
- */
-class FormManager {
-    constructor() {
-        this.validationManager = new ValidationManager();
-        this.uiManager = new UIManager();
-        this.apiService = new ApiService('/api/v1/words');
-
-        // 입력 필드 요소 참조
-        this.inputs = {
-            vocabulary: document.getElementById('vocabulary'),
-            meaning: document.getElementById('meaning'),
-            hint: document.getElementById('hint')
-        };
-    }
-
-    /**
-     * 폼 데이터 가져오기
-     * @returns {{vocabulary: string, meaning: string, hint: string, difficulty: number}} 폼 데이터
-     */
-    getFormData() {
-        return {
-            vocabulary: this.inputs.vocabulary.value.trim(),
-            meaning: this.inputs.meaning.value.trim(),
-            hint: this.inputs.hint.value.trim(),
-            difficulty: parseInt(document.querySelector('input[name="difficulty"]:checked')?.value || 3)
-        };
-    }
-
-    /**
-     * 폼 데이터 유효성 검사
-     * @param {Object} data - 폼 데이터
-     * @returns {Promise<boolean>} 유효성 여부
-     */
-    async validateFormData(data) {
-        // 입력 필드 참조 업데이트 (필요한 경우)
-        const vocabularyField = document.getElementById('vocabulary');
-        const meaningField = document.getElementById('meaning');
-        const hintField = document.getElementById('hint');
-
-        // 폼 제출 시 빈 값 검사
-        if (!data.vocabulary.trim()) {
-            this.uiManager.updateFieldStatus(vocabularyField, false,
-                this.validationManager.ERROR_MESSAGES.vocabulary.required);
-
-            // 명시적으로 에러 토스트 표시
-            window.showErrorToast(this.validationManager.ERROR_MESSAGES.vocabulary.required, {
-                title: '입력 오류'
-            });
-            vocabularyField.focus();
-            return false;
-        }
-
-        if (!data.meaning.trim()) {
-            this.uiManager.updateFieldStatus(meaningField, false,  // 수정: meaningField 사용
-                this.validationManager.ERROR_MESSAGES.meaning.required);
-
-            window.showErrorToast(this.validationManager.ERROR_MESSAGES.meaning.required, {
-                title: '입력 오류'
-            });
-            meaningField.focus();
-            return false;
-        }
-
-        // 영단어 유효성 검사
-        const vocabularyValidation = this.validationManager.validateVocabulary(data.vocabulary);
-        if (!vocabularyValidation.isValid) {
-            this.uiManager.updateFieldStatus(vocabularyField, false, vocabularyValidation.message);
-
-            // 에러 토스트 메시지 수정
-            window.showErrorToast(vocabularyValidation.message.toString(), {
-                title: '입력 오류'
-            });
-
-            vocabularyField.focus();
-            return false;
-        } else {
-            this.uiManager.updateFieldStatus(vocabularyField, true, '');
-        }
-
-        // 의미 유효성 검사
-        const meaningValidation = this.validationManager.validateMeaning(data.meaning);
-        if (!meaningValidation.isValid) {
-            this.uiManager.updateFieldStatus(meaningField, false, meaningValidation.message);
-
-            // 에러 토스트 메시지 수정
-            window.showErrorToast(meaningValidation.message.toString(), {
-                title: '입력 오류'
-            });
-
-            meaningField.focus();
-            return false;
-        } else {
-            this.uiManager.updateFieldStatus(meaningField, true, '');
-        }
-
-        // 힌트 유효성 검사
-        const hintValidation = this.validationManager.validateHint(data.hint);
-        if (!hintValidation.isValid) {
-            this.uiManager.updateFieldStatus(hintField, false, hintValidation.message);
-
-            // 에러 토스트 메시지 수정
-            window.showErrorToast(hintValidation.message, {
-                title: '입력 오류'
-            });
-
-            hintField.focus();
-            return false;
-        } else {
-            this.uiManager.updateFieldStatus(hintField, true, '');
-        }
-
-        // 중복 검사
-        try {
-            const {exists} = await this.apiService.checkDuplicate(data.vocabulary);
-            if (exists) {
-                this.uiManager.updateFieldStatus(vocabularyField, false, this.validationManager.ERROR_MESSAGES.vocabulary.duplicate);
-
-                // 에러 토스트 메시지 수정
-                window.showErrorToast(this.validationManager.ERROR_MESSAGES.vocabulary.duplicate, {
-                    title: '중복 단어'
-                });
-
-                vocabularyField.focus();
-                return false;
-            }
-        } catch (error) {
-            // 에러 토스트 메시지 수정
-            window.showErrorToast(error.message || '중복 검사 중 오류가 발생했습니다.', {
-                title: '서버 오류'
-            });
-
-            return false;
-        }
-
-        return true;
     }
 }
 
@@ -698,7 +512,6 @@ class AnimationManager {
     }
 }
 
-// 애플리케이션 초기화 및 시작
 document.addEventListener('DOMContentLoaded', function () {
     const app = new WordRegistrationApp();
     app.initialize();

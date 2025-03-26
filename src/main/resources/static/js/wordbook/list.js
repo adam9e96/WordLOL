@@ -3,7 +3,6 @@
  * 단어장 목록을 조회, 필터링, 관리하는 기능을 제공합니다.
  */
 class WordBookListManager {
-
     constructor() {
         // 상태 관리
         this.state = {
@@ -638,9 +637,6 @@ class WordBookListManager {
         return categoryMap[category] || category;
     }
 
-    /**
-     * 앱 초기화
-     */
     init() {
         console.log('단어장 목록 관리자 초기화 중...');
 

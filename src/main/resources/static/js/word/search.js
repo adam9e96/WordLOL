@@ -514,10 +514,6 @@ class WordManager {
         this.uiManager = uiManager;
     }
 
-    /**
-     * 단어 수정
-     * @param {number} id - 단어 ID
-     */
     async editWord(id) {
         try {
             const word = await this.apiService.fetchWord(id);
@@ -529,10 +525,6 @@ class WordManager {
         }
     }
 
-    /**
-     * 단어 삭제
-     * @param {number} id - 단어 ID
-     */
     async deleteWord(id) {
         if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) {
             this.state.isProcessing = false;
