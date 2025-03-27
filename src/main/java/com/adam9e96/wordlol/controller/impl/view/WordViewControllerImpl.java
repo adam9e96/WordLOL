@@ -27,12 +27,6 @@ public class WordViewControllerImpl implements WordViewController {
     }
 
     @Override
-    @GetMapping("/words/register")
-    public String showWordsRegisterPage() {
-        return "views/words/register";
-    }
-
-    @Override
     @GetMapping(Constants.ViewPath.WORD_LIST)
     public String showListPage() {
         return "views/word/list";

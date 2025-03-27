@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -73,7 +74,7 @@ public class SecurityConfig {
                 // JWT 필터 추가
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         http.headers(headers ->
-                headers.frameOptions(frameOptions -> frameOptions.sameOrigin()) // H2 콘솔 접근 허용
+                headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) // H2 콘솔 접근 허용
         );
         return http.build();
     }

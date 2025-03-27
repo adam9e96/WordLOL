@@ -33,15 +33,6 @@ public interface WordViewController {
     String showRegisterPage();
 
     /**
-     * 다수의 단어 등록 페이지를 보여줍니다.
-     *
-     * @return 다수의 단어 등록 페이지 뷰 이름
-     */
-    @Operation(summary = "다수 단어 등록 페이지", description = "여러 단어를 한 번에 등록할 수 있는 페이지를 보여줍니다")
-    @GetMapping("/words/register")
-    String showWordsRegisterPage();
-
-    /**
      * 단어 목록 페이지를 보여줍니다.
      *
      * @return 단어 목록 페이지 뷰 이름

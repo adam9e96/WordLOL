@@ -83,12 +83,6 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="/word/words/register">
-                        <i class="bi bi-files"></i>
-                        <span class="sidebar-text">n개등록</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
                     <a class="sidebar-link" href="/wordbook/create">
                         <i class="bi bi-journal-plus"></i>
                         <span class="sidebar-text">단어장 생성</span>
@@ -165,7 +159,8 @@
 <script th:src="@{/js/theme-toggle.js}"></script>
 <script th:src="@{/js/sidebar.js}"></script>
 <script th:src="@{/js/components/toast-service.js}"></script>
-<script th:src="@{/js/components/validation-s.js}"></script>
+<script type="module" th:src="@{/js/utils/validation.js}"></script>
+<script type="module" th:src="@{/js/utils/api-service.js}"></script>
 
 <!-- 페이지별 스크립트 -->
 <th:block layout:fragment="script"></th:block>
