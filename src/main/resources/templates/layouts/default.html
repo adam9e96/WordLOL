@@ -159,9 +159,10 @@
 <script th:src="@{/js/theme-toggle.js}"></script>
 <script th:src="@{/js/sidebar.js}"></script>
 <script th:src="@{/js/components/toast-service.js}"></script>
-<script type="module" th:src="@{/js/utils/validation.js}"></script>
-<script type="module" th:src="@{/js/utils/api-service.js}"></script>
-
+<script th:type="module" th:src="@{/js/utils/validation-service.js}"></script>
+<script th:type="module" th:src="@{/js/utils/api-service.js}"></script>
+<script th:type="module" th:src="@{/js/utils/animation-service.js}"></script>
+<script th:type="module" th:src="@{/js/utils/formatting-utils.js}"></script>
 <!-- 페이지별 스크립트 -->
 <th:block layout:fragment="script"></th:block>
 </body>

@@ -1,3 +1,5 @@
+import apiService from '../utils/api-service.js';
+
 /**
  * 애플리케이션 상태 관리 클래스
  * 전역 상태를 관리하는 싱글톤 클래스
@@ -9,7 +11,6 @@ class StudyManager {
         this.showingHint = false;      // 힌트 표시 여부
         this.speaking = false;         // TTS 재생 중인지 여부
         this.voices = [];              // 사용 가능한 음성 목록
-        this.API_BASE_URL = '/api/v1/words'; // API 기본 URL
         this.animations = {};          // 애니메이션 객체 저장
         this.typingAnimation = null;   // 타이핑 애니메이션 객체
     }
@@ -775,58 +776,6 @@ class UIController {
 }
 
 /**
- * API 서비스 클래스
- * 서버와의 통신을 담당
- */
-class ApiService {
-    /** @type {StudyManager} */
-    state;
-
-    constructor() {
-        this.state = StudyManager.getInstance();
-    }
-
-    /**
-     * 랜덤 단어 가져오기
-     * @returns {Promise<Object>} 단어 객체
-     */
-    async fetchRandomWord() {
-        const response = await fetch(`${this.state.API_BASE_URL}/random`);
-        if (!response.ok) throw new Error('단어를 불러오는데 실패했습니다.');
-        return response.json();
-    }
-
-    /**
-     * 정답 확인
-     * @param {number} wordId - 단어 ID
-     * @param {string} answer - 사용자 입력 답안
-     * @returns {Promise<Object>} 정답 확인 결과
-     */
-    async checkAnswer(wordId, answer) {
-        const response = await fetch(`${this.state.API_BASE_URL}/check`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                answer, wordId
-            })
-        });
-        return response.json();
-    }
-
-    /**
-     * 힌트 가져오기
-     * @param {number} wordId - 단어 ID
-     * @returns {Promise<Object>} 힌트 정보
-     */
-    async fetchHint(wordId) {
-        const response = await fetch(`${this.state.API_BASE_URL}/${wordId}/hint`);
-        return response.json();
-    }
-}
-
-/**
  * 학습 관리 클래스
  * 단어 학습 로직을 담당
  */
@@ -847,18 +796,15 @@ class StudyController {
         this.elements = DOMElements.getInstance();
         this.animation = new AnimationController();
         this.ui = new UIController();
-        this.api = new ApiService();
     }
 
-    /**
-     * 새 단어 로드
-     */
+
     async loadNewWord() {
         this.ui.resetCard();
         this.state.isProcessing = false;
 
         try {
-            this.state.currentWord = await this.api.fetchRandomWord();
+            this.state.currentWord = await apiService.randomWord();
             this.ui.updateWordDisplay(this.state.currentWord);
 
             // 새 단어가 로드되면 자동으로 입력 필드에 포커스
@@ -873,9 +819,6 @@ class StudyController {
         }
     }
 
-    /**
-     * 정답 확인
-     */
     async checkAnswer() {
         if (this.state.isProcessing) return;
 
@@ -890,9 +833,7 @@ class StudyController {
         this.animation.playAnswerAnimation();
 
         try {
-
-            /** @type {{correct: boolean, message: string, perfectRun: number}} */
-            const result = await this.api.checkAnswer(this.state.currentWord.id, userAnswer);
+            const result = await apiService.checkAnswer(this.state.currentWord.id, userAnswer);
             this.ui.showMessage(result.message);
             this.animation.streakAnimation(result.perfectRun);
 
@@ -903,22 +844,17 @@ class StudyController {
                 this.elements.perfectRun.textContent = '0';
             }
         } catch (error) {
+            console.error('정답 확인 중 오류:', error);
             this.ui.showMessage('정답 확인 중 오류가 발생했습니다.');
             this.state.isProcessing = false;
         }
     }
 
-    /**
-     * 정답 처리
-     */
     handleCorrectAnswer() {
         this.ui.showCorrectAnswer(this.state.currentWord.meaning);
         setTimeout(() => this.loadNewWord(), 1500);
     }
 
-    /**
-     * 힌트 표시
-     */
     async showHint() {
         if (!this.state.currentWord) return;
 
@@ -929,13 +865,15 @@ class StudyController {
         }
 
         try {
-            const data = await this.api.fetchHint(this.state.currentWord.id);
+            const data = await apiService.fetchHint(this.state.currentWord.id);
             this.ui.showMessage(`힌트: ${data.hint}`);
             this.state.showingHint = true;
         } catch (error) {
+            console.error('힌트 로드 중 오류:', error);
             this.ui.showMessage('힌트를 불러오는데 실패했습니다.');
         }
     }
+
 }
 
 /**
@@ -1014,10 +952,6 @@ class EventHandler {
     }
 }
 
-/**
- * 애플리케이션 메인 클래스
- * 애플리케이션의 진입점
- */
 class WordStudyApp {
     constructor() {
         this.state = StudyManager.getInstance();
@@ -1027,11 +961,7 @@ class WordStudyApp {
         this.eventHandler = new EventHandler();
     }
 
-    /**
-     * 애플리케이션 초기화 및 실행
-     */
     init() {
-        console.log('단어 학습 애플리케이션 초기화 중...');
 
         // anime.js 로드 확인
         if (typeof anime === 'undefined') {
@@ -1049,12 +979,9 @@ class WordStudyApp {
 
         // 첫 단어 로드
         this.study.loadNewWord();
-
-        console.log('단어 학습 애플리케이션 초기화 완료');
     }
 }
 
-// 문서 로드 완료 시 애플리케이션 시작
 document.addEventListener('DOMContentLoaded', () => {
     const app = new WordStudyApp();
     app.init();

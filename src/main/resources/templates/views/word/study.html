@@ -75,11 +75,8 @@
     </div>
 </main>
 
-<!-- 페이지별 스크립트 -->
 <th:block layout:fragment="script">
-
-    <!-- anime.js 라이브러리 추가 -->
-    <script th:src="@{/js/word/study.js}"></script>  <!-- 경로 수정 -->
+    <script th:type="module" th:src="@{/js/word/study.js}"></script>  <!-- 경로 수정 -->
 </th:block>
 </body>
 </html>

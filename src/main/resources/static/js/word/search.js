@@ -1,11 +1,13 @@
+import apiService from '../utils/api-service.js';
+import { formatDateTime, getDifficultyBadge } from '../utils/formatting-utils.js';
+
 class SearchApp {
     constructor() {
         this.state = {
             currentPage: initialPage || 0,
             pageSize: 20,
             keyword: initialKeyword || '',
-            isProcessing: false,
-            API_BASE_URL: '/api/v1/words'
+            isProcessing: false
         };
         this.elements = {
             pagination: document.getElementById('pagination'),
@@ -13,18 +15,13 @@ class SearchApp {
             resultCount: document.getElementById('resultCount')
         };
         this.uiManager = new UIManager(this.elements);
-        this.apiService = new ApiService(this.state.API_BASE_URL);
         this.paginationManager = new PaginationManager(this.state, this.uiManager);
-        this.wordManager = new WordManager(this.state, this.apiService, this.uiManager);
+        this.wordManager = new WordManager(this.state, this.uiManager);
     }
 
     initialize() {
-        console.log('검색 페이지 초기화 시작');
-        console.log('검색 키워드:', this.state.keyword);
-        console.log('초기 페이지:', this.state.currentPage);
-
-        // 이벤트 리스너 설정
         this.setupEventListeners();
+        this.createDeleteModal(); // 삭제 모달 생성
 
         // 초기 검색 결과 로드
         this.loadSearchResults(this.state.currentPage)
@@ -32,9 +29,6 @@ class SearchApp {
             .catch(error => console.error('검색 결과 로드 실패:', error));
     }
 
-    /**
-     * 이벤트 리스너 설정
-     */
     setupEventListeners() {
         // 페이지네이션 클릭 이벤트
         this.elements.pagination.addEventListener('click', (e) => this.handlePaginationClick(e));
@@ -44,6 +38,42 @@ class SearchApp {
 
         // 브라우저 뒤로가기/앞으로가기 이벤트
         window.addEventListener('popstate', () => this.handlePopState());
+    }
+
+    /**
+     * 삭제 확인 모달 생성
+     */
+    createDeleteModal() {
+        // 기존 모달이 있으면 제거
+        const existingModal = document.getElementById('deleteModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // 새 모달 생성
+        const modalHTML = `
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">단어 삭제</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>정말로 이 단어를 삭제하시겠습니까?</p>
+                        <p>이 작업은 되돌릴 수 없습니다.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">취소</button>
+                        <button type="button" class="btn btn-error" id="confirmDelete">삭제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+
+        // body에 모달 추가
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
 
     /**
@@ -79,9 +109,10 @@ class SearchApp {
 
             if (button.classList.contains('edit-btn')) {
                 this.wordManager.editWord(id);
-            } else if (button.classList.contains('delete-btn')) {
-                this.wordManager.deleteWord(id)
-                    .then(() => this.loadSearchResults(this.state.currentPage));
+            }
+
+            if (button.classList.contains('delete-btn')) {
+                this.wordManager.showDeleteConfirmation(id);
             }
         } finally {
             this.state.isProcessing = false;
@@ -110,7 +141,7 @@ class SearchApp {
             this.state.currentPage = page;
             this.paginationManager.updateUrl(page);
 
-            const data = await this.apiService.searchWords(
+            const data = await apiService.searchWords(
                 this.state.keyword,
                 page,
                 this.state.pageSize
@@ -142,40 +173,7 @@ class UIManager {
      */
     constructor(elements) {
         this.elements = elements;
-    }
-
-    /**
-     * 난이도 배지 HTML 생성
-     * @param {number} level - 난이도 레벨
-     * @returns {string} 배지 HTML
-     */
-    getDifficultyBadge(level) {
-        const badges = {
-            1: ['success', '매우 쉬움'],
-            2: ['info', '쉬움'],
-            3: ['warning', '보통'],
-            4: ['danger', '어려움'],
-            5: ['dark', '매우 어려움']
-        };
-        const [colorClass, label] = badges[level] || ['secondary', '알 수 없음'];
-        return `<span class="badge bg-${colorClass}">${label}</span>`;
-    }
-
-    /**
-     * 날짜 시간 포맷팅
-     * @param {string} dateTimeStr - ISO 형식 날짜 문자열
-     * @returns {string} 포맷팅된 날짜 문자열
-     */
-    formatDateTime(dateTimeStr) {
-        if (!dateTimeStr) return '-';
-        const date = new Date(dateTimeStr);
-        return date.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        this.modalInstance = null;
     }
 
     /**
@@ -192,8 +190,8 @@ class UIManager {
         <td class="fw-medium">${word.vocabulary}</td>
         <td>${word.meaning}</td>
         <td>${word.hint || '-'}</td>
-        <td>${this.getDifficultyBadge(word.difficulty)}</td>
-        <td>${this.formatDateTime(word.createdAt)}</td>
+        <td>${getDifficultyBadge(word.difficulty)}</td>
+        <td>${formatDateTime(word.createdAt)}</td>
         <td>
             <button class="btn btn-action btn-outline-primary btn-sm me-1 edit-btn" data-id="${word.id}">
                 <i class="bi bi-pencil-square"></i>
@@ -246,9 +244,13 @@ class UIManager {
     /**
      * 단어 수정 모달 표시
      * @param {Object} word - 단어 객체
-     * @param {Function} saveCallback - 저장 콜백 함수
      */
-    showEditModal(word, saveCallback) {
+    showEditModal(word) {
+        // 기존 모달 인스턴스 제거
+        if (this.modalInstance) {
+            this.modalInstance.dispose();
+        }
+
         // 기존 모달이 있으면 제거
         const existingModal = document.getElementById('editModal');
         if (existingModal) {
@@ -257,12 +259,12 @@ class UIManager {
 
         // 모달 생성
         const modalHTML = `
-        <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">단어 수정</h5>
-                        <button class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                        <h5 class="modal-title" id="editModalLabel">단어 수정</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="editForm">
@@ -292,119 +294,26 @@ class UIManager {
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-cancel" data-bs-dismiss="modal" type="button">취소</button>
-                        <button class="btn btn-add_word" id="saveEdit" type="button">저장</button>
+                        <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">취소</button>
+                        <button type="button" class="btn btn-modal-save" id="saveEdit">저장</button>
                     </div>
                 </div>
             </div>
         </div>
         `;
 
-        // 모달을 body에 추가
+        // body에 모달 추가
         document.body.insertAdjacentHTML('beforeend', modalHTML);
 
         // 모달 인스턴스 생성 및 표시
-        const modal = new bootstrap.Modal(document.getElementById('editModal'));
-        modal.show();
+        this.modalInstance = new bootstrap.Modal(document.getElementById('editModal'));
+        this.modalInstance.show();
 
         // 저장 버튼에 이벤트 리스너 추가
-        document.getElementById('saveEdit').addEventListener('click', saveCallback);
-    }
-}
-
-/**
- * API 서비스 클래스
- * 서버와의 통신 처리
- */
-class ApiService {
-    /**
-     * 생성자
-     * @param {string} baseUrl - API 기본 URL
-     */
-    constructor(baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    /**
-     * 단어 검색 API 호출
-     * @param {string} keyword - 검색 키워드
-     * @param {number} page - 페이지 번호
-     * @param {number} size - 페이지 크기
-     * @returns {Promise<Object>} 검색 결과
-     */
-    async searchWords(keyword, page, size) {
-        try {
-            console.log(`검색 요청: keyword=${keyword}, page=${page}`);
-
-            const url = new URL(`${this.baseUrl}/search`, window.location.origin);
-            url.searchParams.append('page', page);
-            url.searchParams.append('size', size);
-
-            if (keyword) {
-                url.searchParams.append('keyword', keyword);
-            }
-
-            console.log(`API 요청 URL: ${url.toString()}`);
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error(`API 오류 응답 (${response.status}): ${errorText}`);
-                throw new Error('검색 결과를 불러오는데 실패했습니다.');
-            }
-
-            const data = await response.json();
-            console.log('검색 결과:', data);
-            return data;
-        } catch (error) {
-            console.error('API 호출 중 오류:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * 단어 상세 조회 API 호출
-     * @param {number} id - 단어 ID
-     * @returns {Promise<Object>} 단어 객체
-     */
-    async fetchWord(id) {
-        const response = await fetch(`${this.baseUrl}/${id}`);
-        if (!response.ok) throw new Error('단어 정보를 불러오는데 실패했습니다.');
-        return response.json();
-    }
-
-    /**
-     * 단어 수정 API 호출
-     * @param {number} id - 단어 ID
-     * @param {Object} data - 수정할 단어 데이터
-     * @returns {Promise<Response>} API 응답
-     */
-    async updateWord(id, data) {
-        const response = await fetch(`${this.baseUrl}/${id}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
+        document.getElementById('saveEdit').addEventListener('click', () => {
+            const wordManager = new WordManager(null, null);
+            wordManager.handleEditSave();
         });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            throw new Error(errorData?.message || '단어 수정에 실패했습니다.');
-        }
-
-        return response;
-    }
-
-    /**
-     * 단어 삭제 API 호출
-     * @param {number} id - 단어 ID
-     * @returns {Promise<Response>} API 응답
-     */
-    async deleteWord(id) {
-        const response = await fetch(`${this.baseUrl}/${id}`, {
-            method: 'DELETE'
-        });
-        if (!response.ok) throw new Error('단어 삭제에 실패했습니다.');
-        return response;
     }
 }
 
@@ -505,40 +414,76 @@ class WordManager {
     /**
      * 생성자
      * @param {Object} state - 애플리케이션 상태
-     * @param {ApiService} apiService - API 서비스
      * @param {UIManager} uiManager - UI 관리자
      */
-    constructor(state, apiService, uiManager) {
+    constructor(state, uiManager) {
         this.state = state;
-        this.apiService = apiService;
         this.uiManager = uiManager;
+        this.deleteModal = null;
     }
 
+    /**
+     * 단어 수정 모달 표시
+     * @param {string} id - 단어 ID
+     */
     async editWord(id) {
         try {
-            const word = await this.apiService.fetchWord(id);
-            this.uiManager.showEditModal(word, () => this.handleEditSave());
+            const word = await apiService.fetchWord(parseInt(id));
+            this.uiManager.showEditModal(word);
         } catch (error) {
             console.error('단어 조회 오류:', error);
             window.showErrorToast('단어 정보를 불러오는데 실패했습니다.');
-            this.state.isProcessing = false;
+            if (this.state) this.state.isProcessing = false;
         }
     }
 
-    async deleteWord(id) {
-        if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) {
-            this.state.isProcessing = false;
-            return;
-        }
+    /**
+     * 삭제 확인 모달 표시
+     * @param {string} id - 삭제할 단어 ID
+     */
+    showDeleteConfirmation(id) {
+        const deleteModal = document.getElementById('deleteModal');
+        if (!deleteModal) return;
 
+        // 이전 이벤트 리스너 제거
+        const confirmButton = deleteModal.querySelector('#confirmDelete');
+        const newConfirmButton = confirmButton.cloneNode(true);
+        confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+
+        // 새 이벤트 리스너 추가
+        newConfirmButton.addEventListener('click', () => {
+            this.deleteWord(id);
+        });
+
+        // 모달 표시
+        this.deleteModal = new bootstrap.Modal(deleteModal);
+        this.deleteModal.show();
+    }
+
+    /**
+     * 단어 삭제 처리
+     * @param {string} id - 삭제할 단어 ID
+     */
+    async deleteWord(id) {
         try {
-            await this.apiService.deleteWord(id);
+            await apiService.deleteWord(id);
+
+            // 모달 닫기
+            if (this.deleteModal) {
+                this.deleteModal.hide();
+            }
+
             window.showSuccessToast('단어가 삭제되었습니다.');
+
+            // 삭제 후 목록 새로고침 이벤트 발생
+            const customEvent = new CustomEvent('wordUpdated', {detail: {id}});
+            document.dispatchEvent(customEvent);
+
             return true;
         } catch (error) {
             console.error('단어 삭제 오류:', error);
             window.showErrorToast('단어 삭제에 실패했습니다.');
-            this.state.isProcessing = false;
+            if (this.state) this.state.isProcessing = false;
             return false;
         }
     }
@@ -556,8 +501,15 @@ class WordManager {
         };
 
         try {
-            await this.apiService.updateWord(id, data);
-            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+            await apiService.updateWord(id, data);
+
+            // 모달 닫기
+            const editModal = document.getElementById('editModal');
+            if (editModal) {
+                const bsModal = bootstrap.Modal.getInstance(editModal);
+                if (bsModal) bsModal.hide();
+            }
+
             window.showSuccessToast('단어가 수정되었습니다.');
 
             // 검색 결과 다시 로드 이벤트 발생
@@ -567,7 +519,7 @@ class WordManager {
             console.error('단어 수정 오류:', error);
             window.showErrorToast('단어 수정에 실패했습니다.');
         } finally {
-            this.state.isProcessing = false;
+            if (this.state) this.state.isProcessing = false;
         }
     }
 }

@@ -5,7 +5,7 @@ import {
     validateDifficulty,
     validateWordForm,
     updateFieldStatus
-} from "../utils/validation.js";
+} from "../utils/validation-service.js";
 import apiService from '../utils/api-service.js';
 
 class WordRegistrationApp {

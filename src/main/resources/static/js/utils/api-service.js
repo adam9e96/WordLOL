@@ -9,7 +9,6 @@
  */
 class ApiService {
     constructor() {
-        this.baseUrl = ''; // 기본 URL (현재 도메인)
         this.wordsApiUrl = '/api/v1/words';
     }
 
@@ -102,13 +101,235 @@ class ApiService {
             throw error;
         }
     }
+
+    /**
+     * 단어 목록 조회
+     * @param {number} page - 페이지 번호
+     * @param {number} size - 페이지 크기
+     * @returns {Promise<Object>} 페이징된 단어 목록
+     */
+    async fetchWords(page = 0, size = 20) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordsApiUrl}/list?page=${page}&size=${size}`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('단어 목록을 불러오는데 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'fetchWords');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 단어 상세 조회
+     * @param {number} id - 단어 ID
+     * @returns {Promise<Object>} 단어 상세 정보
+     */
+    async fetchWord(id) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordsApiUrl}/${id}`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('단어 정보를 불러오는데 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'fetchWord');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 단어 수정
+     * @param {number} id - 단어 ID
+     * @param {Object} data - 수정할 단어 데이터
+     * @returns {Promise<Object>} 수정된 단어 정보
+     */
+    async updateWord(id, data) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordsApiUrl}/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || '단어 수정에 실패했습니다.');
+            }
+            return response;
+        } catch (error) {
+            this.handleError(error, 'updateWord');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 단어 삭제
+     * @param {number} id - 단어 ID
+     * @returns {Promise<Response>} 삭제 결과
+     */
+    async deleteWord(id) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordsApiUrl}/${id}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || '단어 삭제에 실패했습니다.');
+
+            }
+
+            return response;
+        } catch (error) {
+            this.handleError(error, 'deleteWord');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 랜덤 단어 조회
+     * @returns {Promise<any>} 랜덤 단어 정보
+     */
+    async randomWord() {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordsApiUrl}/random`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('랜덤 단어를 불러오는데 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'randomWord');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     *
+     * @param id
+     * @param answer
+     * @returns {Promise<any>}
+     */
+    async checkAnswer(wordId, answer) {
+
+        try {
+            const response = await fetch(`${this.wordsApiUrl}/check`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({answer, wordId}),
+                credentials: 'include'
+            });
+            return response.json();
+        } catch (error) {
+            this.handleError(error, 'checkAnswer');
+            throw error;
+        }
+    }
+
+    async fetchHint(id) {
+        const response = await fetch(`${this.wordsApiUrl}/${id}/hint`, {
+            credentials: 'include'
+        });
+        console.log(response.json());
+        return response.json();
+    }
+
+    async fetchDailyWords() {
+        const response = await fetch(`${this.wordsApiUrl}/daily`, {
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            throw new Error('오늘의 단어를 불러오는데 실패했습니다.');
+        }
+        return response.json();
+    }
+
+    /**
+     * 단어 검색
+     * @param {string} keyword - 검색 키워드
+     * @param {number} page - 페이지 번호
+     * @param {number} size - 페이지 크기
+     * @returns {Promise<Object>} 검색 결과
+     */
+    async searchWords(keyword, page = 0, size = 20) {
+        this.startLoading();
+
+        try {
+            const url = new URL(`${this.wordsApiUrl}/search`, window.location.origin);
+            url.searchParams.append('page', page.toString());
+            url.searchParams.append('size', size.toString());
+
+            if (keyword) {
+                url.searchParams.append('keyword', keyword);
+            }
+
+            console.log(`검색 API 호출: ${url.toString()}`);
+
+            const response = await fetch(url, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('검색 결과를 불러오는데 실패했습니다.');
+            }
+
+            const data = await response.json();
+            console.log('검색 결과:', data);
+            return data;
+
+        } catch (error) {
+            this.handleError(error, 'searchWords');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
 }
 
 // 전역 인스턴스 생성
 const apiService = new ApiService();
 
 // 전역 객체에 등록
-window.ApiService = apiService;
+// window.ApiService = apiService;
 
 // ES 모듈 내보내기
 export default apiService;

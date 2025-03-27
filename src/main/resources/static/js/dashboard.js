@@ -1,3 +1,5 @@
+import apiService from "./utils/api-service";
+import {formatDateTime, getDifficultyBadge} from './utils/formatting-utils.js';
 document.addEventListener('DOMContentLoaded', async function () {
     console.group('대시보드 로딩');
     console.time('대시보드 로딩 시간');
@@ -173,34 +175,6 @@ function getCategoryDisplayName(category) {
     return names[category] || category;
 }
 
-/**
- * 날짜/시간 포맷 변환
- * @param {string} dateTimeStr - ISO 형식 날짜/시간 문자열
- * @returns {string} 포맷된 날짜/시간 문자열
- */
-function formatDateTime(dateTimeStr) {
-    if (!dateTimeStr) return '-';
-
-    try {
-        const date = new Date(dateTimeStr);
-
-        // 유효한 날짜인지 확인
-        if (isNaN(date.getTime())) {
-            return '-';
-        }
-
-        return date.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    } catch (e) {
-        console.error('날짜 변환 오류:', e);
-        return '-';
-    }
-}
 
 /**
  * 에러 메시지 표시

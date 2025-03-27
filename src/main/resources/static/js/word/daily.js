@@ -1,12 +1,8 @@
-/**
- * 오늘의 단어 페이지 관리 클래스
- */
+import apiService from '../utils/api-service.js';
+
 class DailyWordsApp {
     constructor() {
-        // API 설정
-        this.API_URL = '/api/v1/words/daily';
 
-        // DOM 요소 캐싱
         this.elements = {
             loading: document.getElementById('loading'), // 로딩 스피너 요소
             wordCards: document.getElementById('word-cards'), // 단어 카드 컨테이너 요소
@@ -18,7 +14,6 @@ class DailyWordsApp {
 
         this.uiManager = new UIManager(this.elements);
         this.animationManager = new AnimationManager(this.elements, this.animations);
-        this.apiService = new ApiService(this.API_URL);
     }
 
     initialize() {
@@ -49,7 +44,7 @@ class DailyWordsApp {
         try {
             this.uiManager.showLoading(); // 로딩 상태 표시
             this.animationManager.animateLoading(); // 로딩 애니메이션 실행
-            const words = await this.apiService.fetchDailyWords(); // API 를 통해 오늘의 단어 데이터 가져오기
+            const words = await apiService.fetchDailyWords();
 
             if (words.length === 0) {
                 window.showErrorToast('단어를 찾을 수 없습니다.');
@@ -99,6 +94,7 @@ class UIManager {
     hideLoading() {
         this.elements.loading.classList.add('d-none');
     }
+
     /**
      * 난이도에 따른 별표 HTML 반환
      * @param {number} level - 난이도 레벨
@@ -321,36 +317,6 @@ class AnimationManager {
             loop: true, // 애니메이션 반복
             easing: 'linear' // 애니메이션 가속도 함수
         });
-    }
-}
-
-/**
- * API 서비스 클래스
- */
-class ApiService {
-    /**
-     * 생성자
-     * @param {string} apiUrl - API 엔드포인트 URL
-     * 이 URL 을 사용하여 fetch 요청을 보냅니다.
-     */
-    constructor(apiUrl) {
-        this.apiUrl = apiUrl;
-    }
-
-    /**
-     * 오늘의 단어 데이터 가져오기 메서드
-     * 이 비동기 메서드는 fetch API 를 사용하여 서버로부터 데이터를 요청합니다.(GET 요청)
-     * @returns {Promise<Array>} - 단어 데이터 배열
-     * 내부적으로 응답 상태를 확인하고, 오류 상태일 경우 오류 메시지와 함께 에러를 발생시킵니다.
-     * 정상 상태인 경우, 응답 데이터를 JSON 형식으로 파싱하여 반환합니다.
-     */
-    async fetchDailyWords() {
-        const response = await fetch(this.apiUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP 오류! 상태: ${response.status}`);
-        }
-        console.log('API 응답 성공 반환된 데이터:', response);
-        return response.json();
     }
 }
 
