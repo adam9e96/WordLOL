@@ -1,5 +1,6 @@
 import apiService from '../utils/api-service.js';
 import {formatDateTime, getDifficultyBadge} from '../utils/formatting-utils.js';
+import modalService from "../utils/modal-service.js";
 
 class WordListApp {
     constructor() {
@@ -202,33 +203,6 @@ class UIManager {
         this.elements.pagination.innerHTML = paginationHTML;
     }
 
-    // 모달 표시
-    showEditModal(word) {
-        // 기존 모달 인스턴스 제거
-        if (this.modalInstance) {
-            this.modalInstance.dispose();
-            this.cleanupModal();
-        }
-
-        // 폼 값 설정
-        this.elements.editForm.id.value = word.id || '';
-        this.elements.editForm.vocabulary.value = word.vocabulary || '';
-        this.elements.editForm.meaning.value = word.meaning || '';
-        this.elements.editForm.hint.value = word.hint || '';
-        this.elements.editForm.difficulty.value = word.difficulty || '3';
-
-        // z-index 값을 명시적으로 설정하여 사이드바보다 높게 하기
-        this.elements.editModal.style.zIndex = '2000';
-
-        // 새 모달 인스턴스 생성 및 표시
-        this.modalInstance = new bootstrap.Modal(this.elements.editModal);
-        this.modalInstance.show();
-
-        // 모달이 표시된 후 포커스 설정
-        this.elements.editModal.addEventListener('shown.bs.modal', () => {
-            this.elements.editForm.vocabulary.focus();
-        }, {once: true});
-    }
 }
 
 // 페이지네이션 관리 클래스
@@ -344,41 +318,61 @@ class WordManager {
         }
     }
 
-    // 단어 편집
     async editWord(id) {
         try {
             const word = await apiService.fetchWord(id);
-            this.uiManager.showEditModal(word);
+            // this.uiManager.showEditModal(word);
+            // 모달 서비스를 사용하여 수정 모달 생성
+            modalService.createEditModal(word, (formData) => {
+
+                this.handleEditSave(formData);
+
+            });
         } catch (error) {
             console.error('단어 조회 오류:', error);
             window.showErrorToast('단어 정보를 불러오는데 실패했습니다.');
         }
     }
 
-    // 단어 삭제
     async deleteWord(id) {
-        if (!confirm('정말로 이 단어를 삭제하시겠습니까?')) {
-            return;
-        }
+        // 모달 서비스를 사용하여 삭제 확인 모달 생성
+        modalService.createDeleteConfirmModal(id, async (wordId) => {
+            try {
+                // 삭제 API 호출
+                await apiService.deleteWord(wordId);
 
-        try {
-            await apiService.deleteWord(id);
-            window.showSuccessToast('단어가 삭제되었습니다.');
-            await this.loadWords(this.state.currentPage);
-        } catch (error) {
-            console.error('단어 삭제 오류:', error);
-            window.showErrorToast('단어 삭제에 실패했습니다.');
-        }
+                // 성공 메시지 표시
+                window.showSuccessToast('단어가 삭제되었습니다.');
+
+                // 모달 닫기
+                modalService.closeAllModals();
+
+                // 목록 새로고침
+                await this.loadWords(this.state.currentPage);
+            } catch (error) {
+                console.error('단어 삭제 오류:', error);
+                window.showErrorToast('단어 삭제에 실패했습니다.');
+            }
+        });
     }
 
     // 단어 수정 저장
-    async handleEditSave() {
-        if (this.state.isProcessing) return;
+    async handleEditSave(formData) {
+        if (this.state.isProcessing) {
+            return;
+        }
+
         this.state.isProcessing = true;
 
         try {
-            const id = this.elements.editForm.id.value;
-            const data = {
+            // 모달 서비스에서 전달한 폼 데이터 사용
+            const id = formData ? formData.id : this.elements.editForm.id.value;
+            const data = formData ? {
+                vocabulary: formData.vocabulary,
+                meaning: formData.meaning,
+                hint: formData.hint,
+                difficulty: formData.difficulty
+            } : {
                 vocabulary: this.elements.editForm.vocabulary.value.trim(),
                 meaning: this.elements.editForm.meaning.value.trim(),
                 hint: this.elements.editForm.hint.value.trim(),
@@ -392,22 +386,13 @@ class WordManager {
                 return;
             }
 
-            // 중복 검사 (현재 단어 ID 제외)
-            const duplicateCheck = await apiService.checkVocabularyDuplicate(data.vocabulary, id);
-            if (duplicateCheck.exists) {
-                window.showErrorToast(`${data.vocabulary}는 이미 존재하는 단어입니다.`);
-                this.state.isProcessing = false;
-                return;
-            }
-
             await apiService.updateWord(id, data);
 
-            // 모달 닫기
-            if (this.uiManager.modalInstance) {
-                this.uiManager.modalInstance.hide();
-            }
-
             window.showSuccessToast('단어가 수정되었습니다.');
+
+            if (formData && modalService.closeModal) {
+                modalService.closeAllModals();
+            }
 
             // 목록 새로고침
             await this.loadWords(this.state.currentPage);

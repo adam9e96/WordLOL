@@ -1,4 +1,3 @@
-import apiService from "./utils/api-service";
 import {formatDateTime, getDifficultyBadge} from './utils/formatting-utils.js';
 document.addEventListener('DOMContentLoaded', async function () {
     console.group('대시보드 로딩');

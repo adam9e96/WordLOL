@@ -5,9 +5,7 @@
  */
 
 class AnimationService {
-    /**
-     * 생성자
-     */
+
     constructor() {
         // anime.js가 로드되었는지 확인
         this.isAnimeAvailable = typeof anime !== 'undefined';
