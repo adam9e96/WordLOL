@@ -35,21 +35,21 @@ public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
     private final UserRepository userRepository;
 
-
     public JwtTokenProvider(JwtProperties jwtProperties, UserRepository userRepository) {
         this.jwtProperties = jwtProperties;
         this.userRepository = userRepository;
+        this.key = initializeKey(jwtProperties.getSecretKey());
+    }
+
+    private Key initializeKey(String secretKey) {
         try {
-            // secretKey는 이미 Base64로 인코딩된 값이어야 함
-            byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecretKey());
-            this.key = Keys.hmacShaKeyFor(keyBytes);
-            log.info("JWT Key initialized successfully");
+            byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+            return Keys.hmacShaKeyFor(keyBytes);
         } catch (Exception e) {
-            log.error("JWT Key initialization failed: {}", e.getMessage());
+            log.error("JWT Key 초기화 실패 : {}", e.getMessage());
             throw e;
         }
     }
-
 
     // 사용자 인증 정보를 바탕으로 액세스 토큰과 리프레시 토큰을 생성합니다
     // 추후 id, password 기반 로그인 시 사용할 메서드

@@ -262,3 +262,4 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 !/application-oauth.yml
+application-secret.yml
