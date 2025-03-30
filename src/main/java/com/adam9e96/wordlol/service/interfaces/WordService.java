@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.service.interfaces;
 
+import com.adam9e96.wordlol.dto.response.CreateWordResponse;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
 import com.adam9e96.wordlol.exception.word.WordDeletionException;
@@ -33,8 +34,9 @@ public interface WordService {
      * 새로운 단어를 생성합니다.
      *
      * @param request 생성할 단어 정보
-     * @throws ValidationException 유효하지 않은 입력인 경우
-     * @throws WordCreationException     단어 생성 중 오류가 발생한 경우
+     * @return
+     * @throws ValidationException   유효하지 않은 입력인 경우
+     * @throws WordCreationException 단어 생성 중 오류가 발생한 경우
      */
     @Operation(summary = "단어 생성", description = "새로운 단어를 생성합니다")
     @ApiResponses(value = {
@@ -42,7 +44,7 @@ public interface WordService {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    void createWord(@Parameter(description = "생성할 단어 정보", required = true) WordRequest request);
+    CreateWordResponse createWord(@Parameter(description = "생성할 단어 정보", required = true) WordRequest request);
 
     /**
      * 여러 단어를 일괄 생성합니다.

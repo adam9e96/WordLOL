@@ -2,10 +2,7 @@ package com.adam9e96.wordlol.entity;
 
 import com.adam9e96.wordlol.enums.Category;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -46,6 +43,7 @@ public class WordBook {
     @Builder.Default
     private List<Word> words = new ArrayList<>(); // 초기화 추가
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

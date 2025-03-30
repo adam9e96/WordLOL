@@ -6,10 +6,7 @@ import com.adam9e96.wordlol.dto.common.PageResponse;
 import com.adam9e96.wordlol.dto.request.AnswerRequest;
 import com.adam9e96.wordlol.dto.request.WordRequest;
 import com.adam9e96.wordlol.dto.request.WordSearchRequest;
-import com.adam9e96.wordlol.dto.response.AnswerResponse;
-import com.adam9e96.wordlol.dto.response.DailyWordResponse;
-import com.adam9e96.wordlol.dto.response.WordResponse;
-import com.adam9e96.wordlol.dto.response.WordStudyResponse;
+import com.adam9e96.wordlol.dto.response.*;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.service.interfaces.StudyProgressService;
 import com.adam9e96.wordlol.service.interfaces.WordService;
@@ -40,10 +37,10 @@ public class WordRestControllerImpl implements WordRestController {
 
     @Override
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createWord(@Valid @RequestBody WordRequest request) {
-
-        wordService.createWord(request);
-        return ResponseEntity.ok(Map.of("message", "success"));
+    public ResponseEntity<CreateWordResponse> createWord(@Valid @RequestBody WordRequest request) {
+        CreateWordResponse response = wordService.createWord(request);
+//        log.info("단어 생성 성공: {}", response);
+        return ResponseEntity.ok().body(response);
     }
 
 

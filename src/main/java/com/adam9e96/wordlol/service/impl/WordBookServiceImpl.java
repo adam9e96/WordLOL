@@ -7,10 +7,12 @@ import com.adam9e96.wordlol.dto.response.WordBookDetailResponse;
 import com.adam9e96.wordlol.dto.response.WordBookListResponse;
 import com.adam9e96.wordlol.dto.response.WordBookResponse;
 import com.adam9e96.wordlol.dto.response.WordBookStudyResponse;
+import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.enums.Category;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.entity.WordBook;
 import com.adam9e96.wordlol.exception.wordbook.*;
+import com.adam9e96.wordlol.repository.jpa.UserRepository;
 import com.adam9e96.wordlol.repository.mybatis.WordBookMapper;
 import com.adam9e96.wordlol.repository.mybatis.WordMapper;
 import com.adam9e96.wordlol.mapper.entity.WordBookEntityMapper;
@@ -22,6 +24,7 @@ import com.adam9e96.wordlol.validator.WordBookValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +45,7 @@ public class WordBookServiceImpl implements WordBookService {
     private final WordBookValidator wordBookValidator;
     private final WordBookEntityMapper wordBookEntityMapper;
     private final WordEntityMapper wordEntityMapper;
+    private final UserRepository userRepository;
 
     @Transactional
     @Override
@@ -50,15 +54,19 @@ public class WordBookServiceImpl implements WordBookService {
             // 입력값 유효성 검사
             wordBookValidator.validate(request);
 
-            // 단어장 생성 (로깅은 debug 레벨로)
-            log.debug("단어장 생성 시작: 이름={}, 카테고리={}, 설명={}", request.name(), request.category(), request.description());
 
+            // 3. 현재 인증된 사용자 가져오기
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("현재 인증된 사용자를 찾을 수 없습니다."));
             // 단어장 생성
             WordBook wordBook = WordBook.createWordBook(
                     request.name(),
                     request.description(),
                     request.category()
             );
+
+            wordBook.setUser(user); // 단어장과 사용자 연결
 
             // 단어 추가
             if (request.words() != null && !request.words().isEmpty()) {
@@ -70,6 +78,7 @@ public class WordBookServiceImpl implements WordBookService {
                             .meaning(wordRequest.meaning())
                             .hint(wordRequest.hint())
                             .difficulty(wordRequest.difficulty())
+                            .user(user)
                             .build();
                     wordBook.addWord(word);
                 }
@@ -168,7 +177,13 @@ public class WordBookServiceImpl implements WordBookService {
     @Override
     public List<WordBookListResponse> findAllWordBookList() {
         try {
-            List<WordBook> wordBooks = wordBookRepository.findAll();
+            // 현재 인증된 사용자 가져오기
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("현재 인증된 사용자를 찾을 수 없습니다."));
+
+            // 이 사용자의 단어장만 가져오기
+            List<WordBook> wordBooks = wordBookRepository.findByUser(user);
 
             if (wordBooks.isEmpty()) {
                 log.debug("등록된 단어장 없습니다");
@@ -177,12 +192,10 @@ public class WordBookServiceImpl implements WordBookService {
             return wordBooks.stream()
                     .map(wordBookEntityMapper::toListDto)
                     .toList();
-
         } catch (Exception e) {
             log.error("단어장 목록 조회 중 오류 발생", e);
             throw new WordBookEmptyException();
         }
-
     }
 
     @Override

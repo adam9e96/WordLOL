@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.repository.mybatis;
 
+import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.entity.Word;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -11,7 +12,7 @@ import java.util.Optional;
 @Mapper
 public interface WordMapper {
 
-    void save(Word word);
+    int save(Word word);
 
     /**
      * 주어진 ID에 해당하는 영어 단어를 조회합니다.
@@ -60,4 +61,9 @@ public interface WordMapper {
     Word findRandomWord();
 
     void batchSave(List<Word> words);
+
+
+    long countByUser(@Param("userId") Long userId);
+
+    List<Word> findByUserWithPaging(@Param("userId") Long userId, @Param("pageable") Pageable pageable);
 }

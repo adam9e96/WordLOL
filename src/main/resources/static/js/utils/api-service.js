@@ -67,7 +67,7 @@ class ApiService {
             // 응답 처리
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || '단어 등록에 실패했습니다.');
+                this.handleError(new Error(errorData.message || '단어 등록에 실패했습니다.'), 'registerWord');
             }
 
             return await response.json();

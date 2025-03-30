@@ -3,9 +3,11 @@ package com.adam9e96.wordlol.service.impl;
 import com.adam9e96.wordlol.common.constants.Constants;
 import com.adam9e96.wordlol.dto.request.WordRequest;
 import com.adam9e96.wordlol.dto.request.WordSearchRequest;
+import com.adam9e96.wordlol.dto.response.CreateWordResponse;
 import com.adam9e96.wordlol.dto.response.DailyWordResponse;
 import com.adam9e96.wordlol.dto.response.WordResponse;
 import com.adam9e96.wordlol.dto.response.WordStudyResponse;
+import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
@@ -18,13 +20,13 @@ import com.adam9e96.wordlol.repository.jpa.WordRepository;
 import com.adam9e96.wordlol.repository.mybatis.WordMapper;
 import com.adam9e96.wordlol.service.interfaces.WordService;
 import com.adam9e96.wordlol.validator.WordValidator;
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -40,38 +42,47 @@ public class WordServiceImpl implements WordService {
     private final WordValidator wordValidator;
     private final WordEntityMapper wordEntityMapper;
     private final UserRepository userRepository;
-    private final HttpSession httpSession;
 
     /**
-     * @todo 유효성 검사로직에서 다중처리가 안됨 가장 먼저 실패한것만 리턴됨 그거 빼면 OK
-     * [OPTIMIZED] - 2025.03.05 완료
+     * 단어를 생성하고 결과를 DTO로 반환합니다.
+     *
+     * @param request 단어 생성 요청 데이터
+     * @return 생성된 단어 정보를 담은 응답 DTO
+     * @throws WordCreationException 단어 생성 중 오류 발생 시
      */
     @Override
-    public void createWord(WordRequest request) {
-        // 1. 세션에서 사용자 정보 가져오기
-        // 세션에서 사용자 정보를 가져옵니다.
-        // 세션이 만료되었거나 사용자가 존재하지 않는 경우 예외를 발생시킵니다.
-
+    public CreateWordResponse createWord(WordRequest request) {
         try {
-            // 1. 입력값 검증 (단어, 뜻, 힌트, 난이도)
+            // 1. 입력값 검증
             wordValidator.validate(request);
+
             // 2. 중복 단어 검사
             if (isDuplicateWord(request.vocabulary())) {
                 throw new ValidationException(Constants.Validation.EXISTS_VOCABULARY_MESSAGE + request.vocabulary());
             }
-            // 3. 엔티티 생성
+
+            // 3. 현재 인증된 사용자 정보 조회
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("인증된 사용자를 찾을 수 없습니다."));
+
+            // 4. 단어 엔티티 생성
             Word word = Word.builder()
                     .vocabulary(request.vocabulary())
                     .meaning(request.meaning())
                     .hint(request.hint())
                     .difficulty(request.difficulty())
+                    .user(user)
                     .build();
-            // 4. DB에 저장
+
+            // 5. 데이터베이스에 저장
             wordMapper.save(word);
+
+            // 6. 응답 DTO로 변환하여 반환
+            return wordEntityMapper.toCreateDto(word);
         } catch (Exception e) {
-            // DB 저장 실패 등의 문제 발생 시
-            log.error("단어 생성 중 오류가 발생: {}", e.getMessage(), e);
-            throw new WordCreationException(0L);  // 신규 생성이므로 임시 ID 0 사용
+            log.error("단어 생성 중 오류 발생: {}", e.getMessage(), e);
+            throw new WordCreationException(0L);
         }
     }
 
@@ -204,8 +215,18 @@ public class WordServiceImpl implements WordService {
     @Transactional
     @Override
     public Page<Word> findAllWithPaging(Pageable pageable) {
-        long total = wordMapper.countTotal();
-        List<Word> words = wordMapper.findAllWithPaging(pageable);
+        // 현재 인증된 사용자 가져오기
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("현재 인증된 사용자를 찾을 수 없습니다."));
+
+        // 1. 현재 사용자의 총 단어 수 계산
+        long total = wordMapper.countByUser(user.getId());
+
+        // 2. 페이징 처리된 현재 사용자의 단어 목록 가져오기
+        List<Word> words = wordMapper.findByUserWithPaging(user.getId(), pageable);
+
+        // 3. 페이징된 결과 반환
         return new PageImpl<>(words, pageable, total);
     }
 

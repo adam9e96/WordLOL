@@ -83,8 +83,7 @@
                null as created_at,
                null as updated_at
         FROM word
-        ORDER BY RAND()
-        LIMIT 5
+        ORDER BY RAND() LIMIT 5
     </select>
     <select id="findAllIds" resultType="java.lang.Long">
         SELECT id
@@ -100,8 +99,7 @@
                created_at,
                null as updated_at
         FROM word
-        ORDER BY id DESC
-        LIMIT 5
+        ORDER BY id DESC LIMIT 5
     </select>
     <select id="countAll" resultType="int">
         SELECT COUNT(*)
@@ -137,15 +135,17 @@
     </select>
     <select id="findAllWithPaging" resultMap="WordResultMap">
         SELECT id,
-               vocabulary,
-               meaning,
-               hint,
-               difficulty,
-               created_at,
-               updated_at
+        vocabulary,
+        meaning,
+        hint,
+        difficulty,
+        created_at,
+        updated_at
         FROM word
+        WHERE user_id = #{userId}
         ORDER BY id DESC
-        LIMIT #{pageSize} OFFSET #{offset}
+        LIMIT #{pageSize}
+        OFFSET #{offset}
     </select>
     <!-- 전체 단어 수 조회 -->
     <select id="countTotal" resultType="long">
@@ -182,8 +182,26 @@
                difficulty
         FROM word
         WHERE EXISTS (SELECT 1 FROM word LIMIT 1) -- 테이블에 레코드가 있는지 확인
-        ORDER BY RAND()
-        LIMIT 1
+        ORDER BY RAND() LIMIT 1
+    </select>
+    <select id="findByUserWithPaging" resultMap="WordResultMap">
+        SELECT id,
+        vocabulary,
+        meaning,
+        hint,
+        difficulty,
+        created_at,
+        updated_at
+        FROM word
+        WHERE user_id = #{userId}
+        ORDER BY id DESC
+        LIMIT #{pageable.pageSize}
+        OFFSET #{pageable.offset}
+    </select>
+    <select id="countByUser" resultType="long">
+        SELECT COUNT(*)
+        FROM word
+        WHERE user_id = #{userId}
     </select>
 
 

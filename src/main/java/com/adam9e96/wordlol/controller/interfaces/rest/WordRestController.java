@@ -38,7 +38,7 @@ public interface WordRestController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PostMapping
-    ResponseEntity<Map<String, Object>> createWord(
+    ResponseEntity<CreateWordResponse> createWord(
             @Parameter(description = "등록할 단어 정보", required = true)
             @Valid @RequestBody WordRequest request);
 
