@@ -44,6 +44,12 @@ public class WordRestControllerImpl implements WordRestController {
     }
 
 
+    /**
+     * 단어를 일괄 등록합니다.
+     *
+     * @param requests 등록할 단어 목록
+     * @deprecated 현재는 사용안하는 API
+     */
     @Override
     @PostMapping("/batch")
     public ResponseEntity<Map<String, Object>> createWords(@RequestBody List<WordRequest> requests) {

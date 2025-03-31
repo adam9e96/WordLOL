@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,7 @@ public class WordServiceImpl implements WordService {
     private final UserRepository userRepository;
 
     /**
-     * 단어를 생성하고 결과를 DTO로 반환합니다.
+     * 단어를 생성하고 결과를 DTO 로 반환합니다.
      *
      * @param request 단어 생성 요청 데이터
      * @return 생성된 단어 정보를 담은 응답 DTO
@@ -62,9 +63,7 @@ public class WordServiceImpl implements WordService {
             }
 
             // 3. 현재 인증된 사용자 정보 조회
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("인증된 사용자를 찾을 수 없습니다."));
+            User user = getCurrentUser();
 
             // 4. 단어 엔티티 생성
             Word word = Word.builder()
@@ -78,7 +77,7 @@ public class WordServiceImpl implements WordService {
             // 5. 데이터베이스에 저장
             wordMapper.save(word);
 
-            // 6. 응답 DTO로 변환하여 반환
+            // 6. 응답 DTO 로 변환하여 반환
             return wordEntityMapper.toCreateDto(word);
         } catch (Exception e) {
             log.error("단어 생성 중 오류 발생: {}", e.getMessage(), e);
@@ -144,7 +143,11 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public WordResponse findById(Long id) {
-        Word word = wordMapper.findById(id).orElseThrow(() -> new WordNotFoundException(id));
+        User currentUser = getCurrentUser();
+
+        Word word = wordMapper.findByIdAndUserId(id, currentUser.getId())
+                .orElseThrow(() -> new WordNotFoundException(id));
+
         return wordEntityMapper.toDto(word);
     }
 
@@ -154,47 +157,49 @@ public class WordServiceImpl implements WordService {
         // 1. 입력값 검증 - 한번에 처리
         validateUpdateRequest(id, request);
 
-        try {
-            // 2. 단어 엔티티 조회 (없으면 예외 발생
-            Word word = wordMapper.findById(id)
-                    .orElseThrow(() -> new WordNotFoundException(id));
+        // 2. 단어 엔티티 조회
+        Word word = wordMapper.findById(id)
+                .orElseThrow(() -> new WordNotFoundException(id));
 
-            // 3. 중복 검사 (자신을 제외한 다른 단어와 중복 체크)
+        // 3. 소유자 검증 - AccessDeniedException 발생 가능
+        verifyWordOwnership(word);
+
+        try {
+            // 4. 중복 검사 (자신을 제외한 다른 단어와 중복 체크)
             if (isVocabularyChangedAndDuplicate(word.getVocabulary(), request.vocabulary(), id)) {
                 throw new ValidationException(Constants.Validation.EXISTS_VOCABULARY_MESSAGE + request.vocabulary());
             }
 
-            // 4. 단어 업데이트
+            // 5. 단어 업데이트
             word.update(request.vocabulary(), request.meaning(), request.hint(), request.difficulty());
 
-            // 5. DB 저장
+            // 6. DB 저장
             wordMapper.update(word);
-        } catch (WordNotFoundException | ValidationException e) {
-            // 이미 적절한 예외이므로 그대로 전파
-            throw e;
         } catch (Exception e) {
             log.error("단어 업데이트 중 오류 발생 [ID={}]: {}", id, e.getMessage(), e);
             throw new WordUpdateException(id);
         }
     }
 
+
     @Override
     public void deleteWord(Long id) {
+        // 1. 단어 조회
+        Word word = wordMapper.findById(id)
+                .orElseThrow(() -> new WordNotFoundException(id));
+
+        // 2. 소유자 검증 - AccessDeniedException 발생 가능
+        verifyWordOwnership(word);
+
         try {
-            // 단어 존재 여부 확인
-            if (!wordMapper.existsById(id)) {
-                throw new WordNotFoundException(id);
-            }
-            // 단어 삭제
+            // 3. 단어 삭제
             wordMapper.deleteById(id);
-        } catch (WordDeletionException e) {
-            log.error("단어 삭제 중 오류 발생: {}", e.getMessage(), e);
-            throw e;
         } catch (Exception e) {
             log.error("단어 삭제 중 오류 발생: {}", e.getMessage(), e);
             throw new WordDeletionException(id);
         }
     }
+
 
     /**
      * @apiNote 전체 단어 목록을 조회합니다.
@@ -353,6 +358,49 @@ public class WordServiceImpl implements WordService {
         return Arrays.stream(correctMeaning.split(","))
                 .map(String::trim)
                 .anyMatch(answer -> answer.equalsIgnoreCase(userAnswer.trim()));
+    }
+
+
+    /**
+     * 현재 로그인한 사용자가 단어의 소유자인지 확인합니다.
+     *
+     * @param word 확인할 단어 엔티티
+     * @throws AccessDeniedException 현재 사용자가 소유자가 아닌 경우
+     */
+    private void verifyWordOwnership(Word word) {
+        // 현재 인증된 사용자 정보 가져오기
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("현재 인증된 사용자를 찾을 수 없습니다."));
+
+        log.info("접근 검증: 사용자={}, 사용자ID={}, 단어ID={}, 단어의 사용자ID={}",
+                currentUser.getEmail(), currentUser.getId(), word.getId(),
+                (word.getUser() != null ? word.getUser().getId() : "null"));
+
+        // 소유자 확인
+        if (word.getUser() == null) {
+            log.error("단어에 사용자 정보가 없음: 단어ID={}", word.getId());
+            throw new AccessDeniedException("해당 단어에 접근할 권한이 없습니다");
+        }
+
+        if (!word.getUser().getId().equals(currentUser.getId())) {
+            log.error("단어 소유자 불일치: 현재사용자ID={}, 단어소유자ID={}",
+                    currentUser.getId(), word.getUser().getId());
+            throw new AccessDeniedException("해당 단어에 접근할 권한이 없습니다");
+        }
+    }
+
+
+    /**
+     * 현재 로그인한 사용자를 가져옵니다.
+     *
+     * @return 현재 인증된 사용자
+     * @throws RuntimeException 인증된 사용자를 찾을 수 없는 경우
+     */
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("인증된 사용자를 찾을 수 없습니다."));
     }
 
 }

@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.adam9e96.wordlol.repository.mybatis.WordMapper">
 
-    <!-- EnglishWord 엔티티의 결과 매핑 -->
+    <!--  Word 엔티티와 데이터베이스 컬럼 간의 매핑 정의 -->
     <resultMap id="WordResultMap" type="com.adam9e96.wordlol.entity.Word">
-        <!-- 기본 키 매핑 -->
         <id property="id" column="id"/>
-        <!-- 일반 컬럼 매핑 -->
         <result property="vocabulary" column="vocabulary"/>
         <result property="meaning" column="meaning"/>
         <result property="hint" column="hint"/>
         <result property="difficulty" column="difficulty"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+
+        <!-- User 엔티티와 데이터베이스 컬럼 간의 매핑 정의 -->
+        <association property="user" javaType="com.adam9e96.wordlol.entity.User">
+            <id property="id" column="user_id"/>
+            <result property="email" column="email"/>
+            <result property="name" column="name"/>
+            <result property="picture" column="picture"/>
+            <result property="role" column="role"/>
+        </association>
 
         <!-- 연관된 WordBook 객체 매핑 -->
         <association property="wordBook" javaType="com.adam9e96.wordlol.entity.WordBook">
@@ -22,7 +30,6 @@
         </association>
     </resultMap>
 
-    <!-- 단어를 추가하는 INSERT 문 -->
     <insert id="save" parameterType="com.adam9e96.wordlol.entity.Word" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO word(vocabulary, meaning, hint, difficulty, created_at, updated_at, user_id)
         VALUES (#{vocabulary}, #{meaning}, #{hint}, #{difficulty}, NOW(), NOW(), #{user.id})
@@ -46,31 +53,58 @@
         WHERE id = #{id}
     </update>
 
-
-    <!-- id에 해당되는 엔티티 삭제 -->
     <delete id="deleteById">
         DELETE
         FROM word
         WHERE id = #{id}
     </delete>
 
-    <!-- ID로 EnglishWord 조회 쿼리 -->
-    <select id="findById" parameterType="long" resultMap="WordResultMap">
-        SELECT id,
-               vocabulary,
-               meaning,
-               hint,
-               difficulty,
-               created_at,
-               updated_at,
-               word_book_id
-        FROM word
-        WHERE id = #{id}
+    <select id="findById" resultMap="WordResultMap">
+        SELECT
+            w.id,
+            w.vocabulary,
+            w.meaning,
+            w.hint,
+            w.difficulty,
+            w.created_at,
+            w.updated_at,
+            w.word_book_id,
+            w.user_id
+        FROM word w
+        WHERE w.id = #{id}
     </select>
-    <select id="findEnglishWordByHint" resultMap="WordResultMap">
+    <select id="findWordByHint" resultMap="WordResultMap">
         SELECT hint
         FROM word
         WHERE id = #{id}
+    </select>
+    <select id="findByIdAndUserId" resultMap="WordResultMap">
+        SELECT
+            w.id,
+            w.vocabulary,
+            w.meaning,
+            w.hint,
+            w.difficulty,
+            w.created_at,
+            w.updated_at,
+            w.word_book_id,
+            w.user_id
+        FROM word w
+        WHERE w.id = #{id} AND w.user_id = #{userId}
+    </select>
+    <select id="findByIdAndWordBookId" resultMap="WordResultMap">
+        SELECT
+            w.id,
+            w.vocabulary,
+            w.meaning,
+            w.hint,
+            w.difficulty,
+            w.created_at,
+            w.updated_at,
+            w.word_book_id,
+            w.user_id
+        FROM word w
+        WHERE w.id = #{id} AND w.word_book_id = #{wordBookId}
     </select>
 
     <!-- 랜덤 5개 단어 조회 -->
@@ -85,10 +119,7 @@
         FROM word
         ORDER BY RAND() LIMIT 5
     </select>
-    <select id="findAllIds" resultType="java.lang.Long">
-        SELECT id
-        FROM word
-    </select>
+
     <!-- 최근 5개 단어 조회-->
     <select id="findRecent5Words" resultMap="WordResultMap">
         SELECT id,
@@ -128,29 +159,19 @@
         FROM word e
         WHERE word_book_id = #{wordBookId}
     </select>
-    <select id="existsById" resultType="java.lang.Boolean">
-        SELECT COUNT(*) > 0
-        FROM word
-        WHERE id = #{id}
-    </select>
     <select id="findAllWithPaging" resultMap="WordResultMap">
         SELECT id,
-        vocabulary,
-        meaning,
-        hint,
-        difficulty,
-        created_at,
-        updated_at
+               vocabulary,
+               meaning,
+               hint,
+               difficulty,
+               created_at,
+               updated_at
         FROM word
         WHERE user_id = #{userId}
         ORDER BY id DESC
-        LIMIT #{pageSize}
+            LIMIT #{pageSize}
         OFFSET #{offset}
-    </select>
-    <!-- 전체 단어 수 조회 -->
-    <select id="countTotal" resultType="long">
-        SELECT COUNT(*)
-        FROM word
     </select>
 
     <select id="searchWords" resultMap="WordResultMap">
@@ -164,7 +185,6 @@
         ORDER BY id DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
-
     <select id="countSearchResults" resultType="long">
         SELECT COUNT(*)
         FROM word
@@ -186,16 +206,16 @@
     </select>
     <select id="findByUserWithPaging" resultMap="WordResultMap">
         SELECT id,
-        vocabulary,
-        meaning,
-        hint,
-        difficulty,
-        created_at,
-        updated_at
+               vocabulary,
+               meaning,
+               hint,
+               difficulty,
+               created_at,
+               updated_at
         FROM word
         WHERE user_id = #{userId}
         ORDER BY id DESC
-        LIMIT #{pageable.pageSize}
+            LIMIT #{pageable.pageSize}
         OFFSET #{pageable.offset}
     </select>
     <select id="countByUser" resultType="long">
@@ -203,6 +223,4 @@
         FROM word
         WHERE user_id = #{userId}
     </select>
-
-
 </mapper>
