@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("필터 실행됨 : {} {}", request.getMethod(), request.getRequestURI());
+        log.info("1 단계: JwtAuthenticationFilter.doFilterInternal() 실행");
 
         // 1. 토큰 추출
         // 쿠키에서 액세스 토큰 추출
@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             token = jwtTokenProvider.resolveToken(request);
         }
 
-        log.info("추출된 토큰: {}", token != null ? "토큰 있음" : "토큰 없음");
+        log.info("3단계 : 추출된 토큰: {}", token != null ? "토큰 있음" : "토큰 없음");
 
         // 2. 토큰 검증
         // 토큰이 유효한 경우 인증 정보 설정
@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 // SecurityContext 에 인증 정보 저장
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.info("Security Context 에 '{}' 인증 정보를 저장했습니다.", authentication.getName());
+                log.info("4단계 : Security Context 에 '{}' 인증 정보를 저장했습니다.", authentication.getName());
             } catch (Exception e) {
                 log.error("인증 처리 중 오류 발생: {}", e.getMessage());
             }
@@ -61,12 +61,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // 쿠키에서 액세스 토큰 추출
     private String extractTokenFromCookie(HttpServletRequest request) {
+        log.info("2 단계: 쿠키에서 토큰 추출");
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             // 쿠키에서 access_token을 찾음
             for (Cookie cookie : cookies) {
                 if ("access_token".equals(cookie.getName())) {
-                    log.info("쿠키에서 토큰 추출: 토큰 있음");
+                    log.info("2 단계 결과: 쿠키에서 토큰 추출: 토큰 있음");
                     return cookie.getValue();
                 }
             }

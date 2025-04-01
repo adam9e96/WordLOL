@@ -63,7 +63,7 @@ public class WordServiceImpl implements WordService {
             }
 
             // 3. 현재 인증된 사용자 정보 조회
-            User user = getCurrentUser();
+            User currentUser = getCurrentUser();
 
             // 4. 단어 엔티티 생성
             Word word = Word.builder()
@@ -71,7 +71,7 @@ public class WordServiceImpl implements WordService {
                     .meaning(request.meaning())
                     .hint(request.hint())
                     .difficulty(request.difficulty())
-                    .user(user)
+                    .user(currentUser)
                     .build();
 
             // 5. 데이터베이스에 저장
@@ -201,7 +201,7 @@ public class WordServiceImpl implements WordService {
     }
 
 
-    /**
+/**
      * @apiNote 전체 단어 목록을 조회합니다.
      * // 예를 들어 다음과 같은 상황이라면:
      * List<EnglishWord> words = ["단어1", "단어2", "단어3"]; // 현재 페이지 데이터
@@ -235,10 +235,6 @@ public class WordServiceImpl implements WordService {
         return new PageImpl<>(words, pageable, total);
     }
 
-    /**
-     * 랜덤 단어를 조회합니다.
-     * [OPTIMIZED] - 2025.03.05 완료
-     */
     @Override
     public WordStudyResponse findRandomWord() {
         try {
