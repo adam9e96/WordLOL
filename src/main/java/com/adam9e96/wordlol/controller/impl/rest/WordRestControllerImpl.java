@@ -72,7 +72,7 @@ public class WordRestControllerImpl implements WordRestController {
 
     @Override
     @PutMapping(Constants.ApiPath.WORD_ID)
-    public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @RequestBody WordRequest request) {
+    public ResponseEntity<Void> updateWord(@PathVariable("id") Long id, @Valid @RequestBody WordRequest request) {
         wordService.updateWord(id, request);
         return ResponseEntity.ok().build();
     }

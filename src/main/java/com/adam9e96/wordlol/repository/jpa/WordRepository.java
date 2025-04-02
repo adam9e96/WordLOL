@@ -23,4 +23,8 @@ public interface WordRepository extends JpaRepository<Word, Long> {
     List<Word> findByUser(User user);
 
     Page<Word> findByUser(User user, Pageable pageable);
+
+    // WordRepository 수정
+    boolean existsByVocabularyIgnoreCaseAndUser(String vocabulary, User user);
+    boolean existsByVocabularyIgnoreCaseAndUserAndIdNot(String vocabulary, User user, Long excludeId);
 }

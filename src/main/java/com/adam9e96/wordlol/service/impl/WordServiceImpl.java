@@ -154,46 +154,40 @@ public class WordServiceImpl implements WordService {
     @Transactional
     @Override
     public void updateWord(Long id, WordRequest request) {
-        // 1. 입력값 검증 - 한번에 처리
-        validateUpdateRequest(id, request);
+        // 1. 사용자 조회
+        User currentUser = getCurrentUser();
 
-        // 2. 단어 엔티티 조회
-        Word word = wordMapper.findById(id)
+        // 2. 단어 조회 및 소유권 검증 (한 번에 처리)
+        Word word = wordMapper.findByIdAndUserId(id, currentUser.getId())
                 .orElseThrow(() -> new WordNotFoundException(id));
 
-        // 3. 소유자 검증 - AccessDeniedException 발생 가능
-        verifyWordOwnership(word);
-
-        try {
-            // 4. 중복 검사 (자신을 제외한 다른 단어와 중복 체크)
-            if (isVocabularyChangedAndDuplicate(word.getVocabulary(), request.vocabulary(), id)) {
-                throw new ValidationException(Constants.Validation.EXISTS_VOCABULARY_MESSAGE + request.vocabulary());
-            }
-
-            // 5. 단어 업데이트
-            word.update(request.vocabulary(), request.meaning(), request.hint(), request.difficulty());
-
-            // 6. DB 저장
-            wordMapper.update(word);
-        } catch (Exception e) {
-            log.error("단어 업데이트 중 오류 발생 [ID={}]: {}", id, e.getMessage(), e);
-            throw new WordUpdateException(id);
+        // 3. 중복 검증
+        if (!word.getVocabulary().equals(request.vocabulary()) &&
+                checkVocabularyDuplicate(request.vocabulary(), id)) {
+            throw new ValidationException(Constants.Validation.EXISTS_VOCABULARY_MESSAGE + request.vocabulary());
         }
+
+        // 4. 단어 업데이트
+        word.update(request.vocabulary(), request.meaning(), request.hint(), request.difficulty());
+
+        // 5. DB 저장
+        wordMapper.update(word);
     }
 
 
     @Override
     public void deleteWord(Long id) {
-        // 1. 단어 조회
-        Word word = wordMapper.findById(id)
-                .orElseThrow(() -> new WordNotFoundException(id));
+        // 1. 사용자 조회
+        User currentUser = getCurrentUser();
 
-        // 2. 소유자 검증 - AccessDeniedException 발생 가능
-        verifyWordOwnership(word);
+        // 2. 단어 조회 및 소유권 검증
+        Word word = wordMapper.findByIdAndUserId(id, currentUser.getId())
+                .orElseThrow(() -> new WordNotFoundException(id));
 
         try {
             // 3. 단어 삭제
             wordMapper.deleteById(id);
+            log.info("단어 삭제 완료 - ID: {}, 단어: {}",id,word.getVocabulary());
         } catch (Exception e) {
             log.error("단어 삭제 중 오류 발생: {}", e.getMessage(), e);
             throw new WordDeletionException(id);
@@ -201,7 +195,7 @@ public class WordServiceImpl implements WordService {
     }
 
 
-/**
+    /**
      * @apiNote 전체 단어 목록을 조회합니다.
      * // 예를 들어 다음과 같은 상황이라면:
      * List<EnglishWord> words = ["단어1", "단어2", "단어3"]; // 현재 페이지 데이터
@@ -280,12 +274,17 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public boolean checkVocabularyDuplicate(String newVocabulary, Long excludeId) {
+        User currentUser = getCurrentUser();
+
         if (excludeId != null) {
             // 수정 시: 자기 자신을 제외한 중복 체크
-            return wordRepository.existsByVocabularyIgnoreCaseAndIdNot(newVocabulary, excludeId);
+            return wordRepository.existsByVocabularyIgnoreCaseAndUserAndIdNot(newVocabulary, currentUser, excludeId);
+//            return wordRepository.existsByVocabularyIgnoreCaseAndIdNot(newVocabulary, excludeId);
         }
+        // 신규 등록 시: 현재 사용자의 단어 중에서만 중복 체크
+        return wordRepository.existsByVocabularyIgnoreCaseAndUser(newVocabulary, currentUser);
         // 신규 등록 시: 전체 중복 체크
-        return wordRepository.existsByVocabularyIgnoreCase(newVocabulary);
+//        return wordRepository.existsByVocabularyIgnoreCase(newVocabulary);
     }
 
     @Transactional
@@ -314,10 +313,12 @@ public class WordServiceImpl implements WordService {
         // }
     }
 
-    // Private 메서드
     private boolean isDuplicateWord(String vocabulary) {
-        // 대소문자 구분 없이 중복 확인
-        return wordRepository.existsByVocabularyIgnoreCase(vocabulary);
+        // 현재 사용자 가져오기
+        User currentUser = getCurrentUser();
+
+        // 현재 사용자의 단어 중에서만 중복 체크
+        return wordRepository.existsByVocabularyIgnoreCaseAndUser(vocabulary, currentUser);
     }
 
     /**
