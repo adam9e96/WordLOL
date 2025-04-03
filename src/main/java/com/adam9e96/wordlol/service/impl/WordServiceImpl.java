@@ -1,6 +1,7 @@
 package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.common.constants.Constants;
+import com.adam9e96.wordlol.dto.common.PageResponse;
 import com.adam9e96.wordlol.dto.request.AnswerRequest;
 import com.adam9e96.wordlol.dto.request.WordRequest;
 import com.adam9e96.wordlol.dto.request.WordSearchRequest;
@@ -191,6 +192,7 @@ public class WordServiceImpl implements WordService {
             // 3. 단어 삭제
             wordMapper.deleteById(id);
             log.info("단어 삭제 완료 - ID: {}, 단어: {}", id, word.getVocabulary());
+
         } catch (Exception e) {
             log.error("단어 삭제 중 오류 발생: {}", e.getMessage(), e);
             throw new WordDeletionException(id);
@@ -221,17 +223,23 @@ public class WordServiceImpl implements WordService {
      */
     @Transactional
     @Override
-    public Page<Word> findAllWithPaging(Pageable pageable) {
-        User user = getCurrentUser();
+    public PageResponse<WordResponse> findAllWithPaging(Pageable pageable) {
+        User currentUser = getCurrentUser();
 
-        // 1. 현재 사용자의 총 단어 수 계산
-        long total = wordMapper.countByUser(user.getId());
+        // 전체 단어 수 조회
+        long total = wordMapper.countByUser(currentUser.getId());
 
-        // 2. 페이징 처리된 현재 사용자의 단어 목록 가져오기
-        List<Word> words = wordMapper.findByUserWithPaging(user.getId(), pageable);
+        // 페이징 처리된 단어 목록 조회
+        List<Word> words = wordMapper.findByUserWithPaging(currentUser.getId(), pageable);
 
-        // 3. 페이징된 결과 반환
-        return new PageImpl<>(words, pageable, total);
+        // MapStruct를 사용하여 Entity를 DTO로 변환
+        List<WordResponse> wordResponses = wordEntityMapper.toDtoList(words);
+
+        // Page 객체 생성
+        Page<WordResponse> wordPage = new PageImpl<>(wordResponses, pageable, total);
+
+        // PageResponse로 래핑
+        return new PageResponse<>(wordPage);
     }
 
     @Override
@@ -346,15 +354,24 @@ public class WordServiceImpl implements WordService {
 
     @Transactional
     @Override
-    public Page<Word> searchWords(WordSearchRequest request, Pageable pageable) {
-        int offset = (int) pageable.getOffset();
-        int limit = pageable.getPageSize();
+    public PageResponse<WordResponse> searchWords(WordSearchRequest request, Pageable pageable) {
+        User currentUser = getCurrentUser();
+        Long userId = currentUser.getId();
+
         String keyword = request.keyword();
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+        int limit = pageable.getPageSize();
 
-        List<Word> words = wordMapper.searchWords(keyword, offset, limit);
-        long total = wordMapper.countSearchResults(keyword);
+        // 검색 조건에 맞는 전체 레코드 수 조회
+        long total = wordMapper.countSearchResults(keyword, userId);
 
-        return new PageImpl<>(words, pageable, total);
+        // 검색 및 페이징 처리된 단어 목록 조회
+        List<Word> words = wordMapper.searchWords(keyword, userId, offset, limit);
+
+        List<WordResponse> wordResponses = wordEntityMapper.toDtoList(words);
+
+        Page<WordResponse> wordPage = new PageImpl<>(wordResponses, pageable, total);
+        return new PageResponse<>(wordPage);
     }
 
     // 사용자의 단어 학습 이력을 기록하기 위한 메서드
@@ -406,7 +423,6 @@ public class WordServiceImpl implements WordService {
         Optional<Word> optionalWord = wordMapper.findWordByHint(id);
         if (optionalWord.isPresent()) {
             Word word = optionalWord.get();
-//            return new WordHintResponse(word.getHint());
             return wordEntityMapper.toHintDto(word);
         } else {
             throw new WordNotFoundException(id);

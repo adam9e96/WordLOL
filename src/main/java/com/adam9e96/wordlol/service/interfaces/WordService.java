@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.service.interfaces;
 
+import com.adam9e96.wordlol.dto.common.PageResponse;
 import com.adam9e96.wordlol.dto.request.AnswerRequest;
 import com.adam9e96.wordlol.dto.response.*;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
@@ -80,9 +81,9 @@ public interface WordService {
      *
      * @param id      수정할 단어의 ID
      * @param request 수정할 단어 정보
-     * @throws WordNotFoundException     단어가 존재하지 않는 경우
-     * @throws ValidationException 유효하지 않은 입력인 경우
-     * @throws WordUpdateException       단어 수정 중 오류가 발생한 경우
+     * @throws WordNotFoundException 단어가 존재하지 않는 경우
+     * @throws ValidationException   유효하지 않은 입력인 경우
+     * @throws WordUpdateException   단어 수정 중 오류가 발생한 경우
      */
     @Operation(summary = "단어 수정", description = "단어 정보를 수정합니다")
     @ApiResponses(value = {
@@ -122,7 +123,7 @@ public interface WordService {
             @ApiResponse(responseCode = "200", description = "단어 목록 조회 성공",
                     content = @Content(schema = @Schema(implementation = Page.class)))
     })
-    Page<Word> findAllWithPaging(@Parameter(description = "페이징 정보", required = true) Pageable pageable);
+    PageResponse<WordResponse> findAllWithPaging(@Parameter(description = "페이징 정보", required = true) Pageable pageable);
 
     /**
      * 랜덤 단어를 조회합니다. 학습 기능에서 사용됩니다.
@@ -144,8 +145,8 @@ public interface WordService {
      * @param id         검증할 단어의 ID
      * @param userAnswer 사용자가 입력한 답안
      * @return 정답 여부 (true: 정답, false: 오답)
-     * @throws WordNotFoundException     단어가 존재하지 않는 경우
-     * @throws ValidationException 유효하지 않은 입력인 경우
+     * @throws WordNotFoundException 단어가 존재하지 않는 경우
+     * @throws ValidationException   유효하지 않은 입력인 경우
      */
     @Operation(summary = "답안 검증", description = "단어의 답안을 검증합니다")
     @ApiResponses(value = {
@@ -172,9 +173,7 @@ public interface WordService {
     })
     List<DailyWordResponse> findRandomWords();
 
-    AnswerResponse checkAnswer(
-            AnswerRequest answerRequest,
-            HttpSession session
+    AnswerResponse checkAnswer(AnswerRequest answerRequest, HttpSession session
     );
 
     /**
@@ -206,7 +205,7 @@ public interface WordService {
             @ApiResponse(responseCode = "200", description = "단어 검색 성공",
                     content = @Content(schema = @Schema(implementation = Page.class)))
     })
-    Page<Word> searchWords(
+    PageResponse<WordResponse> searchWords(
             @Parameter(description = "검색 조건", required = true) WordSearchRequest request,
             @Parameter(description = "페이징 정보", required = true) Pageable pageable
     );

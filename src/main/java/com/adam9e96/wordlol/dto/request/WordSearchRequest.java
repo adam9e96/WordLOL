@@ -12,11 +12,6 @@ public record WordSearchRequest(
         Integer page,
         Integer size
 ) {
-    /**
-     * 기본 생성자
-     *
-     * @param keyword 검색 키워드
-     */
     public WordSearchRequest(String keyword) {
         this(keyword, 0, 20);
     }

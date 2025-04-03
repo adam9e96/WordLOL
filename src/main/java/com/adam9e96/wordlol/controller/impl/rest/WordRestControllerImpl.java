@@ -7,14 +7,12 @@ import com.adam9e96.wordlol.dto.request.AnswerRequest;
 import com.adam9e96.wordlol.dto.request.WordRequest;
 import com.adam9e96.wordlol.dto.request.WordSearchRequest;
 import com.adam9e96.wordlol.dto.response.*;
-import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.service.interfaces.StudyProgressService;
 import com.adam9e96.wordlol.service.interfaces.WordService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -84,10 +82,10 @@ public class WordRestControllerImpl implements WordRestController {
     }
 
     @Override
-    @PostMapping("/check")
+    @PostMapping(Constants.ApiPath.WORD_CHECK)
     public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request, HttpSession session) {
         AnswerResponse response = wordService.checkAnswer(request, session);
-        log.info("정답 확인 결과: {}", response.toString());
+//        log.info("정답 확인 결과: {}", response.toString());
 
         return ResponseEntity.ok().body(response);
     }
@@ -107,7 +105,6 @@ public class WordRestControllerImpl implements WordRestController {
     public ResponseEntity<WordHintResponse> getWordHint(@PathVariable("id") Long id) {
         WordHintResponse response = wordService.getWordHint(id);
 
-        log.info("단어 힌트: {}", response.hint());
         return ResponseEntity.ok().body(response);
     }
 
@@ -137,11 +134,10 @@ public class WordRestControllerImpl implements WordRestController {
      * @return 단어 목록
      */
     @Override
-    @GetMapping("/list")
+    @GetMapping(Constants.ApiPath.WORD_LIST)
     public ResponseEntity<PageResponse<WordResponse>> getWords(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size) {
-
 
         // 페이징 및 정렬 정보 생성
         // offset 과 limit 은 내부적으로 Pageable 에서 계산함
@@ -157,18 +153,13 @@ public class WordRestControllerImpl implements WordRestController {
          * offset = 2 * 20 = 40 (41번째 레코드부터)
          * limit = 20 (20개 레코드)
          */
-
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Word> wordPage = wordService.findAllWithPaging(pageable);
-        PageResponse<WordResponse> response = new PageResponse<>(
-
-                wordPage.map(this::toWordResponse)
-        );
+        PageResponse<WordResponse> response = wordService.findAllWithPaging(pageable);
         return ResponseEntity.ok(response);
     }
 
     @Override
-    @GetMapping("/search")
+    @GetMapping(Constants.ApiPath.WORD_SEARCH)
     public ResponseEntity<PageResponse<WordResponse>> searchWords(
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -177,25 +168,8 @@ public class WordRestControllerImpl implements WordRestController {
         WordSearchRequest searchRequest = new WordSearchRequest(keyword);
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<Word> wordPage = wordService.searchWords(searchRequest, pageable);
-        PageResponse<WordResponse> response = new PageResponse<>(
-                wordPage.map(this::toWordResponse)
-        );
-
+        PageResponse<WordResponse> response = wordService.searchWords(searchRequest, pageable);
         return ResponseEntity.ok(response);
-    }
-
-
-    private WordResponse toWordResponse(Word word) {
-        return new WordResponse(
-                word.getId(),
-                word.getVocabulary(),
-                word.getMeaning(),
-                word.getHint(),
-                word.getDifficulty(),
-                word.getCreatedAt(),
-                word.getUpdatedAt()
-        );
     }
 
 }

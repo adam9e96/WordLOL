@@ -177,7 +177,7 @@
     <select id="searchWords" resultMap="WordResultMap">
         SELECT id, vocabulary, meaning, hint, difficulty, created_at, updated_at
         FROM word
-        WHERE 1=1
+        WHERE user_id = #{userId}
         <if test="keyword != null and keyword != ''">
             AND (vocabulary LIKE CONCAT('%', #{keyword}, '%')
             OR meaning LIKE CONCAT('%', #{keyword}, '%'))
@@ -185,24 +185,15 @@
         ORDER BY id DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
+
     <select id="countSearchResults" resultType="long">
         SELECT COUNT(*)
         FROM word
-        WHERE 1=1
+        WHERE user_id = #{userId}
         <if test="keyword != null and keyword != ''">
             AND (vocabulary LIKE CONCAT('%', #{keyword}, '%')
             OR meaning LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-    </select>
-    <select id="findRandomWord" resultMap="WordResultMap">
-        SELECT id,
-               vocabulary,
-               meaning,
-               hint,
-               difficulty
-        FROM word
-        WHERE EXISTS (SELECT 1 FROM word LIMIT 1) -- 테이블에 레코드가 있는지 확인
-        ORDER BY RAND() LIMIT 1
     </select>
     <select id="findByUserWithPaging" resultMap="WordResultMap">
         SELECT id,

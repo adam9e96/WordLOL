@@ -4,6 +4,7 @@ import com.adam9e96.wordlol.entity.Word;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 
 import javax.swing.text.html.Option;
 import java.util.List;
@@ -34,18 +35,30 @@ public interface WordMapper {
 
     void deleteById(Long id);
 
-    // WordMapper.java 인터페이스에 다음 메서드 추가
     List<Word> findRandomWordsByUserId(@Param("userId") Long userId, @Param("limit") int limit);
 
     List<Word> findAllByWordBookId(Long wordBookId);
 
     List<Word> findAllWithPaging(Pageable pageable);
 
-    List<Word> searchWords(@Param("keyword") String keyword, @Param("offset") int offset, @Param("limit") int limit);
+    List<Word> searchWords(
+            @Param("keyword") String keyword,
+            @Param("userId") Long userId,
+            @Param("offset") int offset,
+            @Param("limit") int limit
+    );
 
-    long countSearchResults(@Param("keyword") String keyword);
-
-    Word findRandomWord();
+    /**
+     * 검색 조건에 맞는 단어의 총 개수를 조회합니다.
+     *
+     * @param keyword 검색어 (단어 또는 의미에 포함된 내용)
+     * @param userId 현재 사용자 ID
+     * @return 검색 조건에 맞는 총 단어 수
+     */
+    long countSearchResults(
+            @Param("keyword") String keyword,
+            @Param("userId") Long userId
+    );
 
     void batchSave(List<Word> words);
 

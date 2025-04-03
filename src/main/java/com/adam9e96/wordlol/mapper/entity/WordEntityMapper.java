@@ -25,4 +25,7 @@ public interface WordEntityMapper {
 
     @Mapping(target = "hint", source = "hint")
     WordHintResponse toHintDto(Word word);
+
+    // 엔티티 리스트 -> DTO 리스트 변환
+    List<WordResponse> toDtoList(List<Word> words);
 }
