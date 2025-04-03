@@ -866,6 +866,7 @@ class StudyController {
 
         try {
             const data = await apiService.fetchHint(this.state.currentWord.id);
+            console.log(`힌트: ${data.hint}`);
             this.ui.showMessage(`힌트: ${data.hint}`);
             this.state.showingHint = true;
         } catch (error) {

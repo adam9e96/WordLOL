@@ -34,8 +34,8 @@ public interface WordRestController {
      */
     @Operation(summary = "단어 등록", description = "새로운 단어를 등록합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "단어 등록 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+            @ApiResponse(responseCode = "200", description = "단어 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PostMapping
     ResponseEntity<CreateWordResponse> createWord(
@@ -50,8 +50,8 @@ public interface WordRestController {
      */
     @Operation(summary = "다수 단어 등록", description = "여러 단어를 일괄 등록합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "단어 일괄 등록 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+            @ApiResponse(responseCode = "200", description = "단어 일괄 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PostMapping("/batch")
     ResponseEntity<Map<String, Object>> createWords(
@@ -66,9 +66,9 @@ public interface WordRestController {
      */
     @Operation(summary = "단어 조회", description = "ID로 단어를 조회합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "단어 조회 성공",
-                     content = @Content(schema = @Schema(implementation = WordResponse.class))),
-        @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
+            @ApiResponse(responseCode = "200", description = "단어 조회 성공",
+                    content = @Content(schema = @Schema(implementation = WordResponse.class))),
+            @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
     })
     @GetMapping("/{id}")
     ResponseEntity<WordResponse> getWord(
@@ -78,15 +78,15 @@ public interface WordRestController {
     /**
      * 단어 정보를 수정합니다.
      *
-     * @param id 수정할 단어 ID
+     * @param id      수정할 단어 ID
      * @param request 수정할 단어 정보
      * @return 수정 결과
      */
     @Operation(summary = "단어 수정", description = "단어 정보를 수정합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "단어 수정 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-        @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
+            @ApiResponse(responseCode = "200", description = "단어 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
     })
     @PutMapping("/{id}")
     ResponseEntity<Void> updateWord(
@@ -103,8 +103,8 @@ public interface WordRestController {
      */
     @Operation(summary = "단어 삭제", description = "단어를 삭제합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "단어 삭제 성공"),
-        @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
+            @ApiResponse(responseCode = "200", description = "단어 삭제 성공"),
+            @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
     })
     @DeleteMapping("/{id}")
     ResponseEntity<Void> deleteWord(
@@ -118,9 +118,9 @@ public interface WordRestController {
      */
     @Operation(summary = "랜덤 단어 조회", description = "학습을 위한 랜덤 단어를 조회합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "랜덤 단어 조회 성공",
-                     content = @Content(schema = @Schema(implementation = WordResponse.class))),
-        @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
+            @ApiResponse(responseCode = "200", description = "랜덤 단어 조회 성공",
+                    content = @Content(schema = @Schema(implementation = WordResponse.class))),
+            @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
     })
     @GetMapping("/random")
     ResponseEntity<WordStudyResponse> getRandomWord();
@@ -134,10 +134,10 @@ public interface WordRestController {
      */
     @Operation(summary = "정답 확인", description = "학습 중인 단어의 정답을 확인합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "정답 확인 성공",
-                     content = @Content(schema = @Schema(implementation = AnswerResponse.class))),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-        @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
+            @ApiResponse(responseCode = "200", description = "정답 확인 성공",
+                    content = @Content(schema = @Schema(implementation = AnswerResponse.class))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
     })
     @PostMapping("/check")
     ResponseEntity<AnswerResponse> checkAnswer(
@@ -145,23 +145,12 @@ public interface WordRestController {
             @Valid @RequestBody AnswerRequest request,
             HttpSession session);
 
-    /**
-     * 단어의 중복 여부를 확인합니다.
-     *
-     * @param vocabulary 확인할 단어
-     * @param excludeId 제외할 단어 ID (수정 시 사용)
-     * @return 중복 여부 (exists: true/false)
-     */
-    @Operation(summary = "단어 중복 확인", description = "단어의 중복 여부를 확인합니다")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "중복 확인 성공")
-    })
     @GetMapping("/check-duplicate")
     ResponseEntity<Map<String, Boolean>> checkVocabularyDuplicate(
-            @Parameter(description = "확인할 단어", required = true)
-            @RequestParam String vocabulary,
-            @Parameter(description = "제외할 단어 ID (수정 시)")
-            @RequestParam(required = false) Long excludeId);
+            @Parameter(description = "단어", required = true)
+            @RequestParam("vocabulary") String vocabulary,
+            @Parameter(description = "제외할 단어 ID (수정 시 자기 자신 제외)", required = false)
+            @RequestParam(value = "excludeId", required = false) Long excludeId);
 
     /**
      * 단어의 힌트를 조회합니다.
@@ -171,11 +160,11 @@ public interface WordRestController {
      */
     @Operation(summary = "단어 힌트 조회", description = "단어의 힌트를 조회합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "힌트 조회 성공"),
-        @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
+            @ApiResponse(responseCode = "200", description = "힌트 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
     })
     @GetMapping("/{id}/hint")
-    ResponseEntity<Map<String, String>> getWordHint(
+    ResponseEntity<WordHintResponse> getWordHint(
             @Parameter(description = "힌트를 조회할 단어의 ID", required = true)
             @PathVariable("id") Long id);
 
@@ -187,7 +176,7 @@ public interface WordRestController {
      */
     @Operation(summary = "연속 정답 수 조회", description = "현재 사용자의 연속 정답 수를 조회합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "연속 정답 수 조회 성공")
+            @ApiResponse(responseCode = "200", description = "연속 정답 수 조회 성공")
     })
     @GetMapping("/streak")
     Map<String, Integer> getCurrentStreak(HttpSession session);
@@ -199,8 +188,8 @@ public interface WordRestController {
      */
     @Operation(summary = "오늘의 단어 조회", description = "오늘의 추천 단어 목록을 조회합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "오늘의 단어 조회 성공"),
-        @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
+            @ApiResponse(responseCode = "200", description = "오늘의 단어 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "단어를 찾을 수 없음")
     })
     @GetMapping("/daily")
     ResponseEntity<List<DailyWordResponse>> getDailyWords();
@@ -214,8 +203,8 @@ public interface WordRestController {
      */
     @Operation(summary = "단어 목록 조회", description = "단어 목록을 페이징하여 조회합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "단어 목록 조회 성공",
-                     content = @Content(schema = @Schema(implementation = PageResponse.class)))
+            @ApiResponse(responseCode = "200", description = "단어 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = PageResponse.class)))
     })
     @GetMapping("/list")
     ResponseEntity<PageResponse<WordResponse>> getWords(
@@ -228,14 +217,14 @@ public interface WordRestController {
      * 단어를 검색합니다.
      *
      * @param keyword 검색 키워드
-     * @param page 페이지 번호 (0부터 시작)
-     * @param size 페이지 크기
+     * @param page    페이지 번호 (0부터 시작)
+     * @param size    페이지 크기
      * @return 검색 결과 단어 목록
      */
     @Operation(summary = "단어 검색", description = "키워드로 단어를 검색합니다")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "단어 검색 성공",
-                     content = @Content(schema = @Schema(implementation = PageResponse.class)))
+            @ApiResponse(responseCode = "200", description = "단어 검색 성공",
+                    content = @Content(schema = @Schema(implementation = PageResponse.class)))
     })
     @GetMapping("/search")
     ResponseEntity<PageResponse<WordResponse>> searchWords(

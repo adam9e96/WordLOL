@@ -34,6 +34,9 @@ public interface WordMapper {
 
     void deleteById(Long id);
 
+    // WordMapper.java 인터페이스에 다음 메서드 추가
+    List<Word> findRandomWordsByUserId(@Param("userId") Long userId, @Param("limit") int limit);
+
     List<Word> findAllByWordBookId(Long wordBookId);
 
     List<Word> findAllWithPaging(Pageable pageable);
@@ -47,6 +50,8 @@ public interface WordMapper {
     void batchSave(List<Word> words);
 
     long countByUser(@Param("userId") Long userId);
+
+    Word findRandomWordByUserId(@Param("userId") Long userId);
 
     List<Word> findByUserWithPaging(@Param("userId") Long userId, @Param("pageable") Pageable pageable);
 }

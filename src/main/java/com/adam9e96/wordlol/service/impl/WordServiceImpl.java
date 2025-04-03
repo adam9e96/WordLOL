@@ -1,38 +1,39 @@
 package com.adam9e96.wordlol.service.impl;
 
 import com.adam9e96.wordlol.common.constants.Constants;
+import com.adam9e96.wordlol.dto.request.AnswerRequest;
 import com.adam9e96.wordlol.dto.request.WordRequest;
 import com.adam9e96.wordlol.dto.request.WordSearchRequest;
-import com.adam9e96.wordlol.dto.response.CreateWordResponse;
-import com.adam9e96.wordlol.dto.response.DailyWordResponse;
-import com.adam9e96.wordlol.dto.response.WordResponse;
-import com.adam9e96.wordlol.dto.response.WordStudyResponse;
+import com.adam9e96.wordlol.dto.response.*;
+import com.adam9e96.wordlol.entity.StudyHistory;
 import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
 import com.adam9e96.wordlol.exception.word.WordDeletionException;
 import com.adam9e96.wordlol.exception.word.WordNotFoundException;
-import com.adam9e96.wordlol.exception.word.WordUpdateException;
 import com.adam9e96.wordlol.mapper.entity.WordEntityMapper;
+import com.adam9e96.wordlol.repository.jpa.StudyHistoryRepository;
 import com.adam9e96.wordlol.repository.jpa.UserRepository;
 import com.adam9e96.wordlol.repository.jpa.WordRepository;
 import com.adam9e96.wordlol.repository.mybatis.WordMapper;
+import com.adam9e96.wordlol.service.interfaces.StudyProgressService;
 import com.adam9e96.wordlol.service.interfaces.WordService;
 import com.adam9e96.wordlol.validator.WordValidator;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -43,6 +44,8 @@ public class WordServiceImpl implements WordService {
     private final WordValidator wordValidator;
     private final WordEntityMapper wordEntityMapper;
     private final UserRepository userRepository;
+    private final StudyHistoryRepository studyHistoryRepository;
+    private final StudyProgressService studyProgressService;
 
     /**
      * 단어를 생성하고 결과를 DTO 로 반환합니다.
@@ -154,26 +157,26 @@ public class WordServiceImpl implements WordService {
     @Transactional
     @Override
     public void updateWord(Long id, WordRequest request) {
-        // 1. 사용자 조회
+        wordValidator.validate(request);
+
         User currentUser = getCurrentUser();
 
-        // 2. 단어 조회 및 소유권 검증 (한 번에 처리)
+        // 3. 단어 조회 및 소유권 검증 (한 번에 처리)
         Word word = wordMapper.findByIdAndUserId(id, currentUser.getId())
                 .orElseThrow(() -> new WordNotFoundException(id));
 
-        // 3. 중복 검증
+        // 4. 중복 검증
         if (!word.getVocabulary().equals(request.vocabulary()) &&
                 checkVocabularyDuplicate(request.vocabulary(), id)) {
             throw new ValidationException(Constants.Validation.EXISTS_VOCABULARY_MESSAGE + request.vocabulary());
         }
 
-        // 4. 단어 업데이트
+        // 5. 단어 업데이트
         word.update(request.vocabulary(), request.meaning(), request.hint(), request.difficulty());
 
-        // 5. DB 저장
+        // 6. DB 저장
         wordMapper.update(word);
     }
-
 
     @Override
     public void deleteWord(Long id) {
@@ -187,37 +190,39 @@ public class WordServiceImpl implements WordService {
         try {
             // 3. 단어 삭제
             wordMapper.deleteById(id);
-            log.info("단어 삭제 완료 - ID: {}, 단어: {}",id,word.getVocabulary());
+            log.info("단어 삭제 완료 - ID: {}, 단어: {}", id, word.getVocabulary());
         } catch (Exception e) {
             log.error("단어 삭제 중 오류 발생: {}", e.getMessage(), e);
             throw new WordDeletionException(id);
         }
     }
 
-
     /**
-     * @apiNote 전체 단어 목록을 조회합니다.
-     * // 예를 들어 다음과 같은 상황이라면:
-     * List<EnglishWord> words = ["단어1", "단어2", "단어3"]; // 현재 페이지 데이터
-     * Pageable pageable = PageRequest.of(0, 3); // 0페이지, 페이지당 3개
-     * long total = 10; // 전체 데이터 10개
+     * 현재 로그인한 사용자의 단어 목록을 페이징하여 조회합니다.
+     *
+     * @param pageable 페이징 정보 (페이지 번호, 페이지 크기, 정렬 정보 등)
+     * @return 페이징 처리된 단어 목록
      * <p>
-     * Page<EnglishWord> page = new PageImpl<>(words, pageable, total);
+     * <예시>
+     * 다음과 같은 상황일 때:
+     * - 사용자의 전체 단어 수: 100개
+     * - pageable: PageRequest.of(0, 10, Sort.by("id").descending()) - 첫 페이지, 페이지당 10개, ID 내림차순
      * <p>
-     * // 이제 다음 정보들을 얻을 수 있습니다:
-     * page.getTotalPages(); // 4 (전체 페이지 수)
-     * page.isFirst(); // true (첫 페이지인가?)
-     * page.isLast(); // false (마지막 페이지인가?)
-     * page.hasNext(); // true (다음 페이지가 있는가?)
-     * page.hasPrevious(); // false (이전 페이지가 있는가?)
+     * 결과:
+     * - page.getContent(): 최근 등록된 10개 단어 목록
+     * - page.getTotalElements(): 100 (전체 단어 수)
+     * - page.getTotalPages(): 10 (전체 페이지 수)
+     * - page.getNumber(): 0 (현재 페이지 번호, 0부터 시작)
+     * - page.getSize(): 10 (페이지 크기)
+     * - page.isFirst(): true (첫 페이지인지 여부)
+     * - page.isLast(): false (마지막 페이지인지 여부)
+     * - page.hasNext(): true (다음 페이지가 있는지 여부)
+     * - page.hasPrevious(): false (이전 페이지가 있는지 여부)
      */
     @Transactional
     @Override
     public Page<Word> findAllWithPaging(Pageable pageable) {
-        // 현재 인증된 사용자 가져오기
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("현재 인증된 사용자를 찾을 수 없습니다."));
+        User user = getCurrentUser();
 
         // 1. 현재 사용자의 총 단어 수 계산
         long total = wordMapper.countByUser(user.getId());
@@ -232,28 +237,59 @@ public class WordServiceImpl implements WordService {
     @Override
     public WordStudyResponse findRandomWord() {
         try {
-            // 1. 단어 개수 확인 (선택적)
-            long count = wordMapper.countAll();
-            if (count == 0) {
+            // 1. 현재 인증된 사용자 정보 가져오기
+            User currentUser = getCurrentUser();
+            // 2. 현재 사용자의 총 단어 수 확인
+            long totalUserWords = wordMapper.countByUser(currentUser.getId());
+            if (totalUserWords == 0) {
+                log.warn("사용자({})의 등록된 단어가 없습니다.", currentUser.getEmail());
                 throw new WordNotFoundException(0L);
             }
-            // 2. 데이터베이스에서 무작위 단어 조회
-            Word randomWord = wordMapper.findRandomWord();
+            // 3. 랜덤 단어 조회 시 사용자 ID를 파라미터로 전달하는 메서드 호출
+            Word randomWord = wordMapper.findRandomWordByUserId(currentUser.getId());
 
-            // 3. 결과가 null 인 경우
+            // 4. 결과가 null 인 경우
             if (randomWord == null) {
+                log.warn("사용자({})의 랜덤 단어 조회 실패", currentUser.getEmail());
                 throw new WordNotFoundException(0L);
             }
+
+            // 6. 응답 DTO 반환
             return wordEntityMapper.toStudyDto(randomWord);
-//            return randomWord;
         } catch (Exception e) {
             log.error("랜덤 단어 조회 중 오류 발생: {}", e.getMessage(), e);
             throw new WordNotFoundException(0L);
         }
     }
 
-    // 답이 2개인경우 가능
-    // 답안중에 중간에 띄어쓰기는 아직 안됨(띄어 쓰기도 포함해야 인정됨)
+    @Override
+    public AnswerResponse checkAnswer(AnswerRequest answerRequest, HttpSession session) {
+        // 1. 단어 ID와 사용자 답안으로 정답 여부 확인
+        boolean isCorrect = validateAnswer(answerRequest.wordId(), answerRequest.answer());
+
+        // 2. 현재 인증된 사용자 정보 가져오기
+        User currentUser = getCurrentUser();
+
+        // 3. 단어 정보 조회
+        Word word = wordRepository.findById(answerRequest.wordId())
+                .orElseThrow(() -> new WordNotFoundException(answerRequest.wordId()));
+
+        // 4. 학습 기록 저장 (정답 여부 포함)
+        updateUserWordStudyHistory(currentUser, word, isCorrect);
+
+        AnswerResponse response;
+        String sessionId = session.getId();
+
+        if (isCorrect) {
+            int newPerfectRun = studyProgressService.incrementPerfectRun(sessionId);
+            response = new AnswerResponse(true, "정답입니다!", newPerfectRun);
+        } else {
+            studyProgressService.resetPerfectRun(sessionId);
+            response = new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", 0);
+        }
+        return response;
+    }
+
     @Override
     public Boolean validateAnswer(Long id, String userAnswer) {
         // 1. 단어 조회
@@ -265,11 +301,35 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public List<DailyWordResponse> findRandomWords() {
-        List<Word> randomWords = wordMapper.findRandom5Words();
-        if (randomWords.isEmpty()) {
+        try {
+            // 현재 인증된 사용자 가져오기
+            User currentUser = getCurrentUser();
+
+            // 사용자가 충분한 단어를 가지고 있는지 확인
+            long totalUserWords = wordMapper.countByUser(currentUser.getId());
+
+            List<Word> randomWords;
+
+            if (totalUserWords >= 5) {
+                // 사용자의 단어가 5개 이상인 경우 해당 사용자의 단어 중에서 랜덤 선택
+                randomWords = wordMapper.findRandomWordsByUserId(currentUser.getId(), 5);
+            } else if (totalUserWords > 0) {
+                // 사용자의 단어가 5개 미만이지만 존재하는 경우 가진 만큼 가져옴
+                randomWords = wordMapper.findRandomWordsByUserId(currentUser.getId(), (int) totalUserWords);
+            } else {
+                // 사용자의 단어가 없는 경우 공용 랜덤 단어 사용 (기존 방식)
+                randomWords = wordMapper.findRandom5Words();
+            }
+
+            if (randomWords.isEmpty()) {
+                log.warn("단어를 찾을 수 없습니다.");
+                throw new WordNotFoundException(0L);
+            }
+            return wordEntityMapper.toDailyWordDtoList(randomWords);
+        } catch (Exception e) {
+            log.error("일일 단어 조회 중 오류 발생: {}", e.getMessage(), e);
             throw new WordNotFoundException(0L);
         }
-        return wordEntityMapper.toDailyWordDtoList(randomWords);
     }
 
     @Override
@@ -279,12 +339,9 @@ public class WordServiceImpl implements WordService {
         if (excludeId != null) {
             // 수정 시: 자기 자신을 제외한 중복 체크
             return wordRepository.existsByVocabularyIgnoreCaseAndUserAndIdNot(newVocabulary, currentUser, excludeId);
-//            return wordRepository.existsByVocabularyIgnoreCaseAndIdNot(newVocabulary, excludeId);
         }
         // 신규 등록 시: 현재 사용자의 단어 중에서만 중복 체크
         return wordRepository.existsByVocabularyIgnoreCaseAndUser(newVocabulary, currentUser);
-        // 신규 등록 시: 전체 중복 체크
-//        return wordRepository.existsByVocabularyIgnoreCase(newVocabulary);
     }
 
     @Transactional
@@ -300,17 +357,16 @@ public class WordServiceImpl implements WordService {
         return new PageImpl<>(words, pageable, total);
     }
 
+    // 사용자의 단어 학습 이력을 기록하기 위한 메서드
+    private void updateUserWordStudyHistory(User user, Word word, boolean isCorrect) {
+        // 객체 생성 후 저장 (setter 없이)
+        StudyHistory studyHistory = StudyHistory.createStudyRecord(user, word, isCorrect);
+        studyHistoryRepository.save(studyHistory);
+    }
 
     // 일괄 저장을 위한 새로운 private 메서드
     private void batchSaveWords(List<Word> words) {
-        // MyBatis를 사용하는 경우 배치 삽입 구현
-        // 옵션 1: 단일 SQL로 여러 레코드 삽입 (권장)
         wordMapper.batchSave(words);
-
-        // 옵션 2: 기존 단일 저장 메서드 재사용
-        // for (Word word : words) {
-        //     wordMapper.save(word);
-        // }
     }
 
     private boolean isDuplicateWord(String vocabulary) {
@@ -321,31 +377,6 @@ public class WordServiceImpl implements WordService {
         return wordRepository.existsByVocabularyIgnoreCaseAndUser(vocabulary, currentUser);
     }
 
-    /**
-     * 단어(vocabulary)가 변경되었고 중복되는지 확인
-     */
-    private boolean isVocabularyChangedAndDuplicate(String originalVocabulary, String newVocabulary, Long wordId) {
-        // 단어 변경이 없으면 중복 검사 불필요
-        if (originalVocabulary.equals(newVocabulary)) {
-            return false;
-        }
-
-        return checkVocabularyDuplicate(newVocabulary, wordId);
-    }
-
-    /**
-     * 업데이트 요청 데이터 검증
-     */
-    private void validateUpdateRequest(Long id, WordRequest request) {
-        if (id == null) {
-            throw new ValidationException(Constants.Validation.EMPTY_ID_MESSAGE);
-        }
-        if (request == null) {
-            throw new ValidationException(Constants.Validation.EMPTY_UPDATE_WORD_MESSAGE);
-        }
-        // WordValidator 를 통한 기본 유효성 검사
-        wordValidator.validate(request);
-    }
 
     private boolean validateAnswer(String correctMeaning, String userAnswer) {
         if (userAnswer == null || userAnswer.trim().isEmpty()) {
@@ -355,36 +386,6 @@ public class WordServiceImpl implements WordService {
         return Arrays.stream(correctMeaning.split(","))
                 .map(String::trim)
                 .anyMatch(answer -> answer.equalsIgnoreCase(userAnswer.trim()));
-    }
-
-
-    /**
-     * 현재 로그인한 사용자가 단어의 소유자인지 확인합니다.
-     *
-     * @param word 확인할 단어 엔티티
-     * @throws AccessDeniedException 현재 사용자가 소유자가 아닌 경우
-     */
-    private void verifyWordOwnership(Word word) {
-        // 현재 인증된 사용자 정보 가져오기
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User currentUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("현재 인증된 사용자를 찾을 수 없습니다."));
-
-        log.info("접근 검증: 사용자={}, 사용자ID={}, 단어ID={}, 단어의 사용자ID={}",
-                currentUser.getEmail(), currentUser.getId(), word.getId(),
-                (word.getUser() != null ? word.getUser().getId() : "null"));
-
-        // 소유자 확인
-        if (word.getUser() == null) {
-            log.error("단어에 사용자 정보가 없음: 단어ID={}", word.getId());
-            throw new AccessDeniedException("해당 단어에 접근할 권한이 없습니다");
-        }
-
-        if (!word.getUser().getId().equals(currentUser.getId())) {
-            log.error("단어 소유자 불일치: 현재사용자ID={}, 단어소유자ID={}",
-                    currentUser.getId(), word.getUser().getId());
-            throw new AccessDeniedException("해당 단어에 접근할 권한이 없습니다");
-        }
     }
 
 
@@ -400,4 +401,15 @@ public class WordServiceImpl implements WordService {
                 .orElseThrow(() -> new RuntimeException("인증된 사용자를 찾을 수 없습니다."));
     }
 
+    @Override
+    public WordHintResponse getWordHint(Long id) {
+        Optional<Word> optionalWord = wordMapper.findWordByHint(id);
+        if (optionalWord.isPresent()) {
+            Word word = optionalWord.get();
+//            return new WordHintResponse(word.getHint());
+            return wordEntityMapper.toHintDto(word);
+        } else {
+            throw new WordNotFoundException(id);
+        }
+    }
 }

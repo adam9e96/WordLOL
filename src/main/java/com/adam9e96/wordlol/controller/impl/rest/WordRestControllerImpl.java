@@ -33,7 +33,6 @@ public class WordRestControllerImpl implements WordRestController {
 
     private final WordService wordService;
     private final StudyProgressService studyProgressService;
-    private final HttpSession httpSession;
 
     @Override
     @PostMapping
@@ -43,13 +42,6 @@ public class WordRestControllerImpl implements WordRestController {
         return ResponseEntity.ok().body(response);
     }
 
-
-    /**
-     * 단어를 일괄 등록합니다.
-     *
-     * @param requests 등록할 단어 목록
-     * @deprecated 현재는 사용안하는 API
-     */
     @Override
     @PostMapping("/batch")
     public ResponseEntity<Map<String, Object>> createWords(@RequestBody List<WordRequest> requests) {
@@ -91,39 +83,32 @@ public class WordRestControllerImpl implements WordRestController {
         return ResponseEntity.ok(response);
     }
 
-
     @Override
     @PostMapping("/check")
-    public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request
-            , HttpSession session) {
-        boolean isCorrect = wordService.validateAnswer(request.wordId(), request.answer());
+    public ResponseEntity<AnswerResponse> checkAnswer(@Valid @RequestBody AnswerRequest request, HttpSession session) {
+        AnswerResponse response = wordService.checkAnswer(request, session);
+        log.info("정답 확인 결과: {}", response.toString());
 
-        AnswerResponse response;
-
-        String sessionId = session.getId();
-        if (isCorrect) {
-
-            int newPerfectRun = studyProgressService.incrementPerfectRun(sessionId);
-            response = new AnswerResponse(true, "정답입니다!", newPerfectRun);
-        } else {
-            studyProgressService.resetPerfectRun(sessionId);
-            response = new AnswerResponse(false, "틀렸습니다. 다시 시도해보세요.", 0);
-        }
         return ResponseEntity.ok().body(response);
     }
 
     @Override
-    public ResponseEntity<Map<String, Boolean>> checkVocabularyDuplicate(String vocabulary, Long excludeId) {
+    @GetMapping("/check-duplicate")
+    public ResponseEntity<Map<String, Boolean>> checkVocabularyDuplicate(
+            @RequestParam("vocabulary") String vocabulary,
+            @RequestParam(value = "excludeId", required = false) Long excludeId) {
+
         boolean exists = wordService.checkVocabularyDuplicate(vocabulary, excludeId);
         return ResponseEntity.ok(Map.of("exists", exists));
     }
 
-
     @Override
     @GetMapping(Constants.ApiPath.WORD_HINT)
-    public ResponseEntity<Map<String, String>> getWordHint(@PathVariable("id") Long id) {
-        WordResponse wordResponse = wordService.findById(id);
-        return ResponseEntity.ok().body(Map.of("hint", wordResponse.hint()));
+    public ResponseEntity<WordHintResponse> getWordHint(@PathVariable("id") Long id) {
+        WordHintResponse response = wordService.getWordHint(id);
+
+        log.info("단어 힌트: {}", response.hint());
+        return ResponseEntity.ok().body(response);
     }
 
     @Override

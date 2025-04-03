@@ -1,9 +1,6 @@
 package com.adam9e96.wordlol.mapper.entity;
 
-import com.adam9e96.wordlol.dto.response.CreateWordResponse;
-import com.adam9e96.wordlol.dto.response.DailyWordResponse;
-import com.adam9e96.wordlol.dto.response.WordResponse;
-import com.adam9e96.wordlol.dto.response.WordStudyResponse;
+import com.adam9e96.wordlol.dto.response.*;
 import com.adam9e96.wordlol.entity.Word;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,4 +22,7 @@ public interface WordEntityMapper {
     @Mapping(target = "wordId", source = "id")
     @Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
     CreateWordResponse toCreateDto(Word word);
+
+    @Mapping(target = "hint", source = "hint")
+    WordHintResponse toHintDto(Word word);
 }

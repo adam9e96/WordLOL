@@ -1,17 +1,15 @@
 package com.adam9e96.wordlol.service.interfaces;
 
-import com.adam9e96.wordlol.dto.response.CreateWordResponse;
+import com.adam9e96.wordlol.dto.request.AnswerRequest;
+import com.adam9e96.wordlol.dto.response.*;
 import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.word.WordCreationException;
 import com.adam9e96.wordlol.exception.word.WordDeletionException;
 import com.adam9e96.wordlol.exception.word.WordNotFoundException;
 import com.adam9e96.wordlol.exception.word.WordUpdateException;
-import com.adam9e96.wordlol.dto.response.DailyWordResponse;
 import com.adam9e96.wordlol.dto.request.WordRequest;
-import com.adam9e96.wordlol.dto.response.WordResponse;
 import com.adam9e96.wordlol.dto.request.WordSearchRequest;
 import com.adam9e96.wordlol.entity.Word;
-import com.adam9e96.wordlol.dto.response.WordStudyResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -34,7 +33,6 @@ public interface WordService {
      * 새로운 단어를 생성합니다.
      *
      * @param request 생성할 단어 정보
-     * @return
      * @throws ValidationException   유효하지 않은 입력인 경우
      * @throws WordCreationException 단어 생성 중 오류가 발생한 경우
      */
@@ -174,6 +172,11 @@ public interface WordService {
     })
     List<DailyWordResponse> findRandomWords();
 
+    AnswerResponse checkAnswer(
+            AnswerRequest answerRequest,
+            HttpSession session
+    );
+
     /**
      * 단어의 중복 여부를 확인합니다.
      *
@@ -207,4 +210,6 @@ public interface WordService {
             @Parameter(description = "검색 조건", required = true) WordSearchRequest request,
             @Parameter(description = "페이징 정보", required = true) Pageable pageable
     );
+
+    WordHintResponse getWordHint(Long id);
 }

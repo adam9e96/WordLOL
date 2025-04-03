@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
@@ -92,10 +93,6 @@ public class SecurityConfig {
                         "/logout",
                         "/oauth2/**",
                         "/auth/**",
-                        "/js/**",
-                        "/css/**",
-                        "/images/**",
-                        "/favicon.ico",
                         "/h2-console/**",
                         "/api/v1/auth/**",
                         "/access-denied"
@@ -111,6 +108,17 @@ public class SecurityConfig {
                 // 그 외 모든 요청은 인증 필요
                 .anyRequest().authenticated();
     }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(
+                "/js/**",
+                "/css/**",
+                "/images/**",
+                "/favicon.ico"
+        );
+    }
+
 
     /**
      * 로그아웃 설정

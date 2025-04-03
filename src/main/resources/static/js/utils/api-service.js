@@ -269,9 +269,15 @@ class ApiService {
         const response = await fetch(`${this.wordsApiUrl}/${id}/hint`, {
             credentials: 'include'
         });
-        console.log(response.json());
-        return response.json();
+        if (!response.ok) {
+            throw new Error('힌트를 불러오는데 실패했습니다.');
+        }
+
+        const data = await response.json();
+        console.log('힌트 데이터:', data);
+        return data;
     }
+
 
     async fetchDailyWords() {
         const response = await fetch(`${this.wordsApiUrl}/daily`, {
