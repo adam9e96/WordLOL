@@ -107,19 +107,31 @@ public class Word {
 
 
     /**
-     * 영어 단어의 세부 정보를 업데이트합니다.
-     * 검증 로직은 서비스 계층에서 update() 메서드가 실행 되기 전에 처리합니다.
-     *
-     * @param vocabulary 새로운 영어 단어(어휘)
-     * @param meaning    새로운 단어의 의미 또는 정의
-     * @param hint       새로운 선택적 힌트
-     * @param difficulty 새로운 난이도 (null 인 경우 기존 값 유지)
+     * 새로운 Word 객체를 반환하는 불변적 업데이트 메서드
      */
-    public void update(String vocabulary, String meaning, String hint, Integer difficulty) {
-        this.vocabulary = vocabulary;
-        this.meaning = meaning;
-        this.hint = hint;
-        this.difficulty = difficulty;
+    public Word update(String vocabulary, String meaning, String hint, Integer difficulty) {
+        return Word.builder()
+                .id(this.id)
+                .vocabulary(vocabulary)
+                .meaning(meaning)
+                .hint(hint)
+                .difficulty(difficulty)
+                .wordBook(this.wordBook)
+                .user(this.user)
+                .build();
     }
 
+    /**
+     * 기존 단어 정보를 바탕으로 새 WordBook에 연결된 복사본 생성
+     */
+    public Word copyWithNewWordBook(WordBook newWordBook) {
+        return Word.builder()
+                .vocabulary(this.vocabulary)
+                .meaning(this.meaning)
+                .hint(this.hint)
+                .difficulty(this.difficulty)
+                .wordBook(newWordBook)
+                .user(this.user)
+                .build();
+    }
 }

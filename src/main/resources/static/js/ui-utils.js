@@ -13,6 +13,13 @@ class UiUtils {
      */
     setupEventListeners() {
         document.addEventListener('DOMContentLoaded', () => {
+
+            // dayjs 한국어 로케일 설정
+            if (window.dayjs) {
+                dayjs.locale('ko');
+                console.log('dayjs 한국어 로케일 설정 완료');
+            }
+
             this.initializeToasts();
             this.initializeModals();
             this.setupAuthListeners();
@@ -220,6 +227,7 @@ class UiUtils {
             userName.textContent = userInfo.name || userInfo.email || '사용자';
         }
     }
+
 }
 
 // 싱글톤 인스턴스 생성

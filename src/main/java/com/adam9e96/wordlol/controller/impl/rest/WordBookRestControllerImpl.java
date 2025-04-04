@@ -1,5 +1,6 @@
 package com.adam9e96.wordlol.controller.impl.rest;
 
+import com.adam9e96.wordlol.common.constants.Constants;
 import com.adam9e96.wordlol.controller.interfaces.rest.WordBookRestController;
 import com.adam9e96.wordlol.dto.response.WordResponse;
 import com.adam9e96.wordlol.dto.request.WordBookRequest;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/wordbooks")
+ @RequestMapping(Constants.ApiPath.WORD_BOOKS)
 @RequiredArgsConstructor
 public class WordBookRestControllerImpl implements WordBookRestController {
     private final WordBookService wordBookService;

@@ -1,24 +1,21 @@
 package com.adam9e96.wordlol.service.impl;
 
-import com.adam9e96.wordlol.dto.request.WordRequest;
-import com.adam9e96.wordlol.dto.response.WordResponse;
 import com.adam9e96.wordlol.dto.request.WordBookRequest;
-import com.adam9e96.wordlol.dto.response.WordBookDetailResponse;
-import com.adam9e96.wordlol.dto.response.WordBookListResponse;
-import com.adam9e96.wordlol.dto.response.WordBookResponse;
-import com.adam9e96.wordlol.dto.response.WordBookStudyResponse;
+import com.adam9e96.wordlol.dto.request.WordRequest;
+import com.adam9e96.wordlol.dto.response.*;
 import com.adam9e96.wordlol.entity.User;
-import com.adam9e96.wordlol.enums.Category;
 import com.adam9e96.wordlol.entity.Word;
 import com.adam9e96.wordlol.entity.WordBook;
+import com.adam9e96.wordlol.enums.Category;
+import com.adam9e96.wordlol.exception.validation.ValidationException;
 import com.adam9e96.wordlol.exception.wordbook.*;
-import com.adam9e96.wordlol.repository.jpa.UserRepository;
-import com.adam9e96.wordlol.repository.mybatis.WordBookMapper;
-import com.adam9e96.wordlol.repository.mybatis.WordMapper;
 import com.adam9e96.wordlol.mapper.entity.WordBookEntityMapper;
 import com.adam9e96.wordlol.mapper.entity.WordEntityMapper;
+import com.adam9e96.wordlol.repository.jpa.UserRepository;
 import com.adam9e96.wordlol.repository.jpa.WordBookRepository;
 import com.adam9e96.wordlol.repository.jpa.WordRepository;
+import com.adam9e96.wordlol.repository.mybatis.WordBookMapper;
+import com.adam9e96.wordlol.repository.mybatis.WordMapper;
 import com.adam9e96.wordlol.service.interfaces.WordBookService;
 import com.adam9e96.wordlol.validator.WordBookValidator;
 import lombok.RequiredArgsConstructor;
@@ -54,48 +51,92 @@ public class WordBookServiceImpl implements WordBookService {
             // 입력값 유효성 검사
             wordBookValidator.validate(request);
 
+            // 현재 인증된 사용자 가져오기
+            User currentUser = getCurrentAuthenticatedUser();
 
-            // 3. 현재 인증된 사용자 가져오기
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("현재 인증된 사용자를 찾을 수 없습니다."));
-            // 단어장 생성
+            // WordBook 엔티티 생성 (팩토리 메서드 사용)
             WordBook wordBook = WordBook.createWordBook(
                     request.name(),
                     request.description(),
-                    request.category()
+                    request.category(),
+                    currentUser
             );
 
-            wordBook.setUser(user); // 단어장과 사용자 연결
-
-            // 단어 추가
+            // 단어 추가 처리
             if (request.words() != null && !request.words().isEmpty()) {
-                log.debug("단어장에 {}개의 단어 추가 시작", request.words().size());
+                log.info("단어장에 {}개의 단어 추가 시작", request.words().size());
 
                 for (WordRequest wordRequest : request.words()) {
-                    Word word = Word.builder()
-                            .vocabulary(wordRequest.vocabulary())
-                            .meaning(wordRequest.meaning())
-                            .hint(wordRequest.hint())
-                            .difficulty(wordRequest.difficulty())
-                            .user(user)
-                            .build();
-                    wordBook.addWord(word);
+                    try {
+                        // WordBook의 팩토리 메서드를 사용하여 Word 생성 및 추가
+                        // 이 방식은 setter 없이 관계를 설정
+                        wordBook.createAndAddWord(
+                                wordRequest.vocabulary(),
+                                wordRequest.meaning(),
+                                wordRequest.hint(),
+                                wordRequest.difficulty(),
+                                currentUser
+                        );
+                    } catch (ValidationException e) {
+                        log.warn("유효하지 않은 단어 '{}' 건너뜀: {}",
+                                wordRequest.vocabulary(), e.getMessage());
+                        throw e;
+                    }
                 }
+            } else {
+                log.info("단어장이 비어있습니다");
             }
-            WordBook savedWordBook = wordBookRepository.save(wordBook);
-            log.debug("단어장 생성 완료: ID={}", savedWordBook.getId());
 
-            // 단어장 생성 후 단어 목록을 WordResponse로 변환
+            // WordBook 저장 (연관된 Word 엔티티들도 cascade로 저장됨)
+            WordBook savedWordBook = wordBookRepository.save(wordBook);
+            log.info("단어장 생성 완료: ID={}, 이름={}", savedWordBook.getId(), savedWordBook.getName());
+
+            // 응답 생성
             return wordBookEntityMapper.toResponse(savedWordBook);
         } catch (DataIntegrityViolationException e) {
-            log.debug("단어장 생성 중 데이터 무결성 오류 : {}", e.getMessage());
+            log.error("단어장 생성 중 데이터 무결성 오류: {}", e.getMessage());
             throw new WordBookCreationException();
+        } catch (ValidationException e) {
+            // 유효성 검사 예외는 그대로 전파
+            throw e;
         } catch (Exception e) {
-            log.error("단어장 생성 중 예기치 않은 오류 발생", e);
+            log.error("단어장 생성 중 예기치 않은 오류 발생: {}", e.getMessage(), e);
             throw new WordBookCreationException();
         }
     }
+
+//    /**
+//     * 단어장에 단어들을 추가하는 메서드입니다.
+//     * 각 단어는 유효성 검사를 거친 후 단어장에 추가됩니다.
+//     *
+//     * @param wordBook     단어가 추가될 단어장
+//     * @param wordRequests 추가할 단어들의 요청 리스트
+//     * @param user         현재 인증된 사용자
+//     */
+//    private void processWordsForWordBook(WordBook wordBook, List<WordRequest> wordRequests, User user) {
+//        for (WordRequest wordRequest : wordRequests) {
+//            try {
+//                // Word 엔티티 생성 시 wordBook을 생성자에 전달
+//                // 생성 시점에 모든 관계 설정 완료
+//                Word word = Word.builder()
+//                        .vocabulary(wordRequest.vocabulary())
+//                        .meaning(wordRequest.meaning())
+//                        .hint(wordRequest.hint())
+//                        .difficulty(wordRequest.difficulty())
+//                        .user(user)
+//                        .wordBook(wordBook) // 생성 시점에 wordBook 설정
+//                        .build();
+//
+//                // words 컬렉션에만 추가
+//                wordBook.getWords().add(word);
+//
+//            } catch (ValidationException e) {
+//                log.warn("유효하지 않은 단어 '{}'를 건너뜁니다: {}",
+//                        wordRequest.vocabulary(), e.getMessage());
+//                throw e;
+//            }
+//        }
+//    }
 
     /**
      * 단어장에 포함된 모든 단어를 조회합니다.
@@ -261,27 +302,32 @@ public class WordBookServiceImpl implements WordBookService {
         log.info("단어장 수정 시작 - id: {}", id);
         // 유효성 검사
         wordBookValidator.validateUpdate(request, id);
+
         // 기존 단어장 조회
         WordBook wordBook = wordBookRepository.findById(id)
                 .orElseThrow(() -> {
                     log.debug("수정할 단어장을 찾을 수 없습니다. id: {}", id);
                     return new WordBookNotFoundException(id);
                 });
+
         try {
-            // 기본 정보 업데이트
+            // WordBook 클래스의 update 메서드가 void 타입으로 변경되었으므로
+            // 리턴값을 사용하지 않고 직접 호출
             wordBook.update(
                     request.name(),
                     request.description(),
                     request.category()
             );
+
             // 단어 목록 업데이트
             updateWordBookWords(wordBook, request.words());
+
             // 저장 및 반환
             WordBook savedWordBook = wordBookRepository.save(wordBook);
             log.debug("단어장 수정 완료 - id: {}", id);
+
             // 단어장 수정 후 단어 목록을 WordResponse로 변환
             return wordBookEntityMapper.toResponse(savedWordBook);
-
         } catch (Exception e) {
             log.error("단어장 수정 중 오류 발생 - id: {}", id, e);
             throw new WordBookUpdateException();
@@ -318,6 +364,9 @@ public class WordBookServiceImpl implements WordBookService {
             return;
         }
 
+        // 현재 인증된 사용자 가져오기 (단어 생성에 필요)
+        User currentUser = getCurrentAuthenticatedUser();
+
         // 기존 단어들을 Map으로 변환 (ID로 빠른 조회를 위해)
         Map<Long, Word> existingWords = wordBook.getWords().stream()
                 .collect(Collectors.toMap(Word::getId, word -> word));
@@ -328,24 +377,29 @@ public class WordBookServiceImpl implements WordBookService {
         // 요청받은 단어들 처리
         for (WordRequest wordRequest : wordRequests) {
             if (wordRequest.id() != null && existingWords.containsKey(wordRequest.id())) {
-                // 기존 단어 업데이트
+                // 기존 단어 업데이트 - 새 Word 객체를 생성하여 업데이트
                 Word existingWord = existingWords.get(wordRequest.id());
-                existingWord.update(
-                        wordRequest.vocabulary(),
-                        wordRequest.meaning(),
-                        wordRequest.hint(),
-                        wordRequest.difficulty()
-                );
-                updatedWords.add(existingWord);
-            } else {
-                // 새 단어 추가
-                Word newWord = Word.builder()
+                Word updatedWord = Word.builder()
+                        .id(existingWord.getId())
                         .vocabulary(wordRequest.vocabulary())
                         .meaning(wordRequest.meaning())
                         .hint(wordRequest.hint())
                         .difficulty(wordRequest.difficulty())
+                        .wordBook(wordBook)  // 관계 유지
+                        .user(existingWord.getUser())
                         .build();
-                wordBook.addWord(newWord);
+
+                updatedWords.add(updatedWord);
+            } else {
+                // 새 단어 추가 - WordBook의 팩토리 메서드 사용
+                Word newWord = wordBook.createAndAddWord(
+                        wordRequest.vocabulary(),
+                        wordRequest.meaning(),
+                        wordRequest.hint(),
+                        wordRequest.difficulty(),
+                        currentUser
+                );
+
                 updatedWords.add(newWord);
             }
         }
@@ -355,5 +409,10 @@ public class WordBookServiceImpl implements WordBookService {
         wordBook.getWords().addAll(updatedWords);
     }
 
+    private User getCurrentAuthenticatedUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다. : " + email));
+    }
 
 }
