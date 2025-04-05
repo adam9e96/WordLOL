@@ -1,8 +1,9 @@
 package com.adam9e96.wordlol.repository.mybatis;
 
-import com.adam9e96.wordlol.enums.Category;
 import com.adam9e96.wordlol.entity.WordBook;
+import com.adam9e96.wordlol.enums.Category;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +17,7 @@ public interface WordBookMapper {
 
     Optional<WordBook> findById(Long id);
 
-    List<WordBook> findByCategory(Category category);
+    List<WordBook> findByCategory(@Param("category") Category category, @Param("userId") Long userId);
+
+
 }

@@ -29,6 +29,10 @@ public final class Constants {
         public static final String WORD_LIST = "/list";
         public static final String WORD_SEARCH = "/search";
         public static final String WORD_BOOKS = BASE_API_PATH + "/wordbooks";
+        public static final String WORD_BOOKS_ID = "/{id}";
+        public static final String WORD_BOOKS_WORDS = "/{id}/words";
+        public static final String WORD_BOOKS_STUDY = "/{id}/study";
+        public static final String WORD_BOOKS_CATEGORY = "/category/{category}/words";
     }
 
     /**

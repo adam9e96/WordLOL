@@ -9,6 +9,8 @@ import com.adam9e96.wordlol.entity.WordBook;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface WordBookEntityMapper {
 
@@ -21,4 +23,5 @@ public interface WordBookEntityMapper {
 
     @Mapping(target = "wordCount", expression = "java(wordBook.getWords().size())")
     WordBookListResponse toListDto(WordBook wordBook);
+
 }

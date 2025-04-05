@@ -136,18 +136,7 @@
         SELECT COUNT(*)
         FROM word
     </select>
-    <select id="findByWordBookId" resultMap="WordResultMap">
-        SELECT e.id,
-               e.vocabulary,
-               e.meaning,
-               e.hint,
-               e.difficulty,
-               e.created_at,
-               e.updated_at
-        FROM word e
-        WHERE e.word_book_id = #{wordBookId}
-        ORDER BY e.id DESC /* 최신 단어부터 조회 */
-    </select>
+
     <select id="findAllByWordBookId" resultMap="WordResultMap">
         SELECT e.id,
                e.vocabulary,
@@ -237,5 +226,19 @@
         FROM word
         WHERE user_id = #{userId}
         ORDER BY RAND() LIMIT #{limit}
+    </select>
+    <select id="findByWordBookId" resultMap="WordResultMap">
+        SELECT e.id,
+               e.vocabulary,
+               e.meaning,
+               e.hint,
+               e.difficulty,
+               e.created_at,
+               e.updated_at
+        FROM word e
+                 JOIN word_book wb ON e.word_book_id = wb.id
+        WHERE e.word_book_id = #{wordBookId}
+          AND wb.user_id = #{userId}
+        ORDER BY e.id DESC /* 최신 단어부터 조회 */
     </select>
 </mapper>

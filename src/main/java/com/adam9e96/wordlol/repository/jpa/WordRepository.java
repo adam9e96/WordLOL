@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface WordRepository extends JpaRepository<Word, Long> {
 
-    List<Word> findByWordBookCategory(Category category);
-
     boolean existsByVocabularyIgnoreCaseAndUser(String vocabulary, User user);
 
     boolean existsByVocabularyIgnoreCaseAndUserAndIdNot(String vocabulary, User user, Long excludeId);
+
+    List<Word> findByWordBookCategoryAndWordBookUser(Category category, User user);
 }

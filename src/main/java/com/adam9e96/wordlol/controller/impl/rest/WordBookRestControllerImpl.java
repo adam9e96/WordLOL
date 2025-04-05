@@ -2,12 +2,8 @@ package com.adam9e96.wordlol.controller.impl.rest;
 
 import com.adam9e96.wordlol.common.constants.Constants;
 import com.adam9e96.wordlol.controller.interfaces.rest.WordBookRestController;
-import com.adam9e96.wordlol.dto.response.WordResponse;
 import com.adam9e96.wordlol.dto.request.WordBookRequest;
-import com.adam9e96.wordlol.dto.response.WordBookDetailResponse;
-import com.adam9e96.wordlol.dto.response.WordBookListResponse;
-import com.adam9e96.wordlol.dto.response.WordBookResponse;
-import com.adam9e96.wordlol.dto.response.WordBookStudyResponse;
+import com.adam9e96.wordlol.dto.response.*;
 import com.adam9e96.wordlol.enums.Category;
 import com.adam9e96.wordlol.service.interfaces.WordBookService;
 import jakarta.validation.Valid;
@@ -20,31 +16,32 @@ import java.util.List;
 
 @Slf4j
 @RestController
- @RequestMapping(Constants.ApiPath.WORD_BOOKS)
+@RequestMapping(Constants.ApiPath.WORD_BOOKS)
 @RequiredArgsConstructor
 public class WordBookRestControllerImpl implements WordBookRestController {
     private final WordBookService wordBookService;
 
     @Override
     @PostMapping
-    public ResponseEntity<WordBookResponse> createWordBook(@RequestBody WordBookRequest request) {
+    public ResponseEntity<WordBookResponse> createWordBook(@RequestBody @Valid WordBookRequest request) {
         WordBookResponse response = wordBookService.createWordBook(request);
         return ResponseEntity.ok().body(response);
     }
 
     @Override
-    @GetMapping("{id}/words")
+    @GetMapping(Constants.ApiPath.WORD_BOOKS_WORDS)
     public ResponseEntity<List<WordResponse>> getWordBookWords(@PathVariable("id") Long id) {
         List<WordResponse> responses = wordBookService.findWordsByWordBookId(id);
         return ResponseEntity.ok().body(responses);
     }
 
-    // 아직 안씀
+    // JS에서 URL 경로를 지워버리는 버그있음 작동은 잘됨
     @Override
-    @GetMapping("/category/{category}/words")
+    @GetMapping(Constants.ApiPath.WORD_BOOKS_CATEGORY)
     public ResponseEntity<List<WordResponse>> getWordsByCategoryName(@PathVariable("category") Category category) {
+        log.info("니니아");
         return ResponseEntity.ok().body(
-                wordBookService.findWordsByBookCategory(category));
+                wordBookService.getAllWordsFromWordBooksByCategory(category));
     }
 
     // 단어장 목록 조회용 (리스트 페이지에서 사용)
@@ -59,31 +56,26 @@ public class WordBookRestControllerImpl implements WordBookRestController {
     @Override
     @GetMapping("/category")
     public ResponseEntity<List<WordBookResponse>> getWordBooksByCategory(@RequestParam("category") Category category) {
-        List<WordBookResponse> response = wordBookService.findWordBookListByCategory(category);
+        List<WordBookResponse> response = wordBookService.getWordBooksByCategory(category);
         return ResponseEntity.ok().body(response);
     }
 
     @Override
-    @DeleteMapping("/{id}")
+    @DeleteMapping(Constants.ApiPath.WORD_BOOKS_ID)
     public ResponseEntity<Void> deleteWordBook(@PathVariable("id") Long id) {
         wordBookService.deleteWordBookById(id);
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * @param id 단어장 ID
-     * @since 2025-02-15
-     * 단어장 상세 조회용 (수정 페이지에서 사용)
-     */
     @Override
-    @GetMapping("/{id}")
+    @GetMapping(Constants.ApiPath.WORD_BOOKS_ID)
     public ResponseEntity<WordBookDetailResponse> getWordBook(@PathVariable("id") Long id) {
         WordBookDetailResponse response = wordBookService.findWordBookById(id);
         return ResponseEntity.ok().body(response);
     }
 
     @Override
-    @PutMapping("/{id}")
+    @PutMapping(Constants.ApiPath.WORD_BOOKS_ID)
     public ResponseEntity<WordBookResponse> updateWordBook(
             @PathVariable("id") Long id,
             @Valid @RequestBody WordBookRequest request) {
@@ -92,7 +84,7 @@ public class WordBookRestControllerImpl implements WordBookRestController {
     }
 
     @Override
-    @GetMapping("/{id}/study")
+    @GetMapping(Constants.ApiPath.WORD_BOOKS_STUDY)
     public ResponseEntity<List<WordBookStudyResponse>> getWordBookStudyData(
             @PathVariable("id") Long id) {
         List<WordBookStudyResponse> response = wordBookService.findWordBookStudyData(id);

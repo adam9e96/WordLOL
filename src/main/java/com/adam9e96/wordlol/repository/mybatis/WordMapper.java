@@ -31,8 +31,6 @@ public interface WordMapper {
 
     List<Word> findRecent5Words();
 
-    List<Word> findByWordBookId(Long wordBookId);
-
     void deleteById(Long id);
 
     List<Word> findRandomWordsByUserId(@Param("userId") Long userId, @Param("limit") int limit);
@@ -67,4 +65,6 @@ public interface WordMapper {
     Word findRandomWordByUserId(@Param("userId") Long userId);
 
     List<Word> findByUserWithPaging(@Param("userId") Long userId, @Param("pageable") Pageable pageable);
+
+    List<Word> findByWordBookId(@Param("wordBookId") Long wordBookId, @Param("userId") Long userId);
 }

@@ -70,7 +70,7 @@ public interface WordBookService {
         @ApiResponse(responseCode = "200", description = "단어장 목록 조회 성공"),
         @ApiResponse(responseCode = "404", description = "해당 카테고리의 단어장을 찾을 수 없음")
     })
-    List<WordBookResponse> findWordBookListByCategory(@Parameter(description = "조회할 카테고리", required = true) Category category);
+    List<WordBookResponse> getWordBooksByCategory(@Parameter(description = "조회할 카테고리", required = true) Category category);
 
     /**
      * 모든 단어장 목록을 조회합니다.
@@ -96,7 +96,7 @@ public interface WordBookService {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "단어 목록 조회 성공")
     })
-    List<WordResponse> findWordsByBookCategory(@Parameter(description = "조회할 카테고리", required = true) Category category);
+    List<WordResponse> getAllWordsFromWordBooksByCategory(@Parameter(description = "조회할 카테고리", required = true) Category category);
 
     /**
      * 학습용 단어장 데이터를 조회합니다.

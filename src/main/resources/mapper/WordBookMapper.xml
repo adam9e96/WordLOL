@@ -45,24 +45,25 @@
     <select id="findByCategory" resultMap="WordBookResultMap">
         SELECT
             /* 단어장 정보 */
-            wb.id, /* 단어장 ID */
-            wb.name, /* 단어장 이름 */
-            wb.description, /* 단어장 설명 */
-            wb.category, /* 카테고리 */
-            wb.created_at, /* 단어장 생성일시 */
-            wb.updated_at, /* 단어장 수정일시 */
+            wb.id,
+            wb.name,
+            wb.description,
+            wb.category,
+            wb.created_at,
+            wb.updated_at,
 
             /* 단어 정보 */
-            ew.id         as word_id, /* 단어 ID (별칭 사용으로 단어장 ID와 구분) */
-            ew.vocabulary, /* 영단어 */
-            ew.meaning, /* 의미 */
-            ew.hint, /* 힌트 */
-            ew.difficulty, /* 난이도 */
-            ew.created_at as word_created_at, /* 단어 생성일시 */
-            ew.updated_at as word_updated_at /* 단어 수정일시 */
+            ew.id         as word_id,
+            ew.vocabulary,
+            ew.meaning,
+            ew.hint,
+            ew.difficulty,
+            ew.created_at as word_created_at,
+            ew.updated_at as word_updated_at
         FROM word_book wb
-                 LEFT JOIN word ew ON wb.id = ew.word_book_id /* 단어장-단어 테이블 조인 */
-        WHERE wb.category = #{category} /* 입력받은 카테고리로 필터링 */
+                 LEFT JOIN word ew ON wb.id = ew.word_book_id
+        WHERE wb.category = #{category}
+          AND wb.user_id = #{userId}
     </select>
     <select id="findById" resultMap="WordBookResultMap">
         SELECT *
