@@ -1,15 +1,7 @@
-/**
- * @file api-service.js
- * @description 단어 등록을 위한 간단한 API 서비스 모듈
- */
-
-/**
- * API 서비스 클래스
- * 단어 등록 관련 API 기능을 제공합니다.
- */
 class ApiService {
     constructor() {
         this.wordsApiUrl = '/api/v1/words';
+        this.wordBooksApiUrl = '/api/v1/wordbooks';
     }
 
     /**
@@ -19,23 +11,14 @@ class ApiService {
      */
     handleError(error, endpoint) {
         console.error(`API 오류 (${endpoint}):`, error);
-        if (window.showErrorToast) {
-            window.showErrorToast(error.message || '요청 처리 중 오류가 발생했습니다.');
-        }
     }
 
-    /**
-     * 로딩 표시 시작
-     */
     startLoading() {
         if (window.showLoading) {
             window.showLoading(true);
         }
     }
 
-    /**
-     * 로딩 표시 종료
-     */
     endLoading() {
         if (window.showLoading) {
             window.showLoading(false);
@@ -243,8 +226,8 @@ class ApiService {
 
     /**
      *
-     * @param id
-     * @param answer
+     * @param wordId 단어 ID
+     * @param answer 사용자 입력 정답
      * @returns {Promise<any>}
      */
     async checkAnswer(wordId, answer) {
@@ -329,13 +312,289 @@ class ApiService {
             this.endLoading();
         }
     }
+
+
+    //** 단어장 관련 메서드 */
+
+    /**
+     * 단어장 생성
+     * @param {Object} wordBookData - 단어장 데이터
+     * @param {string} wordBookData.name - 단어장 이름
+     * @param {string} wordBookData.description - 단어장 설명
+     * @param {string} wordBookData.category - 단어장 카테고리
+     * @param {Array<Object>} wordBookData.words - 단어 목록
+     * @returns {Promise<Object>} 생성된 단어장 정보
+     */
+    async createWordBook(wordBookData) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(this.wordBooksApiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(wordBookData),
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || '단어장 생성에 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'createWordBook');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 단어장 목록 조회
+     * @param {Object} [options={}] - 조회 옵션
+     * @param {number} [options.page=0] - 페이지 번호
+     * @param {number} [options.size=10] - 페이지 크기
+     * @param {string} [options.category] - 카테고리 필터
+     * @returns {Promise<Object>} 페이징된 단어장 목록
+     */
+    async fetchWordBooks(options = {}) {
+        this.startLoading();
+
+        try {
+            const {page = 0, size = 10, category} = options;
+
+            let url = `${this.wordBooksApiUrl}/?page=${page}&size=${size}`;
+            if (category) {
+                url += `&category=${encodeURIComponent(category)}`;
+            }
+
+            const response = await fetch(url, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('단어장 목록을 불러오는데 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'fetchWordBooks');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 단어장 상세 조회
+     * @param {number} wordBookId - 단어장 ID
+     * @returns {Promise<Object>} 단어장 상세 정보
+     */
+    async fetchWordBook(wordBookId) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordBooksApiUrl}/${wordBookId}`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('단어장 정보를 불러오는데 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'fetchWordBook');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 단어장의 단어 목록 조회
+     * @param {number} wordBookId - 단어장 ID
+     * @returns {Promise<Array>} 단어 목록
+     */
+    async fetchWordBookWords(wordBookId) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordBooksApiUrl}/${wordBookId}/words`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('단어장의 단어 목록을 불러오는데 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'fetchWordBookWords');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 단어장 삭제
+     * @param {number} wordBookId - 단어장 ID
+     * @returns {Promise<Response>} 삭제 결과
+     */
+    async deleteWordBook(wordBookId) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordBooksApiUrl}/${wordBookId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || '단어장 삭제에 실패했습니다.');
+            }
+
+            return response;
+        } catch (error) {
+            this.handleError(error, 'deleteWordBook');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+    /**
+     * 모든 단어장 목록 조회 - 단어장 목록 페이지용
+     * @returns {Promise<Array>} 단어장 목록
+     */
+    async getAllWordBooks() {
+        this.startLoading();
+
+        try {
+            const response = await fetch(this.wordBooksApiUrl, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('단어장 목록을 불러오는데 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'getAllWordBooks');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 카테고리별 단어장 목록 조회
+     * @param {string} category - 카테고리 코드 (TOEIC, TOEFL, CSAT, CUSTOM)
+     * @returns {Promise<Array>} 단어장 목록
+     */
+    async getWordBooksByCategory(category) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordBooksApiUrl}/category?category=${category}`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`${getCategoryDisplayName(category)} 카테고리의 단어장을 불러오는데 실패했습니다.`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'getWordBooksByCategory');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+
+    /**
+     * 단어장 학습 데이터 조회
+     * @param {number} wordBookId - 단어장 ID
+     * @returns {Promise<Array>} 학습 데이터
+     */
+    async fetchWordBookStudyData(wordBookId) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordBooksApiUrl}/${wordBookId}/study`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('단어장 학습 데이터를 불러오는데 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'fetchWordBookStudyData');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
+
+    /**
+     * 단어장 수정
+     * @param {number} wordBookId - 단어장 ID
+     * @param {Object} wordBookData - 수정할 단어장 데이터
+     * @returns {Promise<Object>} 수정된 단어장 정보
+     */
+    async updateWordBook(wordBookId, wordBookData) {
+        this.startLoading();
+
+        try {
+            const response = await fetch(`${this.wordBooksApiUrl}/${wordBookId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(wordBookData),
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('단어장 수정에 실패했습니다.');
+            }
+
+            return await response.json();
+        } catch (error) {
+            this.handleError(error, 'updateWordBook');
+            throw error;
+        } finally {
+            this.endLoading();
+        }
+    }
 }
 
-// 전역 인스턴스 생성
+
+/**
+ * 카테고리 표시 이름 가져오기
+ * @param {string} category - 카테고리 코드
+ * @returns {string} 카테고리 표시 이름
+ */
+function getCategoryDisplayName(category) {
+    const categoryMap = {
+        'ALL': '전체',
+        'TOEIC': '토익',
+        'TOEFL': '토플',
+        'CSAT': '수능',
+        'CUSTOM': '사용자 정의'
+    };
+    return categoryMap[category] || category;
+}
+
 const apiService = new ApiService();
 
-// 전역 객체에 등록
-// window.ApiService = apiService;
-
-// ES 모듈 내보내기
 export default apiService;

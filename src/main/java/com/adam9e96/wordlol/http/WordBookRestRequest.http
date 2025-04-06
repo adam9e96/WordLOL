@@ -1,23 +1,137 @@
 ### POST 단어장 생성
-POST http://localhost:8080/api/v1/wordbooks/create
+POST http://localhost:8080/api/v1/wordbooks/
 Content-Type: application/json
 
 {
-  "name": "토익테스트단어장",
-  "description": "토익테스트설명",
+  "name": "토익 기본 어휘 100",
   "category": "TOEIC",
+  "description": "토익 시험에 자주 출제되는 핵심 단어 100개 모음집",
   "words": [
     {
-      "vocabulary": "occur",
-      "meaning": "발생하다",
-      "hint": "발생하다",
-      "difficulty": 1
+      "vocabulary": "accomplish",
+      "meaning": "완수하다, 달성하다",
+      "hint": "ac(~에) + complish(완성하다)",
+      "difficulty": 3
     },
     {
-      "vocabulary": "wheel",
-      "meaning": "바퀴, 밀다, 태우고 가다",
-      "hint": "바퀴",
-      "difficulty": 1
+      "vocabulary": "agreement",
+      "meaning": "동의, 합의",
+      "hint": "agree(동의하다) + -ment(명사형)",
+      "difficulty": 2
+    },
+    {
+      "vocabulary": "anticipate",
+      "meaning": "예상하다, 기대하다",
+      "hint": "앞(anti-)으로 생각하다",
+      "difficulty": 4
+    },
+    {
+      "vocabulary": "beneficial",
+      "meaning": "유익한, 이로운",
+      "hint": "benefit(이익) + -al(형용사 접미사)",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "collaborate",
+      "meaning": "협력하다, 공동 작업하다",
+      "hint": "co(함께) + labor(노동)",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "demonstrate",
+      "meaning": "증명하다, 보여주다",
+      "hint": "demon(악마) + strate(~하다, 상징)",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "emerge",
+      "meaning": "나타나다, 출현하다",
+      "hint": "e(밖으로) + merge(합류하다)",
+      "difficulty": 2
+    },
+    {
+      "vocabulary": "facilitate",
+      "meaning": "쉽게 하다, 촉진하다",
+      "hint": "facil(쉬운) + -itate(~하게 하다)",
+      "difficulty": 4
+    },
+    {
+      "vocabulary": "generate",
+      "meaning": "발생시키다, 생성하다",
+      "hint": "gene(생성) + rate(비율)",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "hesitate",
+      "meaning": "망설이다, 주저하다",
+      "hint": "he(그) + sitate(멈추다)",
+      "difficulty": 2
+    },
+    {
+      "vocabulary": "implement",
+      "meaning": "실행하다, 이행하다",
+      "hint": "in(안으로) + plement(채우다)",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "negotiate",
+      "meaning": "협상하다",
+      "hint": "negotia(거래) + -te(~하다)",
+      "difficulty": 4
+    },
+    {
+      "vocabulary": "postpone",
+      "meaning": "연기하다, 미루다",
+      "hint": "post(후) + pone(놓다)",
+      "difficulty": 2
+    },
+    {
+      "vocabulary": "priority",
+      "meaning": "우선순위",
+      "hint": "prior(앞의) + -ity(명사형)",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "reluctant",
+      "meaning": "꺼리는, 마지못해 하는",
+      "hint": "re(되돌아가다) + lucta(투쟁)",
+      "difficulty": 4
+    },
+    {
+      "vocabulary": "substantial",
+      "meaning": "상당한, 실질적인",
+      "hint": "substa(밑에 놓인) + -ntial(형용사 접미사)",
+      "difficulty": 4
+    },
+    {
+      "vocabulary": "terminate",
+      "meaning": "종료하다, 끝내다",
+      "hint": "termin(경계) + -ate(~하다)",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "validate",
+      "meaning": "검증하다, 확인하다",
+      "hint": "valid(유효한) + -ate(~하다)",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "verify",
+      "meaning": "확인하다, 입증하다",
+      "hint": "veri(진실) + -fy(~하게 하다)",
+      "difficulty": 3
+    },
+    {
+      "vocabulary": "withdraw",
+      "meaning": "철회하다, 빼내다",
+      "hint": "with(함께) + draw(그리다, 빼내다)",
+      "difficulty": 2
+    },
+    {
+      "vocabulary": "yield",
+      "meaning": "산출하다, 생산하다",
+      "hint": "농작물이 수확되다",
+      "difficulty": 3
     }
   ]
 }

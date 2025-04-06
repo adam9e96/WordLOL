@@ -6,7 +6,7 @@
 <head>
     <title>단어장 목록</title>
     <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/pages/wordbook/list.css}">
+        <link rel="stylesheet" th:href="@{/css/pages/wordbook/book_list.css}">
     </th:block>
 </head>
 <body>
@@ -20,13 +20,12 @@
                     <i class="bi bi-journal-text"></i>
                     <span>단어장 목록</span>
                 </h2>
-                <button class="btn btn-check-answer create-btn" onclick="wordBookListManager.navigateTo('/wordbook/create')">
+                <button class="btn btn-check-answer create-btn" id="create-btn">
                     <i class="bi bi-plus-lg"></i>
                     <span>새 단어장 만들기</span>
                 </button>
             </div>
 
-            <!-- 카테고리 필터 -->
             <div class="category-filter">
                 <div class="filter-chip-group" role="group">
                     <button class="filter-chip active" data-category="ALL">
@@ -60,40 +59,10 @@
             </div>
         </section>
     </div>
-
-    <!-- 삭제 확인 모달 -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="bi bi-exclamation-triangle"></i>
-                        단어장 삭제
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>정말로 이 단어장을 삭제하시겠습니까?</p>
-                    <p class="text-danger">이 작업은 되돌릴 수 없습니다.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
-                        취소
-                    </button>
-                    <button type="button" class="btn btn-error" id="confirmDelete">
-                        <i class="bi bi-trash"></i>
-                        삭제
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 </main>
-<!-- 토스트 컨테이너 추가 -->
-<div class="toast-container position-fixed top-0 end-0 p-3"></div>
 
 <th:block layout:fragment="script">
-    <script th:src="@{/js/wordbook/list.js}"></script>
+    <script th:type="module" th:src="@{/js/wordbook/book_list.js}"></script>
 </th:block>
 </body>
 </html>

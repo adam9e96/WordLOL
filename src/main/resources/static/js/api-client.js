@@ -1,8 +1,3 @@
-/**
- * api-client.js
- * API 요청과 응답을 처리하는 클라이언트 모듈
- */
-
 class ApiClient {
     constructor() {
         this.pendingRequests = 0;
@@ -33,7 +28,6 @@ class ApiClient {
                 return await this.handleResponse(response);
             } catch (error) {
                 console.error(`요청 오류: ${url}`, error);
-                this.showErrorMessage(error.message);
                 throw error;
             } finally {
                 this.endLoading();
@@ -85,16 +79,6 @@ class ApiClient {
         return response;
     }
 
-    /**
-     * 오류 메시지 표시
-     */
-    showErrorMessage(message) {
-        if (window.showToast) {
-            window.showToast(message, '오류', 'error');
-        } else {
-            console.error('오류 메시지:', message);
-        }
-    }
 
     /**
      * API 요청 시작 시 로딩 상태 표시

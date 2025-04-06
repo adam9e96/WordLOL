@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <title>단어장 상세 보기</title>
     <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/pages/wordbook/view.css}">
+        <link rel="stylesheet" th:href="@{/css/pages/wordbook/book_view.css}">
     </th:block>
 </head>
 <body>
@@ -99,7 +99,7 @@
 </main>
 
 <th:block layout:fragment="script">
-    <script th:src="@{/js/wordbook/view.js}"></script>
+    <script th:type="module" th:src="@{/js/wordbook/book_view.js}"></script>
 </th:block>
 </body>
 </html>

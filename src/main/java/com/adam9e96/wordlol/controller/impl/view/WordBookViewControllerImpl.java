@@ -15,13 +15,13 @@ public class WordBookViewControllerImpl implements WordBookViewController {
     @Override
     @GetMapping(Constants.ViewPath.WORD_BOOK_CREATE)
     public String showWordBookCreatePage() {
-        return "views/wordbook/create";
+        return "views/wordbook/book_create";
     }
 
     @Override
     @GetMapping(Constants.ViewPath.WORD_BOOK_LIST)
     public String showWordBookListPage() {
-        return "views/wordbook/list";
+        return "views/wordbook/book_list";
     }
 
     @Override
@@ -39,6 +39,6 @@ public class WordBookViewControllerImpl implements WordBookViewController {
     @Override
     @GetMapping(Constants.ViewPath.WORD_BOOK_VIEW)
     public String showWordBookViewPage(@PathVariable("id") Long id) {
-        return "views/wordbook/view";
+        return "views/wordbook/book_view";
     }
 }

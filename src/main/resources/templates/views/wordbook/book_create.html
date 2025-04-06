@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>단어장 만들기</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/pages/wordbook/book_create.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content" class="create-grid">
+    <div class="content-container">
+        <!-- 헤더 섹션 -->
+        <div class="page-header">
+            <h2 class="page-title">
+                <i class="bi bi-journal-plus"></i>
+                <span>새 단어장 만들기</span>
+            </h2>
+        </div>
+
+        <!-- 단어장 생성 폼 -->
+        <form id="wordBookForm" class="wordbook-form needs-validation" novalidate>
+            <!-- 기본 정보 섹션 -->
+            <section class="form-section">
+                <h3 class="features-title">
+                    <i class="bi bi-info-circle"></i>
+                    기본 정보
+                </h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="name">
+                            <i class="bi bi-journal-text"></i>
+                            단어장 이름
+                        </label>
+                        <input type="text" id="name" class="form-control"
+                               placeholder="예: 토익 Day 1" required>
+                        <div class="invalid-feedback">단어장 이름을 입력해주세요.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="category">
+                            <i class="bi bi-folder"></i>
+                            카테고리
+                        </label>
+                        <select id="category" class="form-select" required>
+                            <option value="">카테고리 선택</option>
+                            <option value="TOEIC">토익</option>
+                            <option value="TOEFL">토플</option>
+                            <option value="CSAT">수능</option>
+                            <option value="CUSTOM">사용자 정의</option>
+                        </select>
+                        <div class="invalid-feedback">카테고리를 선택해주세요.</div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label" for="description">
+                            <i class="bi bi-card-text"></i>
+                            설명
+                        </label>
+                        <textarea id="description" class="form-control"
+                                  placeholder="단어장에 대한 설명을 입력해주세요."
+                                  required rows="3"></textarea>
+                        <div class="invalid-feedback">설명을 입력해주세요.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 단어 목록 섹션 -->
+            <section class="form-section">
+                <div class="features-header">
+                    <h3 class="features-title">
+                        <i class="bi bi-list-ul"></i>
+                        단어 목록
+                    </h3>
+                    <div class="bulk-actions">
+                        <button type="button" class="btn btn-surface" data-rows="5">
+                            <i class="bi bi-plus-lg"></i>
+                            5줄 추가
+                        </button>
+                        <button type="button" class="btn btn-surface" data-rows="10">
+                            <i class="bi bi-plus-lg"></i>
+                            10줄 추가
+                        </button>
+                    </div>
+                </div>
+
+                <div class="words-container">
+                    <div class="word-list-header">
+                        <div class="col">영단어</div>
+                        <div class="col">의미</div>
+                        <div class="col">힌트</div>
+                        <div class="col">난이도</div>
+                        <div class="col-action">관리</div>
+                    </div>
+                    <div id="wordList" class="word-list">
+                        <!-- 단어 행들이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                    <button type="button" class="btn btn-text-primary add-word-btn" id="addWordBtn">
+                        <i class="bi bi-plus-lg"></i>
+                        단어 추가
+                    </button>
+                </div>
+            </section>
+
+            <!-- 버튼 그룹 -->
+            <div class="control-section">
+                <button type="button" class="btn btn-cancel" id="cancelBtn">
+                    <i class="bi bi-arrow-left"></i>
+                    취소
+                </button>
+                <button type="submit" class="btn btn-check-answer">
+                    <i class="bi bi-check-lg"></i>
+                    단어장 생성
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 단어 행 템플릿 (JavaScript에서 사용) -->
+    <template id="wordRowTemplate">
+        <div class="word-row">
+            <div class="col" data-label="영단어">
+                <input type="text" class="form-control vocabulary"
+                       placeholder="영단어" required
+                       pattern="^[a-zA-Z\s-]+$">
+                <div class="invalid-feedback">올바른 영단어를 입력해주세요.</div>
+            </div>
+            <div class="col" data-label="의미">
+                <input type="text" class="form-control meaning"
+                       placeholder="의미" required>
+                <div class="invalid-feedback">의미를 입력해주세요.</div>
+            </div>
+            <div class="col" data-label="힌트">
+                <input type="text" class="form-control hint"
+                       placeholder="힌트">
+                <div class="invalid-feedback">힌트는 100자 이내여야 합니다.</div>
+            </div>
+            <div class="col" data-label="난이도">
+                <select class="form-select difficulty" required>
+                    <option value="1">⭐ 매우 쉬움</option>
+                    <option value="2">⭐⭐ 쉬움</option>
+                    <option value="3" selected>⭐⭐⭐ 보통</option>
+                    <option value="4">⭐⭐⭐⭐ 어려움</option>
+                    <option value="5">⭐⭐⭐⭐⭐ 매우 어려움</option>
+                </select>
+                <div class="invalid-feedback">난이도를 선택해주세요.</div>
+            </div>
+            <div class="col-action">
+                <button type="button" class="btn-remove" title="행 삭제">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+    </template>
+</main>
+
+<th:block layout:fragment="script">
+    <script th:type="module" th:src="@{/js/wordbook/book_create.js}"></script>
+</th:block>
+</body>
+</html>

@@ -60,6 +60,9 @@ public final class Constants {
 
 
     public static final class Validation {
+        private Validation() {
+            throw new AssertionError("Validation 클래스는 인스턴스화할 수 없습니다.");
+        }
         public static final String VOCABULARY_PATTERN = "^[a-zA-Z\\s-]*$";
         public static final int MAX_LENGTH = 100;
         public static final String MAX_LENGTH_MESSAGE = "100자를 초과할 수 없습니다.";
