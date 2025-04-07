@@ -1,5 +1,4 @@
-/* 1. 기본 레이아웃 및 컨테이너
-단어장 목록 페이지 그리드 */
+/* 1. 기본 레이아웃 및 컨테이너 */
 .list-grid {
     display: grid;
     place-items: start center;
@@ -8,7 +7,6 @@
     background: var(--surface-container-low);
 }
 
-/* 단어장 목록 페이지 컨테이너 */
 .content-container {
     width: min(100%, 1400px);
     display: grid;
@@ -25,7 +23,6 @@
     gap: var(--spacing-4);
 }
 
-/* 상단 내용 */
 .top-content {
     display: flex;
     align-items: center;
@@ -33,7 +30,6 @@
     gap: var(--spacing-4);
 }
 
-/* 상단 제목 */
 .page-title {
     display: flex;
     align-items: center;
@@ -44,14 +40,13 @@
     margin: 0;
 }
 
-/* 상단 아이콘 */
 .page-title i {
     color: var(--primary);
     font-size: 2rem;
 }
 
-/* 새 단어장 만들기 버튼 */
-.create-btn {
+/* 버튼 스타일 */
+.create-btn, .btn-check-answer {
     background: var(--primary);
     color: var(--on-primary);
     border: none;
@@ -64,27 +59,29 @@
     transition: all var(--transition-normal);
 }
 
-/* 새 단어장 만들기 버튼 호버 */
-.create-btn:hover {
+.create-btn:hover, .btn-check-answer:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
 }
 
-/*3. 카테고리 필터 */
-/* 카테고리 필터 */
+.btn-check-answer:hover {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    transform: translateY(-4px);
+}
+
+/* 3. 카테고리 필터 */
 .category-filter {
     padding-top: var(--spacing-4);
     border-top: 1px solid var(--outline-variant);
 }
 
-/* 카테고리 필터 그룹 */
 .filter-chip-group {
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-2);
 }
 
-/* 기본 필터 칩 스타일 */
 .filter-chip {
     display: flex;
     align-items: center;
@@ -99,7 +96,6 @@
     cursor: pointer;
 }
 
-/* 호버 상태 */
 .filter-chip:hover {
     background: var(--surface-container-high);
     border-color: var(--outline);
@@ -107,7 +103,6 @@
     box-shadow: var(--shadow-1);
 }
 
-/* 선택된 필터 칩 강조 스타일 */
 .filter-chip.active {
     background: var(--primary-container);
     color: var(--on-primary-container);
@@ -115,31 +110,29 @@
     box-shadow: var(--shadow-2);
 }
 
-/* 칩 내 아이콘 스타일 */
 .filter-chip i {
     font-size: 1.1rem;
     color: inherit;
 }
 
-/* 각 카테고리별 아이콘 색상 */
-.filter-chip[onclick*="TOEIC"].active i {
-    color: #6750A4; /* 토익 테마 색상 */
+/* 카테고리별 아이콘 색상 */
+.filter-chip[data-category="TOEIC"].active i {
+    color: #6750A4;
 }
 
-.filter-chip[onclick*="TOEFL"].active i {
-    color: #0C8599; /* 토플 테마 색상 */
+.filter-chip[data-category="TOEFL"].active i {
+    color: #0C8599;
 }
 
-.filter-chip[onclick*="CSAT"].active i {
-    color: #C2410C; /* 수능 테마 색상 */
+.filter-chip[data-category="CSAT"].active i {
+    color: #C2410C;
 }
 
-.filter-chip[onclick*="CUSTOM"].active i {
-    color: #047857; /* 사용자 정의 테마 색상 */
+.filter-chip[data-category="CUSTOM"].active i {
+    color: #047857;
 }
 
 /* 4. 단어장 섹션 */
-/* 단어장 목록 섹션 */
 .wordbooks-section {
     background: var(--surface);
     border-radius: var(--border-radius-xl);
@@ -147,22 +140,13 @@
     box-shadow: var(--shadow-2);
 }
 
-/* 단어장 목록 */
 .wordbooks-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: var(--spacing-4);
 }
 
-/*5. 단어장 카드 */
-
-/* 카테고리 아이콘 크기 */
-.category-chip i {
-    font-size: 1rem;
-}
-
-
-/* 단어장 js 에서 동적으로 추가됨 */
+/* 5. 단어장 카드 */
 .wordbook-card {
     background: var(--surface-container);
     border-radius: var(--border-radius);
@@ -172,21 +156,17 @@
     position: relative;
     transition: all var(--transition-normal);
     min-height: 320px;
-    /* 애니메이션 관련 속성 추가 */
     will-change: transform, box-shadow;
     transform: translateZ(0);
     overflow: hidden;
 }
 
-/* 단어장 호버 */
 .wordbook-card:hover {
     background: var(--surface-container-high);
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
 }
 
-/* 카테고리 태그 위치 고정 및 스타일 개선 */
-/* js 에서 동적으로 생성 */
 .category-chip {
     position: absolute;
     top: var(--spacing-3);
@@ -201,23 +181,25 @@
     background: var(--primary-container);
     color: var(--on-primary-container);
     box-shadow: var(--shadow-1);
-    max-width: 120px; /* 최대 너비 제한 */
+    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    z-index: 2; /* 카테고리 칩이 항상 위에 오도록 함 */
+    z-index: 2;
 }
 
-/* 카드 헤더 레이아웃 */
+.category-chip i {
+    font-size: 1rem;
+}
+
 .card-header-container {
     padding-top: var(--spacing-4);
     margin-bottom: var(--spacing-2);
-    padding-right: 70px; /* 카테고리 태그 너비만큼 여백 확보 */
-    min-height: 70px; /* 최소 높이 설정 */
-    width: 89%; /* 전체 너비 사용 */
+    padding-right: 70px;
+    min-height: 70px;
+    width: 89%;
 }
 
-/* 제목 텍스트 스타일 - 말줄임 처리 추가 */
 .card-name {
     font-size: 1.25rem;
     font-weight: 600;
@@ -225,10 +207,9 @@
     margin: 0;
     overflow-wrap: break-word;
     hyphens: auto;
-    display: inline-block; /* 인라인 블록으로 변경하여 자연스러운 줄바꿈 */
+    display: inline-block;
 }
 
-/* 설명 텍스트 영역 - 높이 제한 및 말줄임 처리 */
 .card-description {
     color: var(--on-surface-variant);
     font-size: 0.875rem;
@@ -237,15 +218,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* 최대 3줄까지 표시 */
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-    min-height: 3.9em; /* 3줄에 해당하는 대략적인 높이 */
+    min-height: 3.9em;
     background: var(--surface-container-high);
     border-radius: var(--border-radius);
     padding: var(--spacing-3);
 }
 
-/* 카드 푸터 영역 구분선 */
 .card-footer {
     display: grid;
     gap: var(--spacing-3);
@@ -255,7 +235,6 @@
     border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
-/* 단어 수 */
 .word-count {
     display: flex;
     align-items: center;
@@ -264,20 +243,17 @@
     font-size: 0.875rem;
 }
 
-/* 단어 수 아이콘*/
 .word-count i {
     color: var(--primary);
 }
 
 /* 6. 카드 버튼 섹션 */
-/* 조회/학습/수정/삭제 버튼 섹션 */
 .control-section {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--spacing-2);
 }
 
-/* 조회/학습/수정삭제 버튼 */
 .card-btn {
     display: flex;
     flex-direction: column;
@@ -289,7 +265,6 @@
     transition: all var(--transition-normal);
     border: none;
     cursor: pointer;
-    /* 버튼 애니메이션 관련 속성 */
     will-change: transform;
     backface-visibility: hidden;
 }
@@ -297,9 +272,10 @@
 .card-btn:hover {
     background: var(--surface-container-highest);
     border-color: var(--outline);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
 }
 
-/* 카드 버튼 아이콘 */
 .card-btn i {
     font-size: 1.25rem;
     margin-bottom: 0.25rem;
@@ -310,20 +286,16 @@
     font-weight: 500;
 }
 
-/* 조회 버튼 */
+/* 버튼 유형별 스타일 */
 .btn-view {
     background: var(--surface-container-high);
     color: var(--on-surface-variant);
 }
 
 .btn-view:hover {
-    background: var(--surface-container-highest);
     color: var(--on-surface);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-2);
 }
 
-/* 학습 버튼 */
 .btn-study {
     background: var(--primary-container);
     color: var(--on-primary-container);
@@ -332,11 +304,8 @@
 .btn-study:hover {
     background: var(--primary);
     color: var(--on-primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-2);
 }
 
-/* 수정 버튼 */
 .btn-edit {
     background: var(--secondary-container);
     color: var(--on-secondary-container);
@@ -345,11 +314,8 @@
 .btn-edit:hover {
     background: var(--secondary);
     color: var(--on-secondary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-2);
 }
 
-/* 삭제 버튼 */
 .btn-delete {
     background: var(--error-container);
     color: var(--on-error-container);
@@ -358,30 +324,173 @@
 .btn-delete:hover {
     background: var(--error);
     color: var(--on-error);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-2);
 }
 
-/* 8. 상태 메시지(빈 상태, 오류 상태) */
-/* 빈 상태 및 오류 상태 컨테이너 js 에서 동적으로 생성 */
+/* 7. 모달 */
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-3);
+    overflow: hidden;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--outline-variant);
+    padding: var(--spacing-4) var(--spacing-5);
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: var(--spacing-5);
+    color: var(--on-surface);
+}
+
+.modal-body p {
+    margin-bottom: var(--spacing-3);
+    line-height: 1.5;
+}
+
+.modal-body .text-danger {
+    color: var(--error);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    background-color: var(--error-container);
+    border-radius: var(--border-radius);
+    margin-top: var(--spacing-3);
+}
+
+.modal-body .text-danger::before {
+    content: '\F623';
+    font-family: "bootstrap-icons";
+    font-size: 1.1rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--outline-variant);
+    padding: var(--spacing-3) var(--spacing-5);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-3);
+}
+
+.modal .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-5);
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 100px;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal .btn:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+.modal .btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%, -50%);
+    transform-origin: 50% 50%;
+}
+
+/* 모달 버튼 유형별 스타일 */
+.modal .btn-cancel {
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
+    border: 1px solid var(--outline-variant);
+}
+
+.modal .btn-cancel:hover {
+    background: var(--surface-container-high);
+    color: var(--on-surface);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-1);
+}
+
+.modal .btn-cancel:active {
+    transform: translateY(0);
+    box-shadow: none;
+    background: var(--surface-container-lowest);
+}
+
+.modal .btn-cancel:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-container);
+}
+
+.modal .btn-error {
+    background: var(--error);
+    color: var(--on-error);
+    font-weight: 600;
+}
+
+.modal .btn-error i {
+    font-size: 1.1rem;
+    margin-right: var(--spacing-1);
+}
+
+.modal .btn-error:hover {
+    background: #D32F2F;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(211, 47, 47, 0.3);
+}
+
+.modal .btn-error:active {
+    transform: translateY(0);
+    background: var(--error);
+    box-shadow: none;
+}
+
+.modal .btn-error:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--error-container);
+}
+
+/* 8. 상태 메시지 */
 .empty-state,
-.error-state {
+.error-state,
+.loading-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
+    grid-column: 1 / -1;
+    min-height: 300px;
+}
+
+.empty-state,
+.error-state {
     padding: var(--spacing-8);
     background: var(--surface-container);
     border-radius: var(--border-radius);
     margin: 2rem auto;
     width: 100%;
-    min-height: 300px;
-    grid-column: 1 / -1; /* 그리드 전체 너비 사용 */
     box-shadow: var(--shadow-1);
 }
 
-/* 아이콘 컨테이너 */
 .empty-state-icon,
 .error-state-icon {
     display: flex;
@@ -393,25 +502,21 @@
     margin-bottom: var(--spacing-4);
 }
 
-/* 빈 상태 아이콘 */
 .empty-state-icon {
     background-color: var(--secondary-container);
     color: var(--on-secondary-container);
 }
 
-/* 오류 상태 아이콘 */
 .error-state-icon {
     background-color: var(--error-container);
     color: var(--on-error-container);
 }
 
-/* 아이콘 크기 */
 .empty-state-icon i,
 .error-state-icon i {
     font-size: 2.5rem;
 }
 
-/* 제목 스타일 */
 .empty-state-title,
 .error-state-title {
     font-size: 1.5rem;
@@ -420,7 +525,6 @@
     color: var(--on-surface);
 }
 
-/* 메시지 스타일 */
 .empty-state-message,
 .error-state-message {
     font-size: 1rem;
@@ -429,56 +533,13 @@
     max-width: 500px;
 }
 
-/* 버튼 마진 추가 */
 .empty-state button,
 .error-state button {
     margin-top: var(--spacing-4);
 }
 
-/* 9. 애니메이션 및 반응형 디자인 */
-/* 애니메이션 관련 추가 스타일 */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInRight {
-    from {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes pullUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* 로딩 스피너 스타일 */
 .loading-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     padding: var(--spacing-8);
-    grid-column: 1 / -1;
-    min-height: 300px;
 }
 
 .loading-state p {
@@ -486,31 +547,18 @@
     color: var(--on-surface-variant);
 }
 
-/* 호버 상태 */
-.filter-chip:hover {
-    background: var(--surface-container-high);
-    border-color: var(--outline);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-1);
-}
-
-/* 선택된 필터 칩 강조 스타일 */
-.filter-chip.active {
-    background: var(--primary-container);
-    color: var(--on-primary-container);
-    border-color: var(--primary);
-    box-shadow: var(--shadow-2);
-}
-
-.btn-check-answer {
-    background: var(--primary);
-    border-radius: var(--border-radius);
-    color: var(--on-primary);
-}
-
-.btn-check-answer:hover {
-    background: var(--primary-container);
-    color: var(--on-primary-container);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-2);
+/* 9. 애니메이션 */
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    20% {
+        transform: scale(25, 25);
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(40, 40);
+    }
 }

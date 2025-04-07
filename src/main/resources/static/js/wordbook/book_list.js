@@ -243,10 +243,6 @@ function createWordBookCard(book) {
     `;
 }
 
-/**
- * 페이지 이동
- * @param {string} url - 이동할 URL
- */
 function navigateTo(url) {
     location.href = url;
 }

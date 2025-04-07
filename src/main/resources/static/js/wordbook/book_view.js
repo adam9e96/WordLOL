@@ -2,7 +2,6 @@ import apiService from '../utils/api-service.js';
 import animationService from '../utils/animation-service.js';
 import {formatDateTime, getDifficultyStars} from '../utils/formatting-utils.js';
 
-// 애플리케이션 상태 관리 객체
 const state = {
     wordBookId: null,
     wordBook: null,
@@ -13,7 +12,6 @@ const state = {
     animationServiceReady: false // 애니메이션 서비스 준비 상태 추적
 };
 
-// DOM 요소 참조 객체
 const elements = {
     container: document.querySelector('.content-container'),
     wordBookName: document.getElementById('wordbook-name'),
@@ -615,9 +613,6 @@ function setupEventListeners() {
     }
 }
 
-/**
- * 애플리케이션 초기화
- */
 async function initialize() {
     try {
         console.log('단어장 상세 보기 초기화 시작');

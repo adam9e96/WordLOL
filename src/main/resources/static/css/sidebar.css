@@ -6,13 +6,16 @@
     top: 0;
     left: 0;
     width: 250px;
-    height: 100vh;
     background: var(--surface-container);
     box-shadow: var(--shadow-2);
     z-index: 1000;
     transition: transform var(--transition-normal), width var(--transition-normal);
     overflow-y: auto;
     padding-top: 0; /* 헤더 높이만큼 패딩 제거 */
+    border-radius: 0 var(--border-radius-xl) var(--border-radius-xl) 0; /* 오른쪽 모서리만 둥글게 */
+    margin-top: var(--spacing-4); /* 상단에 약간의 여백 추가 */
+    margin-bottom: var(--spacing-4); /* 하단에 약간의 여백 추가 */
+    height: calc(100vh - var(--spacing-8)); /* 전체 높이에서 상하 여백 제외 */
 }
 
 /* 사이드바 접힌 상태 */
@@ -30,11 +33,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem;
     border-bottom: 1px solid var(--outline-variant);
     height: var(--header-height, 75px);
     position: relative;
-    padding-left: 60px; /* 햄버거 버튼 공간 */
+    /* 햄버거 버튼 공간 */
+    padding: 1rem 1rem 1rem 60px;
+    border-top-right-radius: var(--border-radius-xl); /* 오른쪽 상단 모서리 둥글게 */
 }
 
 /* 사이드바 제목 */
@@ -101,6 +105,7 @@
 /* 사이드바 콘텐츠 영역 */
 .sidebar-content {
     padding: 1rem 0;
+    border-bottom-right-radius: var(--border-radius-xl); /* 오른쪽 하단 모서리 둥글게 */
 }
 
 /* 사이드바 메뉴 */
@@ -182,6 +187,10 @@
     .sidebar {
         transform: translateX(-100%);
         width: 250px; /* 모바일에서도 너비 동일하게 */
+        border-radius: 0 var(--border-radius-xl) var(--border-radius-xl) 0;
+        margin-top: var(--spacing-4);
+        margin-bottom: var(--spacing-4);
+        height: calc(100vh - var(--spacing-8));
     }
 
     .sidebar.open {

@@ -141,15 +141,20 @@ header {
 
 /* 메인 콘텐츠 영역 */
 main {
-    /* grid-area: main; */ /* 그리드 영역 지정 제거 */
-    /* display: grid; */ /* 그리드 레이아웃 제거 */
-    /* place-items: center; */ /* 중앙 정렬 제거 */
-    padding: var(--spacing-unit); /* 패딩 설정 */
-    margin-top: var(--header-height); /* 헤더 높이만큼 마진 추가 */
-    min-height: calc(100vh - var(--header-height)); /* 최소 높이 계산 */
-    width: calc(100% - 250px); /* 사이드바 너비 고려 */
-    margin-left: 250px; /* 사이드바 너비만큼 왼쪽 마진 */
-    position: relative; /* 상대적 포지셔닝 설정 */
+    /* 그리드 영역 지정 제거 */
+    /* padding 설정 */
+    padding: var(--spacing-unit);
+    /* 헤더 높이만큼 상단 여백 추가 */
+    margin-top: var(--header-height);
+    /* 최소 높이 계산 - 헤더 높이 고려 */
+    min-height: calc(100vh - var(--header-height));
+    /* 사이드바 너비 고려 */
+    width: calc(100% - 250px);
+    /* 사이드바 너비만큼 왼쪽 마진 */
+    margin-left: 250px;
+    /* 상대적 포지셔닝 설정 */
+    position: relative;
+    /* 트랜지션 효과 추가 */
     transition: margin-left var(--transition-normal), width var(--transition-normal);
 }
 
@@ -170,16 +175,19 @@ body.sidebar-closed main {
     main {
         margin-left: 0;
         width: 100%;
+        /* 모바일에서는 상단 여백 더 명확하게 */
+        margin-top: var(--header-height);
+        padding-top: var(--spacing-4);
     }
 }
 
-/* Utility Classes - 유틸리티 클래스 정의 */
-.container {
-    width: min(calc(100% - 2rem), var(--max-width)); /* 반응형 너비 설정 */
-    margin: 0 auto; /* 중앙 정렬 */
-    padding: 0 var(--spacing-unit); /* 좌우 패딩 */
-}
-
-.hidden {
-    display: none !important; /* 요소 숨김 처리 */
+/* 모든 페이지 컨테이너에 적용될 공통 스타일 */
+.welcome-container,
+.word-list-container,
+.study-grid,
+.daily-content-grid,
+.dashboard-grid,
+.register-grid {
+    /* 공통 패딩 적용 */
+    padding-top: var(--spacing-6);
 }

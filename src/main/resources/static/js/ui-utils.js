@@ -13,13 +13,6 @@ class UiUtils {
      */
     setupEventListeners() {
         document.addEventListener('DOMContentLoaded', () => {
-
-            // dayjs 한국어 로케일 설정
-            if (window.dayjs) {
-                dayjs.locale('ko');
-                console.log('dayjs 한국어 로케일 설정 완료');
-            }
-
             this.initializeToasts();
             this.initializeModals();
             this.setupAuthListeners();
@@ -171,8 +164,31 @@ class UiUtils {
         });
 
         // 초기 인증 상태 확인 및 UI 업데이트
-        if (window.AuthService && window.AuthService.isAuthenticated()) {
-            this.updateAuthUI(true);
+        this.initializeAuthState();
+    }
+
+    /**
+     * 초기 인증 상태 및 사용자 정보 로드
+     */
+    async initializeAuthState() {
+        if (window.AuthService && window.AuthService.isAuthenticated) {
+            const isAuthenticated = await window.AuthService.isAuthenticated();
+
+            if (isAuthenticated) {
+                this.updateAuthUI(true);
+
+                // loadUserInfo 메서드 사용
+                if (window.AuthService.loadUserInfo) {
+                    try {
+                        const userInfo = await window.AuthService.loadUserInfo();
+                        if (userInfo) {
+                            this.updateProfileUI(userInfo);
+                        }
+                    } catch (error) {
+                        console.error('사용자 정보 로드 오류:', error);
+                    }
+                }
+            }
         }
     }
 
@@ -227,7 +243,6 @@ class UiUtils {
             userName.textContent = userInfo.name || userInfo.email || '사용자';
         }
     }
-
 }
 
 // 싱글톤 인스턴스 생성

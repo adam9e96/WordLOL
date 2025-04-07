@@ -27,7 +27,7 @@ public class WordBookViewControllerImpl implements WordBookViewController {
     @Override
     @GetMapping(Constants.ViewPath.WORD_BOOK_EDIT)
     public String showWordBookEditPage(@PathVariable("id") Long id) {
-        return "views/wordbook/edit";
+        return "views/wordbook/book_edit";
     }
 
     @Override

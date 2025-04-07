@@ -12,7 +12,8 @@ header 에 대한 스타일을 정의
     z-index: 1050;
     display: flex;
     align-items: center;
-    padding: 0;
+    justify-content: center; /* 중앙 정렬 */
+    padding: 0 var(--spacing-4); /* 좌우 패딩 추가 */
     background-color: var(--surface);
     box-shadow: var(--shadow-1);
 }
@@ -22,21 +23,20 @@ header 에 대한 스타일을 정의
 */
 .header-container {
     width: 100%;
-    padding-left: 60px; /* 햄버거 버튼 공간 */
-    transition: padding-left var(--transition-normal);
+    max-width: var(--max-width);
     display: flex;
     align-items: center;
+    padding: 0 var(--spacing-2); /* 내부 패딩 조정 */
 }
-
 
 /* 사이드바 열렸을 때 헤더 패딩 조정 */
 body.sidebar-open .header-container {
-    padding-left: 250px;
+    padding-left: 0; /* 패딩 제거 */
 }
 
 /* 사이드바 접혔을 때 헤더 패딩 조정 */
 body.sidebar-collapsed .header-container {
-    padding-left: 60px;
+    padding-left: 0; /* 패딩 제거 */
 }
 
 /* 사이드바가 닫힌 경우 헤더 컨테이너 패딩 제거 */
@@ -50,21 +50,21 @@ body.sidebar-closed .header-container {
     display: flex;
     align-items: center;
     /* 자식 요소들 간의 간격을 1rem 으로 설정 */
-    gap: 1rem;
+    gap: var(--spacing-4); /* 간격 조정 */
+    width: 100%;
     /* 내부 여백을 0.5rem 으로 설정 */
-    padding: 0.5rem;
+    padding: var(--spacing-2);
     background: var(--surface-container);
     border-radius: var(--border-radius);
-    box-shadow: var(--shadow-1);
 }
 
 /* 브랜드 로고 섹션 - 로고가 들어가는 컨테이너 */
 .header-brand-section {
-    padding: 0.5rem 1rem;
-    background: var(--surface-container);
+    padding: var(--spacing-2);
     border-radius: var(--border-radius);
     transition: background-color var(--transition-fast); /* 배경색 변경시 애니메이션 효과 */
     white-space: nowrap; /* 로고 텍스트가 줄바꿈 되지 않도록 설정 */
+    flex: 0 0 auto; /* 크기 고정 */
 }
 
 /* 브랜드 로고 섹션 호버시 - 마우스가 올라갔을 때의 스타일 */
@@ -98,9 +98,11 @@ body.sidebar-closed .header-container {
 /* 검색바 섹션 - 검색창이 들어가는 컨테이너 */
 .header-search-section {
     flex: 1; /* 남은 공간을 모두 차지하도록 설정 */
-    background: var(--surface-container);
+    min-width: 150px; /* 최소 너비 설정 */
+    background: var(--surface-container-low);
     border-radius: var(--border-radius);
-    padding: 0.25rem;
+    padding: var(--spacing-1) var(--spacing-2);
+    margin: 0 var(--spacing-2);
     display: flex;
     align-items: center;
     transition: all var(--transition-fast); /* 스타일 변경시 애니메이션 효과 */
@@ -174,7 +176,7 @@ body.sidebar-closed .header-container {
 /* 로그인 섹션 - 로그인 버튼이 있는 영역 */
 .header-auth-section {
     /* 패딩 설정 */
-    padding: 0.7rem 1rem;
+    padding: var(--spacing-2);
     /* 배경색 설정 */
     background: var(--surface-container);
     /* 테두리 반경 설정 */
@@ -183,6 +185,9 @@ body.sidebar-closed .header-container {
     transition: background-color var(--transition-fast);
     /* 텍스트 줄바꿈 방지 */
     white-space: nowrap;
+    flex: 0 0 auto; /* 크기 고정 */
+    min-width: 120px; /* 최소 너비 설정 */
+    max-width: 200px; /* 최대 너비 설정 */
 }
 
 /* 로그인 섹션 호버시 효과 */
@@ -225,14 +230,17 @@ body.sidebar-closed .header-container {
 .user-info {
     display: flex;
     align-items: center;
-    padding: 0.5rem 1rem;
-    background: var(--surface-container);
-    border-radius: var(--border-radius);
-    transition: background-color var(--transition-fast);
+    gap: var(--spacing-2);
+    background: transparent;
+    padding: 0;
 }
 
-.user-info:hover {
-    background: var(--surface-container-high);
+/* 사용자 이름 스타일 */
+#userName {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* 로그아웃 링크 스타일 */
@@ -244,6 +252,12 @@ body.sidebar-closed .header-container {
 
 .logout-link:hover {
     color: var(--primary);
+}
+
+/* 테마 토글 컨테이너 */
+.theme-toggle-container {
+    flex: 0 0 auto;
+    margin-left: var(--spacing-2);
 }
 
 /* 카테고리 메뉴 영역 - 네비게이션이 있는 헤더 하단부 */
@@ -310,6 +324,57 @@ body.sidebar-closed .header-container {
 /* 모바일 환경 (작은 화면)에서 헤더 컨테이너 스타일 변경 */
 @media (max-width: 991px) {
     .header-container {
-        padding-left: 0; /* 모바일에서는 패딩 제거 */
+        padding: 0 var(--spacing-2); /* 모바일에서 패딩 조정 */
+        max-width: 100%; /* 모바일에서 전체 너비 사용 */
+    }
+
+    .header-top {
+        gap: var(--spacing-2); /* 모바일에서 간격 줄임 */
+        padding: var(--spacing-2);
+    }
+
+    .header-brand-section {
+        padding: var(--spacing-1);
+    }
+
+    /* 모바일에서 검색창 조정 */
+    .header-search-section {
+        min-width: 100px;
+        margin: 0 var(--spacing-1);
+        padding: var(--spacing-1);
+    }
+
+    /* 모바일에서 로그인 섹션 조정 */
+    .header-auth-section {
+        padding: var(--spacing-1);
+        min-width: 80px;
+    }
+
+    /* 모바일에서 사용자 이름 더 줄이기 */
+    #userName {
+        max-width: 60px;
+    }
+
+    /* 모바일에서 아이콘 크기 줄이기 */
+    .auth-link i, .header-brand::before {
+        font-size: 1.2rem;
+    }
+
+    /* 모바일에서 프로필 이미지 크기 줄이기 */
+    .profile-img {
+        width: 28px;
+        height: 28px;
+        margin-right: 4px;
+    }
+
+    /* 테마 토글 컨테이너 조정 */
+    .theme-toggle-container {
+        margin-left: var(--spacing-1);
+    }
+
+    /* 테마 토글 버튼 크기 조정 */
+    .theme-toggle {
+        width: 32px;
+        height: 32px;
     }
 }

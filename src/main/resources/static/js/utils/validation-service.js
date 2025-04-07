@@ -21,6 +21,24 @@ const ERROR_MESSAGES = {
     difficulty: {
         required: '난이도를 선택해주세요.',
         range: '난이도는 1에서 5 사이의 값이어야 합니다.'
+    },
+    wordbook: {
+        name: {
+            required: '단어장 이름을 입력해주세요.',
+            length: '단어장 이름은 2자 이상 50자 이하로 입력해주세요.'
+        },
+        description: {
+            required: '단어장 설명을 입력해주세요.',
+            length: '단어장 설명은 10자 이상 500자 이하로 입력해주세요.'
+        },
+        category: {
+            required: '카테고리를 선택해주세요.',
+            invalid: '유효하지 않은 카테고리입니다.'
+        },
+        words: {
+            required: '최소 1개 이상의 단어가 필요합니다.',
+            max: '단어장에는 최대 100개의 단어만 추가할 수 있습니다.'
+        }
     }
 };
 const PATTERNS = {
@@ -141,6 +159,156 @@ export function validateDifficulty(value, options = {}) {
 }
 
 /**
+ * 단어장 이름 유효성 검증
+ * @param {string} value - 검증할 단어장 이름
+ * @param {Object} [options={}] - 추가 옵션
+ * @param {boolean} [options.allowEmpty=false] - 빈 값 허용 여부
+ * @returns {{isValid: boolean, message: string}} - 유효성 검증 결과
+ */
+export function validateWordBookName(value, options = {}) {
+    const {allowEmpty = false} = options;
+
+    // 빈 값 처리
+    if (!value || value.trim() === '') {
+        return allowEmpty
+            ? {isValid: true, message: ''}
+            : {isValid: false, message: ERROR_MESSAGES.wordbook.name.required};
+    }
+
+    const trimmedValue = value.trim();
+
+    // 길이 검증 (2-50자)
+    if (trimmedValue.length < 2 || trimmedValue.length > 50) {
+        return {isValid: false, message: ERROR_MESSAGES.wordbook.name.length};
+    }
+
+    return {isValid: true, message: ''};
+}
+
+/**
+ * 단어장 설명 유효성 검증
+ * @param {string} value - 검증할 단어장 설명
+ * @param {Object} [options={}] - 추가 옵션
+ * @param {boolean} [options.allowEmpty=false] - 빈 값 허용 여부
+ * @returns {{isValid: boolean, message: string}} - 유효성 검증 결과
+ */
+export function validateWordBookDescription(value, options = {}) {
+    const {allowEmpty = false} = options;
+
+    // 빈 값 처리
+    if (!value || value.trim() === '') {
+        return allowEmpty
+            ? {isValid: true, message: ''}
+            : {isValid: false, message: ERROR_MESSAGES.wordbook.description.required};
+    }
+
+    const trimmedValue = value.trim();
+
+    // 길이 검증 (10-500자)
+    if (trimmedValue.length < 10 || trimmedValue.length > 500) {
+        return {isValid: false, message: ERROR_MESSAGES.wordbook.description.length};
+    }
+
+    return {isValid: true, message: ''};
+}
+
+/**
+ * 단어장 카테고리 유효성 검증
+ * @param {string} value - 검증할 카테고리
+ * @param {Object} [options={}] - 추가 옵션
+ * @param {boolean} [options.allowEmpty=false] - 빈 값 허용 여부
+ * @returns {{isValid: boolean, message: string}} - 유효성 검증 결과
+ */
+export function validateWordBookCategory(value, options = {}) {
+    const {allowEmpty = false} = options;
+
+    // 빈 값 처리
+    if (!value || value.trim() === '') {
+        return allowEmpty
+            ? {isValid: true, message: ''}
+            : {isValid: false, message: ERROR_MESSAGES.wordbook.category.required};
+    }
+
+    // 유효한 카테고리 값 확인
+    const validCategories = ['TOEIC', 'TOEFL', 'CSAT', 'CUSTOM'];
+    if (!validCategories.includes(value)) {
+        return {isValid: false, message: ERROR_MESSAGES.wordbook.category.invalid};
+    }
+
+    return {isValid: true, message: ''};
+}
+
+/**
+ * 단어장 단어 목록 유효성 검증
+ * @param {Array} words - 검증할 단어 목록
+ * @returns {{isValid: boolean, message: string}} - 유효성 검증 결과
+ */
+export function validateWordBookWords(words) {
+    // 단어 목록이 배열인지 확인
+    if (!Array.isArray(words)) {
+        return {isValid: false, message: ERROR_MESSAGES.wordbook.words.required};
+    }
+
+    // 단어 목록이 비어있는지 확인
+    if (words.length === 0) {
+        return {isValid: false, message: ERROR_MESSAGES.wordbook.words.required};
+    }
+
+    // 단어 목록 최대 개수 검증
+    if (words.length > 100) {
+        return {isValid: false, message: ERROR_MESSAGES.wordbook.words.max};
+    }
+
+    // 각 단어 유효성 검사
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+
+        // 단어 필수 필드 검증
+        const vocabularyResult = validateVocabulary(word.vocabulary);
+        if (!vocabularyResult.isValid) {
+            return {
+                isValid: false,
+                message: `${i + 1}번째 단어: ${vocabularyResult.message}`,
+                index: i
+            };
+        }
+
+        const meaningResult = validateMeaning(word.meaning);
+        if (!meaningResult.isValid) {
+            return {
+                isValid: false,
+                message: `${i + 1}번째 단어: ${meaningResult.message}`,
+                index: i
+            };
+        }
+
+        // 힌트는 선택 사항이지만, 입력된 경우 유효성 검사
+        if (word.hint) {
+            const hintResult = validateHint(word.hint);
+            if (!hintResult.isValid) {
+                return {
+                    isValid: false,
+                    message: `${i + 1}번째 단어: ${hintResult.message}`,
+                    index: i
+                };
+            }
+        }
+
+        // 난이도 검증
+        const difficultyResult = validateDifficulty(word.difficulty);
+        if (!difficultyResult.isValid) {
+            return {
+                isValid: false,
+                message: `${i + 1}번째 단어: ${difficultyResult.message}`,
+                index: i
+            };
+        }
+    }
+
+    return {isValid: true, message: ''};
+}
+
+/**
  * 단어 폼 전체 유효성 검사
  * @param {Object} data - 단어 데이터
  * @param {Object} options - 추가 옵션
@@ -198,6 +366,61 @@ export async function validateWordForm(data, options = {}) {
         if (showToast && window.showErrorToast) {
             window.showErrorToast(difficultyResult.message, {title: '입력 오류'});
         }
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * 단어장 전체 유효성 검사
+ * @param {Object} data - 단어장 데이터
+ * @param {Object} options - 추가 옵션
+ * @param {boolean} options.showToast - 토스트 메시지 표시 여부
+ * @returns {Promise<boolean>} 유효성 검사 결과
+ */
+export async function validateWordBookForm(data, options = {}) {
+    const {showToast = false} = options;
+
+    // 단어장 이름 검증
+    const nameResult = validateWordBookName(data.name);
+    if (!nameResult.isValid) {
+        if (showToast && window.showErrorToast) {
+            window.showErrorToast(nameResult.message, {title: '입력 오류'});
+        }
+        return false;
+    }
+
+    // 단어장 설명 검증
+    const descriptionResult = validateWordBookDescription(data.description);
+    if (!descriptionResult.isValid) {
+        if (showToast && window.showErrorToast) {
+            window.showErrorToast(descriptionResult.message, {title: '입력 오류'});
+        }
+        return false;
+    }
+
+    // 카테고리 검증
+    const categoryResult = validateWordBookCategory(data.category);
+    if (!categoryResult.isValid) {
+        if (showToast && window.showErrorToast) {
+            window.showErrorToast(categoryResult.message, {title: '입력 오류'});
+        }
+        return false;
+    }
+
+    // 단어 목록 검증
+    const wordsResult = validateWordBookWords(data.words);
+    if (!wordsResult.isValid) {
+        if (showToast && window.showErrorToast) {
+            window.showErrorToast(wordsResult.message, {title: '입력 오류'});
+        }
+
+        // 에러가 발생한 단어 행 포커스 처리
+        if (wordsResult.index !== undefined && options.focusField) {
+            options.focusField(wordsResult.index);
+        }
+
         return false;
     }
 

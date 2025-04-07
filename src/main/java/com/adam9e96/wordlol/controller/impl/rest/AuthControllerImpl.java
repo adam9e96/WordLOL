@@ -4,11 +4,12 @@ import com.adam9e96.wordlol.config.security.jwt.JwtTokenProvider;
 import com.adam9e96.wordlol.controller.interfaces.rest.AuthController;
 import com.adam9e96.wordlol.dto.common.TokenInfo;
 import com.adam9e96.wordlol.dto.response.TokenResponse;
+import com.adam9e96.wordlol.dto.response.UserInfoResponse;
+import com.adam9e96.wordlol.entity.User;
 import com.adam9e96.wordlol.repository.jpa.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -86,7 +87,7 @@ public class AuthControllerImpl implements AuthController {
      */
     @GetMapping("/me")
     @Override
-    public ResponseEntity<String> getCurrentUser(HttpServletRequest request) {
+    public ResponseEntity<UserInfoResponse> getCurrentUser(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
 
         if (token == null || !jwtTokenProvider.validateToken(token)) {
@@ -96,15 +97,22 @@ public class AuthControllerImpl implements AuthController {
 
         try {
             String email = jwtTokenProvider.getEmailFromToken(token);
-            boolean userExists = userRepository.findByEmail(email).isPresent();
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> {
+                        log.warn("토큰의 이메일({})에 해당하는 사용자가 없습니다.", email);
+                        return new RuntimeException("사용자를 찾을 수 없습니다");
+                    });
 
-            if (!userExists) {
-                log.warn("토큰의 이메일({})에 해당하는 사용자가 없습니다.", email);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
+            UserInfoResponse userInfo = new UserInfoResponse(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getName(),
+                    user.getPicture(),
+                    user.getRole().getKey()
+            );
 
-            log.debug("사용자 정보 조회 성공: {}", email);
-            return ResponseEntity.ok(email);
+            log.info("사용자 정보 조회 성공: {}", email);
+            return ResponseEntity.ok(userInfo);
         } catch (Exception e) {
             log.error("사용자 정보 조회 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -113,29 +121,31 @@ public class AuthControllerImpl implements AuthController {
 
     /**
      * 현재 사용자의 인증 상태와 정보를 조회합니다.
+     * JWT 토큰이 있으면 토큰에서 사용자 정보를 추출하여 반환합니다.
      *
-     * @param session HTTP 세션
+     * @param request HTTP 요청 (JWT 토큰 확인용)
      * @return 인증 상태와 사용자 정보를 포함한 응답 엔티티
      */
     @GetMapping("/status")
     @Override
-    public ResponseEntity<Map<String, Object>> getAuthStatus(HttpSession session) {
+    public ResponseEntity<Map<String, Object>> getAuthStatus(HttpServletRequest request) {
         Map<String, Object> response = new HashMap<>();
-        // 세션에서 인증 상태 확인
-        Boolean authenticated = (Boolean) session.getAttribute("authenticated");
-        boolean isAuthenticated = authenticated != null && authenticated;
+        String token = jwtTokenProvider.resolveToken(request);
+
+        boolean isAuthenticated = token != null && jwtTokenProvider.validateToken(token);
         response.put("authenticated", isAuthenticated);
 
-        // 사용자 정보 추가 처리 (모든 조건을 단일 if문으로 통합)
-        String email = (String) session.getAttribute("userEmail");
-        if (isAuthenticated && email != null) {
+        if (isAuthenticated) {
             try {
+                String email = jwtTokenProvider.getEmailFromToken(token);
                 userRepository.findByEmail(email)
                         .ifPresent(user -> {
                             Map<String, Object> userInfo = new HashMap<>();
+                            userInfo.put("id", user.getId());
                             userInfo.put("email", user.getEmail());
                             userInfo.put("name", user.getName());
                             userInfo.put("picture", user.getPicture());
+                            userInfo.put("role", user.getRole().getKey());
                             response.put("userInfo", userInfo);
                         });
             } catch (Exception e) {
@@ -143,7 +153,6 @@ public class AuthControllerImpl implements AuthController {
             }
         }
 
-        response.put("authenticated", isAuthenticated);
         return ResponseEntity.ok(response);
     }
 
@@ -159,8 +168,6 @@ public class AuthControllerImpl implements AuthController {
 
         // 리프레시 토큰 쿠키 삭제
         clearCookie(response, "refresh_token", "/api/v1/auth/refresh");
-
-        // 세션 관련 처리는 프레임워크에 맡김 (SecurityContextHolder로 충분)
 
         // 보안 컨텍스트 클리어
         SecurityContextHolder.clearContext();
