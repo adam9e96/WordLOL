@@ -33,7 +33,7 @@ public class WordBookViewControllerImpl implements WordBookViewController {
     @Override
     @GetMapping(Constants.ViewPath.WORD_BOOK_STUDY)
     public String showWordBookStudyPage(@PathVariable("id") Long id) {
-        return "views/wordbook/study";
+        return "views/wordbook/book_study";
     }
 
     @Override
