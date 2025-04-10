@@ -1,30 +1,35 @@
 /* 전체 페이지 컨테이너 */
 .study-grid {
     /* 그리드 레이아웃 설정 */
-    display: grid;
+    display: flex; /* grid 대신 flex로 변경 */
+    flex-direction: column; /* 세로 방향으로 배치 */
     /* 그리드 아이템을 시작 위치에 중앙 정렬 */
-    align-items: start;
-    justify-items: center;
+    align-items: center;
+    justify-content: flex-start; /* 위에서부터 시작 */
     /* 최소 높이를 100%로 설정 */
-    /* @todo 수치 계산 필요*/
-    min-height: 100%;
+    min-height: 100%; /* 이미 main에서 100vh-header 설정됨 */
     /* 패딩 설정 */
     padding: var(--spacing-4);
     /* 배경색 설정 */
     background: var(--surface-container-low);
+    flex: 1; /* 남은 공간을 모두 차지 */
 }
 
 /*
  =================================================================
- 학습 페이지 컨테이너
-*/
 /* 학습 영역 주요 컨테이너 */
 .study-container {
     /* 최대 너비를 800px로 설정하고, 100% 너비를 초과하지 않도록 설정 */
     width: min(100%, 800px);
-    display: grid;
+    display: flex; /* grid 대신 flex로 변경 */
+    flex-direction: column; /* 세로 방향으로 배치 */
     /* 그리드 아이템 간의 간격 설정 */
     gap: var(--spacing-6);
+    flex: 1; /* 남은 공간을 모두 차지 */
+}
+/* 메시지 섹션이 자라나지 않도록 flex-shrink 설정 */
+.message-section, .input-section, .control-section {
+    flex-shrink: 0; /* 크기가 줄어들지 않도록 설정 */
 }
 
 /* 상태 섹션: 연속 정답 및 난이도 표시 */
@@ -67,12 +72,14 @@
     color: var(--primary);
 }
 
-/* 단어 섹션 : 카드 형태로 단어와 관련 정보를 표시 */
+/* 단어 섹션이 남은 공간을 차지하도록 설정 */
 .word-section {
+    flex: 1; /* 남은 공간을 모두 차지 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     perspective: 1000px; /* 3D 효과를 위한 원근감 설정 */
-}
-
-/* 단어 카드 */
+}/* 단어 카드 */
 .word-card {
     /* 상대적 위치 설정 */
     position: relative;
